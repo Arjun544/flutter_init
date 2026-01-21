@@ -1,0 +1,16 @@
+import 'package:appwrite/appwrite.dart';
+
+class AuthService {
+AuthService(this.client);
+
+final Client client;
+
+Account get _account => Account(client);
+
+Future<Session> signInWithEmail(String email, String password) {
+    return _account.createEmailPasswordSession(
+    email: email,
+    password: password,
+    );
+    }
+    }

@@ -1,0 +1,26 @@
+import 'package:flutter/material.dart';
+{{#if flags.isRiverpod}}import 'package:flutter_riverpod/flutter_riverpod.dart';{{/if}}
+{{#if flags.usesDotenv}}import 'package:flutter_dotenv/flutter_dotenv.dart';{{/if}}
+{{#if (eq backend.provider "firebase")}}import 'package:firebase_core/firebase_core.dart';{{/if}}
+{{#if extras.flavors}}import 'src/flavors.dart';{{/if}}
+
+import 'src/app.dart';
+
+Future<void> main() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    {{#if flags.usesDotenv}}
+    await dotenv.load(fileName: ".env");
+    {{/if}}
+    {{#if extras.flavors}}
+    FlavorConfig.load(Flavor.dev);
+    {{/if}}
+    {{#if (eq backend.provider "firebase")}}
+    await Firebase.initializeApp();
+    {{/if}}
+
+    {{#if flags.isRiverpod}}
+    runApp(const ProviderScope(child: App()));
+    {{else}}
+    runApp(const App());
+    {{/if}}
+    }

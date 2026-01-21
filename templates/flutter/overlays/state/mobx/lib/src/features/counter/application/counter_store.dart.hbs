@@ -1,0 +1,14 @@
+import 'package:mobx/mobx.dart';
+
+class CounterStore {
+CounterStore() {
+increment = Action(_increment);
+}
+
+final Observable<int> count = Observable(0);
+    late final Action increment;
+
+    void _increment() {
+    count.value++;
+    }
+    }

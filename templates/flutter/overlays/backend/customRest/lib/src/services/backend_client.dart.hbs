@@ -1,0 +1,16 @@
+{{#if flags.usesDio}}import 'package:dio/dio.dart';{{else}}import 'package:http/http.dart' as http;{{/if}}
+
+class BackendClient {
+BackendClient({this.baseUrl = '{{backend.options.baseUrl}}'});
+
+final String baseUrl;
+
+{{#if flags.usesDio}}
+Dio get _dio => Dio(BaseOptions(baseUrl: baseUrl));
+
+Future<Response<dynamic>> get(String path) => _dio.get(path);
+    {{else}}
+    Future<http.Response> get(String path) =>
+        http.get(Uri.parse('$baseUrl$path'));
+        {{/if}}
+        }

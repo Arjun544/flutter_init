@@ -1,0 +1,5 @@
+{
+  "@@locale": "en",
+  "hello": "Hello",
+  "counterLabel": "You have pushed the button this many times:"
+}

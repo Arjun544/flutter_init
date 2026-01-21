@@ -1,0 +1,12 @@
+import 'package:flutter/material.dart';
+{{#if flags.usesGoogleFont}}
+import 'package:google_fonts/google_fonts.dart';
+{{/if}}
+
+TextTheme buildTextTheme() {
+{{#if flags.usesGoogleFont}}
+return GoogleFonts.getTextTheme('{{#if theme.font.family}}{{theme.font.family}}{{else}}Roboto{{/if}}');
+{{else}}
+return const TextTheme();
+{{/if}}
+}

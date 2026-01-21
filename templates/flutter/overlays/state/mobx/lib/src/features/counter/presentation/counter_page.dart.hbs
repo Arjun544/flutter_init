@@ -1,0 +1,35 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+
+import '../application/counter_store.dart';
+
+class CounterPage extends StatelessWidget {
+CounterPage({super.key});
+
+final store = CounterStore();
+
+@override
+Widget build(BuildContext context) {
+return Scaffold(
+appBar: AppBar(title: const Text('Counter (MobX)')),
+body: Center(
+child: Column(
+mainAxisAlignment: MainAxisAlignment.center,
+children: [
+Text('MobX counter', style: Theme.of(context).textTheme.titleMedium),
+Observer(
+builder: (_) => Text(
+'${store.count.value}',
+style: Theme.of(context).textTheme.displayMedium,
+),
+),
+],
+),
+),
+floatingActionButton: FloatingActionButton(
+onPressed: store.increment,
+child: const Icon(Icons.add),
+),
+);
+}
+}

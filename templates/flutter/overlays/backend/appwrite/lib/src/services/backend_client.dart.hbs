@@ -1,0 +1,12 @@
+import 'package:appwrite/appwrite.dart';
+
+class BackendClient {
+BackendClient({
+required String endpoint,
+required String projectId,
+}) : client = Client()
+..setEndpoint(endpoint)
+..setProject(projectId);
+
+final Client client;
+}

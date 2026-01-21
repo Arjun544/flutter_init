@@ -1,0 +1,13 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class AuthService {
+AuthService(this.client);
+
+final SupabaseClient client;
+
+Future<AuthResponse> signInWithEmail(String email, String password) {
+    return client.auth.signInWithPassword(email: email, password: password);
+    }
+
+    Future<void> signOut() => client.auth.signOut();
+        }

@@ -1,0 +1,15 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class BackendClient {
+BackendClient() : client = Supabase.instance.client;
+
+final SupabaseClient client;
+
+static Future<BackendClient> init({
+    required String supabaseUrl,
+    required String supabaseAnonKey,
+    }) async {
+    await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+    return BackendClient();
+    }
+    }

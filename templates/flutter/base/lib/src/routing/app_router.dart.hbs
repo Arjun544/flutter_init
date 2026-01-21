@@ -1,0 +1,55 @@
+{{#if (eq flags.routerPackage "go_router")}}
+import 'package:go_router/go_router.dart';
+import '../features/counter/presentation/counter_page.dart';
+
+final GoRouter appRouter = GoRouter(
+routes: <RouteBase>[
+    GoRoute(
+    path: '/',
+    name: 'home',
+    builder: (context, state) => const CounterPage(),
+    ),
+    ],
+    );
+    {{else if (eq flags.routerPackage "auto_route")}}
+    import 'package:auto_route/auto_route.dart';
+    import '../features/counter/presentation/counter_page.dart';
+
+    class AppRouter extends RootStackRouter {
+    AppRouter();
+
+    @override
+    final Map<String, PageFactory> pagesMap = {
+        CounterRoute.name: (routeData) => AutoRoutePage<dynamic>(
+            routeData: routeData,
+            child: const CounterPage(),
+            ),
+            };
+
+            @override
+            List<RouteConfig> get routes => [
+                RouteConfig(
+                CounterRoute.name,
+                path: '/',
+                ),
+                ];
+                }
+
+                class CounterRoute extends PageRouteInfo<void> {
+                    const CounterRoute() : super(name, path: '/');
+
+                    static const String name = 'CounterRoute';
+                    }
+                    {{else}}
+                    import 'package:flutter/material.dart';
+                    import '../features/counter/presentation/counter_page.dart';
+
+                    class AppRouter {
+                    static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+                        return MaterialPageRoute(
+                        builder: (_) => const CounterPage(),
+                        settings: settings,
+                        );
+                        }
+                        }
+                        {{/if}}

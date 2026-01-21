@@ -1,0 +1,32 @@
+import 'package:flutter/material.dart';
+
+import 'text_theme.dart';
+
+Color _colorFromHex(String hex) {
+final cleaned = hex.replaceFirst('#', '');
+return Color(int.parse('ff$cleaned', radix: 16));
+}
+
+ThemeData buildLightTheme({required String primaryColorHex}) {
+final seed = _colorFromHex(primaryColorHex.isNotEmpty ? primaryColorHex : '#6750A4');
+return ThemeData(
+colorScheme: ColorScheme.fromSeed(
+seedColor: seed,
+brightness: Brightness.light,
+),
+useMaterial3: true,
+textTheme: buildTextTheme(),
+);
+}
+
+ThemeData buildDarkTheme({required String primaryColorHex}) {
+final seed = _colorFromHex(primaryColorHex.isNotEmpty ? primaryColorHex : '#6750A4');
+return ThemeData(
+colorScheme: ColorScheme.fromSeed(
+seedColor: seed,
+brightness: Brightness.dark,
+),
+useMaterial3: true,
+textTheme: buildTextTheme(),
+);
+}

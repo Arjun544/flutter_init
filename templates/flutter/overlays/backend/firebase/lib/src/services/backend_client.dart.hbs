@@ -1,0 +1,22 @@
+import 'package:firebase_core/firebase_core.dart';
+{{#if backend.options.firestore}}import 'package:cloud_firestore/cloud_firestore.dart';{{/if}}
+{{#if backend.options.realtimeDb}}import 'package:firebase_database/firebase_database.dart';{{/if}}
+{{#if backend.options.storage}}import 'package:firebase_storage/firebase_storage.dart';{{/if}}
+
+class BackendClient {
+const BackendClient();
+
+Future<void> init() async {
+    await Firebase.initializeApp();
+    }
+
+    {{#if backend.options.firestore}}
+    FirebaseFirestore get firestore => FirebaseFirestore.instance;
+    {{/if}}
+    {{#if backend.options.realtimeDb}}
+    FirebaseDatabase get realtimeDb => FirebaseDatabase.instance;
+    {{/if}}
+    {{#if backend.options.storage}}
+    FirebaseStorage get storage => FirebaseStorage.instance;
+    {{/if}}
+    }

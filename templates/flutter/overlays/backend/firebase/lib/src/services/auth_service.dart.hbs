@@ -1,0 +1,25 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
+class AuthService {
+AuthService() : _auth = FirebaseAuth.instance;
+
+final FirebaseAuth _auth;
+
+Future<UserCredential> signInAnonymously() {
+    return _auth.signInAnonymously();
+    }
+
+    {{#if backend.options.authEmail}}
+    Future<UserCredential> signInWithEmail(String email, String password) {
+        return _auth.signInWithEmailAndPassword(email: email, password: password);
+        }
+        {{/if}}
+
+        {{#if backend.options.authGoogle}}
+        // Provide Google Sign-In implementation in the app layer (not included here).
+        {{/if}}
+
+        {{#if backend.options.authPhone}}
+        // Provide phone auth verification in the UI layer.
+        {{/if}}
+        }
