@@ -1,0 +1,203 @@
+import '../../../imports/imports.dart';
+
+class BaseButton extends StatelessWidget {
+  final String? text;
+  final VoidCallback? onPressed;
+  final ButtonState state;
+  final ButtonVariant variant;
+  final ButtonSize size;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
+  final Color? backgroundColor;
+  final Color? textColor;
+  final double? width;
+  final double? height;
+  final double? borderRadius;
+  final EdgeInsetsGeometry? padding;
+  final bool fullWidth;
+  final double? elevation;
+
+  const BaseButton({
+    super.key,
+    this.text,
+    this.onPressed,
+    this.state = ButtonState.idle,
+    this.variant = ButtonVariant.primary,
+    this.size = ButtonSize.medium,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.backgroundColor,
+    this.textColor,
+    this.width,
+    this.height,
+    this.borderRadius,
+    this.padding,
+    this.fullWidth = true,
+    this.elevation,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.theme;
+    final colors = context.colors;
+    final isLoading = state == ButtonState.loading;
+    final isSuccess = state == ButtonState.success;
+    final isError = state == ButtonState.error;
+    final isDisabled = state == ButtonState.disabled || (onPressed == null && !isLoading);
+    
+    // Determine background color based on variant or state
+    Color getBgColor() {
+      if (isSuccess) return Colors.green;
+      if (isError) return colors.error;
+      if (backgroundColor != null) return backgroundColor!;
+      switch (variant) {
+        case ButtonVariant.primary:
+          return theme.primaryColor;
+        case ButtonVariant.secondary:
+          return colors.secondary;
+        case ButtonVariant.outline:
+        case ButtonVariant.ghost:
+          return Colors.transparent;
+        case ButtonVariant.danger:
+          return colors.error;
+        case ButtonVariant.success:
+          return Colors.green;
+      }
+    }
+
+    // Determine text/icon color based on variant or state
+    Color getTextColor() {
+      if (isSuccess || isError) return Colors.white;
+      if (textColor != null) return textColor!;
+      switch (variant) {
+        case ButtonVariant.outline:
+          return backgroundColor ?? theme.primaryColor;
+        case ButtonVariant.ghost:
+          return theme.primaryColor;
+        case ButtonVariant.primary:
+        case ButtonVariant.secondary:
+        case ButtonVariant.danger:
+        case ButtonVariant.success:
+          return Colors.white;
+      }
+    }
+
+    // Determine border side based on variant
+    BorderSide? getBorderSide() {
+      if (isSuccess || isError) return BorderSide.none;
+      if (variant == ButtonVariant.outline) {
+        return BorderSide(color: backgroundColor ?? theme.primaryColor);
+      }
+      return BorderSide.none;
+    }
+
+    // Determine height based on size
+    double getHeight() {
+      if (height != null) return height!;
+      switch (size) {
+        case ButtonSize.small:
+          return {{#if flags.usesScreenutil}}32.h{{else}}32{{/if}};
+        case ButtonSize.medium:
+          return {{#if flags.usesScreenutil}}48.h{{else}}48{{/if}};
+        case ButtonSize.large:
+          return {{#if flags.usesScreenutil}}56.h{{else}}56{{/if}};
+      }
+    }
+
+    // Determine font size based on size
+    double getFontSize() {
+      switch (size) {
+        case ButtonSize.small:
+          return {{#if flags.usesScreenutil}}12.sp{{else}}12{{/if}};
+        case ButtonSize.medium:
+          return {{#if flags.usesScreenutil}}16.sp{{else}}16{{/if}};
+        case ButtonSize.large:
+          return {{#if flags.usesScreenutil}}18.sp{{else}}18{{/if}};
+      }
+    }
+
+    final effectiveOnPressed = (isLoading || isSuccess || isError || isDisabled) ? null : onPressed;
+    final color = getTextColor();
+    final bg = getBgColor();
+
+    Widget buttonChild;
+
+    if (isLoading) {
+      buttonChild = SizedBox(
+        height: getFontSize() + 4,
+        width: getFontSize() + 4,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(color),
+        ),
+      );
+    } else if (isSuccess) {
+      buttonChild = Icon(Icons.check, color: color, size: getFontSize() + 4);
+    } else if (isError) {
+      buttonChild = Icon(Icons.priority_high, color: color, size: getFontSize() + 4);
+    } else {
+      buttonChild = Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (prefixIcon != null) ...[
+            IconTheme(
+              data: IconThemeData(size: getFontSize() + 2, color: color),
+              child: prefixIcon!,
+            ),
+            {{#if flags.usesScreenutil}}8.w.kW{{else}}8.kW{{/if}},
+          ],
+          if (text != null)
+            Text(
+              text!,
+              style: TextStyle(
+                color: color,
+                fontSize: getFontSize(),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          if (suffixIcon != null) ...[
+            {{#if flags.usesScreenutil}}8.w.kW{{else}}8.kW{{/if}},
+            IconTheme(
+              data: IconThemeData(size: getFontSize() + 2, color: color),
+              child: suffixIcon!,
+            ),
+          ],
+        ],
+      );
+    }
+
+    return SkeletonWrapper(
+      isLoading: isLoading,
+      child: SizedBox(
+        width: fullWidth ? ({{#if flags.usesScreenutil}}width?.w ?? double.infinity{{else}}width ?? double.infinity{{/if}}) : width,
+        height: getHeight(),
+        child: ElevatedButton(
+          onPressed: effectiveOnPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: bg,
+            foregroundColor: color,
+            elevation: variant == ButtonVariant.ghost || variant == ButtonVariant.outline ? 0 : (elevation ?? 2),
+            padding: padding ?? EdgeInsets.symmetric(horizontal: {{#if flags.usesScreenutil}}16.w{{else}}16{{/if}}),
+            shape: RoundedRectangleBorder(
+              borderRadius: {{#if flags.usesScreenutil}}(borderRadius?.r ?? 8.r).radius{{else}}(borderRadius ?? 8).radius{{/if}},
+              side: getBorderSide()!,
+            ),
+          ).copyWith(
+            // Handle hover/pressed states for ghost/outline if needed
+            overlayColor: WidgetStateProperty.resolveWith((states) {
+               if (states.contains(WidgetState.pressed)) {
+                 return color.withOpacity(0.1);
+               }
+               if (states.contains(WidgetState.hovered)) {
+                 return color.withOpacity(0.05);
+               }
+               return null;
+            }),
+          ),
+          child: buttonChild,
+        ),
+      ),
+    );
+  }
+}

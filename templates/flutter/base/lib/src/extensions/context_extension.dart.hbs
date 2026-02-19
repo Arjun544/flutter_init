@@ -1,0 +1,83 @@
+import 'package:flutter/material.dart';
+{{#if (eq flags.routerPackage "go_router")}}import 'package:go_router/go_router.dart';{{/if}}
+
+extension ContextExtension on BuildContext {
+  // Theme shortcuts
+  ThemeData get theme => Theme.of(this);
+  TextTheme get typography => theme.textTheme;
+  TextTheme get textTheme => theme.textTheme;
+  ColorScheme get colors => theme.colorScheme;
+  bool get isDarkMode => theme.brightness == Brightness.dark;
+
+  // MediaQuery shortcuts
+  Size get mediaQuerySize => MediaQuery.sizeOf(this);
+  Size get screenSize => mediaQuerySize;
+  double get width => mediaQuerySize.width;
+  double get height => mediaQuerySize.height;
+
+  // Keyboard state
+  bool get isKeyboardVisible => MediaQuery.viewInsetsOf(this).bottom > 0;
+  void hideKeyboard() => FocusScope.of(this).unfocus();
+
+  // Platform checks
+  bool get isIOS => theme.platform == TargetPlatform.iOS;
+  bool get isAndroid => theme.platform == TargetPlatform.android;
+
+  // Overlays
+  void showSnackBar(String message, {SnackBarAction? action}) {
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        action: action,
+      ),
+    );
+  }
+
+  Future<T?> showBottomSheet<T>({
+    required WidgetBuilder builder,
+    bool isScrollControlled = false,
+  }) {
+    return showModalBottomSheet<T>(
+      context: this,
+      builder: builder,
+      isScrollControlled: isScrollControlled,
+    );
+  }
+
+  // Routing shortcuts
+  {{#if (eq flags.routerPackage "go_router")}}
+  String get currentRoute {
+    final router = GoRouter.of(this);
+    final RouteMatch lastMatch = router.routerDelegate.currentConfiguration.last;
+    final RouteMatchList matchList = lastMatch is ImperativeRouteMatch
+        ? lastMatch.matches
+        : router.routerDelegate.currentConfiguration;
+    return matchList.uri.toString();
+  }
+  {{/if}}
+
+  void pop<T extends Object?>([T? result]) => Navigator.of(this).pop<T>(result);
+
+  Future<T?> push<T extends Object?>(Route<T> route) {
+    return Navigator.of(this).push<T>(route);
+  }
+
+  Future<T?> pushNamed<T extends Object?>(
+    String routeName, {
+    Object? arguments,
+  }) {
+    return Navigator.of(this).pushNamed<T>(routeName, arguments: arguments);
+  }
+
+  Future<T?> pushReplacementNamed<T extends Object?, TO extends Object?>(
+    String routeName, {
+    TO? result,
+    Object? arguments,
+  }) {
+    return Navigator.of(this).pushReplacementNamed<T, TO>(
+      routeName,
+      result: result,
+      arguments: arguments,
+    );
+  }
+}

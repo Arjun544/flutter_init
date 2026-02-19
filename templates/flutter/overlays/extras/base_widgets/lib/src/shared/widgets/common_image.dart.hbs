@@ -1,0 +1,110 @@
+import '../../../imports/imports.dart';
+
+
+/// A multi-purpose image widget that handles network images, SVGs, and local assets.
+/// 
+/// Automatically uses [CachedNetworkImage] if enabled for web images.
+/// Automatically uses [SvgPicture] if enabled for SVG files.
+class CommonImage extends StatelessWidget {
+  final String imageUrl;
+  final double? width;
+  final double? height;
+  final BoxFit fit;
+  final Color? color;
+  final Widget? placeholder;
+  final Widget? errorWidget;
+  final BorderRadius? borderRadius;
+
+  const CommonImage({
+    super.key,
+    required this.imageUrl,
+    this.width,
+    this.height,
+    this.fit = BoxFit.cover,
+    this.color,
+    this.placeholder,
+    this.errorWidget,
+    this.borderRadius,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final double? adjustedWidth = {{#if flags.usesScreenutil}}width?.w{{else}}width{{/if}};
+    final double? adjustedHeight = {{#if flags.usesScreenutil}}height?.h{{else}}height{{/if}};
+
+    Widget image;
+
+    if (imageUrl.startsWith('http')) {
+      {{#if flags.usesCachedNetworkImage}}
+      image = CachedNetworkImage(
+        imageUrl: imageUrl,
+        width: adjustedWidth,
+        height: adjustedHeight,
+        fit: fit,
+        color: color,
+        placeholder: (context, url) => placeholder ?? _buildDefaultPlaceholder(),
+        errorWidget: (context, url, error) => errorWidget ?? _buildDefaultErrorWidget(),
+      );
+      {{else}}
+      image = Image.network(
+        imageUrl,
+        width: adjustedWidth,
+        height: adjustedHeight,
+        fit: fit,
+        color: color,
+        errorBuilder: (context, error, stackTrace) => errorWidget ?? _buildDefaultErrorWidget(),
+      );
+      {{/if}}
+    } else if (imageUrl.endsWith('.svg')) {
+      {{#if flags.usesFlutterSvg}}
+      image = SvgPicture.asset(
+        imageUrl,
+        width: adjustedWidth,
+        height: adjustedHeight,
+        fit: fit,
+        colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+      );
+      {{else}}
+      image = const Icon(Icons.broken_image, color: Colors.grey);
+      {{/if}}
+    } else {
+      image = Image.asset(
+        imageUrl,
+        width: adjustedWidth,
+        height: adjustedHeight,
+        fit: fit,
+        color: color,
+        errorBuilder: (context, error, stackTrace) => errorWidget ?? _buildDefaultErrorWidget(),
+      );
+    }
+
+    if (borderRadius != null) {
+      return ClipRRect(
+        borderRadius: borderRadius!,
+        child: image,
+      );
+    }
+
+    return image;
+  }
+
+  Widget _buildDefaultPlaceholder() {
+    return Container(
+      width: width,
+      height: height,
+      color: Colors.grey[200],
+      child: const Center(
+        child: CircularProgressIndicator(strokeWidth: 2),
+      ),
+    );
+  }
+
+  Widget _buildDefaultErrorWidget() {
+    return Container(
+      width: width,
+      height: height,
+      color: Colors.grey[200],
+      child: const Icon(Icons.error_outline, color: Colors.grey),
+    );
+  }
+}

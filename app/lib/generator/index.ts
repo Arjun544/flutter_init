@@ -27,6 +27,12 @@ type TemplateContext = ScaffoldConfig & {
         usesHttp: boolean
         usesHive: boolean
         usesSharedPreferences: boolean
+        usesSecureStorage: boolean
+        usesCachedNetworkImage: boolean
+        usesFlutterSvg: boolean
+        usesSkeletonizer: boolean
+        usesScreenutil: boolean
+        usesAnimate: boolean
         usesDotenv: boolean
         usesLogger: boolean
         supportsLocalization: boolean
@@ -90,6 +96,12 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
 
             usesHive: config.commonPackages.hive,
             usesSharedPreferences: config.commonPackages.sharedPreferences,
+            usesSecureStorage: config.commonPackages.flutterSecureStorage,
+            usesCachedNetworkImage: config.commonPackages.cachedNetworkImage,
+            usesFlutterSvg: config.commonPackages.flutterSvg,
+            usesSkeletonizer: config.commonPackages.skeletonizer,
+            usesScreenutil: config.commonPackages.flutterScreenutil,
+            usesAnimate: config.commonPackages.flutterAnimate,
             usesDotenv: config.commonPackages.flutterDotenv,
             usesLogger: config.commonPackages.logger,
             supportsLocalization: config.extras.localization,
@@ -119,10 +131,9 @@ async function resolveOverlayDirs(
         ],
         [path.join(root, "overlays", "networking", "dio"), config.commonPackages.dio],
         [path.join(root, "overlays", "networking", "http"), config.commonPackages.http],
-        [
-            path.join(root, "overlays", "extras", "localization"),
-            config.extras.localization,
-        ],
+        [path.join(root, "overlays", "extras", "localization"), config.extras.localization],
+        [path.join(root, "overlays", "extras", "base_widgets"), config.extras.baseWidgets],
+        [path.join(root, "overlays", "storage", "secure_storage"), config.commonPackages.flutterSecureStorage],
         [path.join(root, "overlays", "extras", "flavors"), config.extras.flavors],
     ]
 

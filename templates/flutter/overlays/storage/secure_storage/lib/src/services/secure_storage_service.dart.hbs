@@ -1,0 +1,45 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+/// Service for securely storing sensitive data using platform-native encryption.
+/// 
+/// Uses [FlutterSecureStorage] which uses Keychain on iOS and Keystore on Android.
+class SecureStorageService {
+  final FlutterSecureStorage _storage;
+
+  SecureStorageService({FlutterSecureStorage? storage})
+      : _storage = storage ?? const FlutterSecureStorage(
+          aOptions: AndroidOptions(
+            encryptedSharedPreferences: true,
+          ),
+        );
+
+  /// Stores a [value] associated with [key].
+  Future<void> write(String key, String value) async {
+    await _storage.write(key: key, value: value);
+  }
+
+  /// Retrieves the value associated with [key], or null if not found.
+  Future<String?> read(String key) async {
+    return await _storage.read(key: key);
+  }
+
+  /// Removes the value associated with [key].
+  Future<void> delete(String key) async {
+    await _storage.delete(key: key);
+  }
+
+  /// Removes all values from secure storage.
+  Future<void> deleteAll() async {
+    await _storage.deleteAll();
+  }
+
+  /// Returns true if the storage contains the given [key].
+  Future<bool> containsKey(String key) async {
+    return await _storage.containsKey(key: key);
+  }
+
+  /// Reads all values from secure storage.
+  Future<Map<String, String>> readAll() async {
+    return await _storage.readAll();
+  }
+}

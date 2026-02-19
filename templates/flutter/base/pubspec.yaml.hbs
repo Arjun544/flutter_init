@@ -16,8 +16,11 @@ sdk: ">=3.5.0 <4.0.0" dependencies: flutter: sdk: flutter cupertino_icons: ^1.0.
     backend.options.crashlytics}}firebase_crashlytics: ^4.1.4{{/if}} {{/if}} {{#if (eq backend.provider "supabase" )}}
     supabase_flutter: ^2.8.0 {{/if}} {{#if (eq backend.provider "appwrite" )}} appwrite: ^12.0.2 {{/if}} {{#if
     flags.usesHive}} hive: ^2.2.3 hive_flutter: ^1.1.0 {{/if}} {{#if flags.usesSharedPreferences}} shared_preferences:
-    ^2.3.4 {{/if}} {{#if flags.usesDotenv}} flutter_dotenv: ^5.1.0 {{/if}} {{#if flags.usesLogger}} logger: ^2.5.0
-    {{/if}} {{#if flags.supportsLocalization}} flutter_localizations: sdk: flutter {{/if}} dev_dependencies:
+    ^2.3.4 {{/if}} {{#if flags.usesSecureStorage}} flutter_secure_storage: ^9.2.2 {{/if}} {{#if
+    flags.usesCachedNetworkImage}} cached_network_image: ^3.4.1 {{/if}} {{#if flags.usesFlutterSvg}} flutter_svg: ^2.0.15 {{/if}} {{#if
+    flags.usesSkeletonizer}} skeletonizer: ^1.4.1 {{/if}} {{#if flags.usesScreenutil}} flutter_screenutil: ^5.9.3 {{/if}} {{#if
+    flags.usesAnimate}} flutter_animate: ^4.5.2 {{/if}} {{#if flags.usesDotenv}} flutter_dotenv: ^5.1.0 {{/if}} {{#if
+    flags.usesLogger}} logger: ^2.5.0 {{/if}} {{#if flags.supportsLocalization}} flutter_localizations: sdk: flutter {{/if}} dev_dependencies:
     flutter_test: sdk: flutter flutter_lints: ^4.0.0 {{#if (or flags.isMobX (eq
     flags.routerPackage "auto_route" ))}} build_runner: ^2.4.12 {{/if}} {{#if flags.isMobX}}
     mobx_codegen: ^2.6.2 {{/if}} {{#if (eq flags.routerPackage "auto_route" )}} auto_route_generator: ^9.2.2 {{/if}}

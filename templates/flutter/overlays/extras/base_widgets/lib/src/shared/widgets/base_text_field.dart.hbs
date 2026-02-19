@@ -1,0 +1,53 @@
+import '../../../imports/imports.dart';
+
+class BaseTextField extends StatelessWidget {
+  final TextEditingController? controller;
+  final String? labelText;
+  final String? hintText;
+  final bool obscureText;
+  final TextInputType keyboardType;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
+  final String? Function(String?)? validator;
+  final void Function(String)? onChanged;
+
+  const BaseTextField({
+    super.key,
+    this.controller,
+    this.labelText,
+    this.hintText,
+    this.obscureText = false,
+    this.keyboardType = TextInputType.text,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.validator,
+    this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      validator: validator,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: labelText,
+        hintText: hintText,
+        prefixIcon: prefixIcon,
+        suffixIcon: suffixIcon,
+        border: OutlineInputBorder(
+          borderRadius: {{#if flags.usesScreenutil}}8.r.radius{{else}}8.radius{{/if}},
+        ),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: {{#if flags.usesScreenutil}}16.w{{else}}16{{/if}},
+          vertical: {{#if flags.usesScreenutil}}12.h{{else}}12{{/if}},
+        ),
+      ),
+      style: TextStyle(
+        fontSize: {{#if flags.usesScreenutil}}14.sp{{else}}14{{/if}},
+      ),
+    );
+  }
+}

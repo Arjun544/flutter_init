@@ -1,37 +1,48 @@
-import 'package:flutter/material.dart';
-{{#if flags.supportsLocalization}}import 'package:flutter_localizations/flutter_localizations.dart';{{/if}}
-
-import 'routing/app_router.dart';
-import 'theme/theme.dart';
+import 'imports/imports.dart';
 import 'features/counter/presentation/counter_page.dart';
 
 class App extends StatelessWidget {
 const App({super.key});
 
-@override
-Widget build(BuildContext context) {
-return MaterialApp{{#if flags.routerPackage}}.router{{/if}}(
-title: '{{appName}}',
-debugShowCheckedModeBanner: false,
-theme: buildLightTheme(primaryColorHex: '{{theme.primaryColor}}'),
-{{#if flags.hasDarkMode}}
-darkTheme: buildDarkTheme(primaryColorHex: '{{theme.primaryColor}}'),
-themeMode: {{#if theme.darkMode.system}}ThemeMode.system{{else}}ThemeMode.dark{{/if}},
-{{/if}}
-{{#if flags.routerPackage}}
-routerConfig: {{#if (eq flags.routerPackage "go_router")}}appRouter{{else}}AppRouter().config(){{/if}},
-{{else}}
-home: const CounterPage(),
-onGenerateRoute: AppRouter.onGenerateRoute,
-{{/if}}
-{{#if flags.supportsLocalization}}
-localizationsDelegates: const [
-GlobalMaterialLocalizations.delegate,
-GlobalWidgetsLocalizations.delegate,
-GlobalCupertinoLocalizations.delegate,
-],
-supportedLocales: const [Locale('en')],
-{{/if}}
-);
-}
+  @override
+  Widget build(BuildContext context) {
+    {{#if flags.usesScreenutil}}
+    return ScreenUtilInit(
+      designSize: const Size(360, 690),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        return _buildMaterialApp(context);
+      },
+    );
+    {{else}}
+    return _buildMaterialApp(context);
+    {{/if}}
+  }
+
+  Widget _buildMaterialApp(BuildContext context) {
+    return MaterialApp{{#if flags.routerPackage}}.router{{/if}}(
+      title: '{{appName}}',
+      debugShowCheckedModeBanner: false,
+      theme: buildLightTheme(primaryColorHex: '{{theme.primaryColor}}'),
+      {{#if flags.hasDarkMode}}
+      darkTheme: buildDarkTheme(primaryColorHex: '{{theme.primaryColor}}'),
+      themeMode: {{#if theme.darkMode.system}}ThemeMode.system{{else}}ThemeMode.dark{{/if}},
+      {{/if}}
+      {{#if flags.routerPackage}}
+      routerConfig: {{#if (eq flags.routerPackage "go_router")}}appRouter{{else}}AppRouter().config(){{/if}},
+      {{else}}
+      home: const CounterPage(),
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      {{/if}}
+      {{#if flags.supportsLocalization}}
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('en')],
+      {{/if}}
+    );
+  }
 }

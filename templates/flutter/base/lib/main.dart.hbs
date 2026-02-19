@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-{{#if flags.isRiverpod}}import 'package:flutter_riverpod/flutter_riverpod.dart';{{/if}}
-{{#if flags.usesDotenv}}import 'package:flutter_dotenv/flutter_dotenv.dart';{{/if}}
+import 'src/imports/imports.dart';
 {{#if (eq backend.provider "firebase")}}import 'package:firebase_core/firebase_core.dart';{{/if}}
 {{#if extras.flavors}}import 'src/flavors.dart';{{/if}}
 
