@@ -22,6 +22,14 @@ export const backendProviderSchema = z.enum([
 ])
 export type BackendProvider = z.infer<typeof backendProviderSchema>
 
+export const navigationSchema = z.enum([
+    "imperative",
+    "go_router",
+    "getx",
+    "auto_route",
+])
+export type NavigationStyle = z.infer<typeof navigationSchema>
+
 export const architectureSchema = z.enum([
     "mvc",
     "mvvm",
@@ -34,20 +42,22 @@ export type ArchitectureStyle = z.infer<typeof architectureSchema>
 export type StepId =
     | "basics"
     | "theme"
+    | "architecture"
     | "state"
+    | "navigation"
     | "backend"
     | "packages"
-    | "architecture"
     | "extras"
     | "generate"
 
 export const stepOrder: StepId[] = [
     "basics",
     "theme",
+    "architecture",
     "state",
+    "navigation",
     "backend",
     "packages",
-    "architecture",
     "extras",
     "generate",
 ]
@@ -108,12 +118,8 @@ const backendSchema = z.discriminatedUnion("provider", [
 export type BackendConfig = z.infer<typeof backendSchema>
 
 const packagesSchema = z.object({
-    goRouter: z.boolean(),
-    autoRoute: z.boolean(),
     dio: z.boolean(),
     http: z.boolean(),
-    freezed: z.boolean(),
-    jsonSerializable: z.boolean(),
     intl: z.boolean(),
     hive: z.boolean(),
     sharedPreferences: z.boolean(),
@@ -141,6 +147,7 @@ export const scaffoldConfigSchema = z.object({
     theme: themeSchema,
     stateManagement: stateManagementSchema,
     backend: backendSchema,
+    navigation: navigationSchema,
     commonPackages: packagesSchema,
     architecture: architectureSchema,
     extras: extrasSchema,
@@ -173,13 +180,11 @@ export const defaultConfig: ScaffoldConfig = {
     },
     stateManagement: "riverpod",
     backend: { provider: "none" },
+    navigation: "go_router",
     commonPackages: {
-        goRouter: true,
-        autoRoute: false,
         dio: true,
         http: false,
-        freezed: false,
-        jsonSerializable: true,
+
         intl: true,
         hive: false,
         sharedPreferences: true,
@@ -244,13 +249,13 @@ export const backendOptions = [
 ] as const satisfies Array<{ value: BackendProvider; label: string }>
 
 export const stateManagementOptions = [
-    { value: "provider", label: "Provider" },
-    { value: "riverpod", label: "Riverpod" },
-    { value: "bloc", label: "Bloc" },
-    { value: "getx", label: "GetX" },
-    { value: "mobx", label: "MobX" },
-    { value: "none", label: "None (setState)" },
-] as const satisfies Array<{ value: StateManagement; label: string }>
+    { value: "provider", label: "Provider", description: "Simple and easy to use. Recommended by Google." },
+    { value: "riverpod", label: "Riverpod", description: "Compile-safe, no context dependency. A better Provider." },
+    { value: "bloc", label: "Bloc", description: "Predictable business logic separation. Widely used in enterprise." },
+    { value: "getx", label: "GetX", description: "All-in-one solution: State, Dependency Injection, and Routing." },
+    { value: "mobx", label: "MobX", description: "Reactive state management based on observables and actions." },
+    { value: "none", label: "None (setState)", description: "Vanilla Flutter state management using setState." },
+] as const satisfies Array<{ value: StateManagement; label: string; description: string }>
 
 export const architectureOptions = [
     { value: "mvc", label: "MVC" },
@@ -260,22 +265,26 @@ export const architectureOptions = [
     { value: "layer-first", label: "Layer-first" },
 ] as const satisfies Array<{ value: ArchitectureStyle; label: string }>
 
+export const navigationOptions = [
+    { value: "imperative", label: "Imperative (Navigator 1.0)", description: "Standard Flutter navigation. Simple for small apps." },
+    { value: "go_router", label: "go_router", description: "Declarative routing. Supports deep linking and redirection. Recommended." },
+    { value: "getx", label: "GetX Routing", description: "Simple and powerful routing without context." },
+    { value: "auto_route", label: "auto_route", description: "Code generation based routing. Strong typing and guards." },
+] as const satisfies Array<{ value: NavigationStyle; label: string; description: string }>
+
 export const packageOptions: Array<{
     key: keyof PackagesConfig
     label: string
     description?: string
 }> = [
-        { key: "goRouter", label: "go_router" },
-        { key: "autoRoute", label: "auto_route" },
-        { key: "dio", label: "dio" },
-        { key: "http", label: "http" },
-        { key: "freezed", label: "freezed" },
-        { key: "jsonSerializable", label: "json_serializable" },
-        { key: "intl", label: "intl" },
-        { key: "hive", label: "hive" },
-        { key: "sharedPreferences", label: "shared_preferences" },
-        { key: "flutterDotenv", label: "flutter_dotenv" },
-        { key: "logger", label: "logger" },
+        { key: "dio", label: "dio", description: "Powerful HTTP client for Dart with Interceptors and Global configuration." },
+        { key: "http", label: "http", description: "A composable, Future-based library for making HTTP requests." },
+
+        { key: "intl", label: "intl", description: "Internationalization and localization support." },
+        { key: "hive", label: "hive", description: "Lightweight and blazing fast key-value database." },
+        { key: "sharedPreferences", label: "shared_preferences", description: "Persistent storage for simple data." },
+        { key: "flutterDotenv", label: "flutter_dotenv", description: "Load configuration configuration from a .env file." },
+        { key: "logger", label: "logger", description: "Small, easy to use and extensible logger which prints beautiful logs." },
     ]
 
 export const extrasOptions: Array<{

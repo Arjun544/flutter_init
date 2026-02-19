@@ -25,8 +25,6 @@ type TemplateContext = ScaffoldConfig & {
         usesCustomRest: boolean
         usesDio: boolean
         usesHttp: boolean
-        usesFreezed: boolean
-        usesJsonSerializable: boolean
         usesHive: boolean
         usesSharedPreferences: boolean
         usesDotenv: boolean
@@ -64,11 +62,12 @@ export async function generateFlutterScaffold(input: unknown) {
 function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
     const appSlug = config.appName.trim().replace(/\\s+/g, "-").toLowerCase()
     const appSnake = config.appName.trim().replace(/\\s+/g, "_").toLowerCase()
-    const routerPackage = config.commonPackages.goRouter
-        ? "go_router"
-        : config.commonPackages.autoRoute
-            ? "auto_route"
-            : undefined
+    const routerPackage =
+        config.navigation === "go_router"
+            ? "go_router"
+            : config.navigation === "auto_route"
+                ? "auto_route"
+                : undefined
 
     return {
         ...config,
@@ -88,8 +87,7 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             usesCustomRest: config.backend.provider === "customRest",
             usesDio: config.commonPackages.dio,
             usesHttp: config.commonPackages.http,
-            usesFreezed: config.commonPackages.freezed,
-            usesJsonSerializable: config.commonPackages.jsonSerializable,
+
             usesHive: config.commonPackages.hive,
             usesSharedPreferences: config.commonPackages.sharedPreferences,
             usesDotenv: config.commonPackages.flutterDotenv,
@@ -113,11 +111,11 @@ async function resolveOverlayDirs(
         [path.join(root, "overlays", "backend", config.backend.provider), true],
         [
             path.join(root, "overlays", "routing", "go_router"),
-            config.commonPackages.goRouter,
+            config.navigation === "go_router",
         ],
         [
             path.join(root, "overlays", "routing", "auto_route"),
-            config.commonPackages.autoRoute,
+            config.navigation === "auto_route",
         ],
         [path.join(root, "overlays", "networking", "dio"), config.commonPackages.dio],
         [path.join(root, "overlays", "networking", "http"), config.commonPackages.http],
