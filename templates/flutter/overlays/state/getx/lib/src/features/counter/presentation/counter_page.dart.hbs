@@ -16,9 +16,9 @@ class CounterPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('GetX counter', style: Theme.of(context).textTheme.titleMedium),
+            Text('GetX counter', style: context.textTheme.titleMedium),
             Obx(() => Text('${controller.count.value}',
-                style: Theme.of(context).textTheme.displayMedium)),
+                style: context.textTheme.displayMedium)),
           ],
         ),
       ),

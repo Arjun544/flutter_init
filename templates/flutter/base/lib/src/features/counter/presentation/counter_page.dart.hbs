@@ -28,11 +28,11 @@ class _CounterPageState extends State<CounterPage> {
           children: [
             Text(
               'You have pushed the button this many times:',
-              style: Theme.of(context).textTheme.titleMedium{{#if flags.usesScreenutil}}?.copyWith(fontSize: 14.sp){{/if}},
+              style: context.textTheme.titleMedium{{#if flags.usesScreenutil}}?.copyWith(fontSize: 14.sp){{/if}},
             ),
             Text(
               '$_count',
-              style: Theme.of(context).textTheme.displayMedium{{#if flags.usesScreenutil}}?.copyWith(fontSize: 45.sp){{/if}},
+              style: context.textTheme.displayMedium{{#if flags.usesScreenutil}}?.copyWith(fontSize: 45.sp){{/if}},
             ){{#if flags.usesAnimate}}.animate(key: ValueKey(_count)).scale(duration: 200.ms, curve: Curves.easeOutBack){{/if}},
           ],
         ),

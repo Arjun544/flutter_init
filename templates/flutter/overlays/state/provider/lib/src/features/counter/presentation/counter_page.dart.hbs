@@ -19,9 +19,9 @@ child: Consumer<CounterController>(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
     Text('Provider counter',
-    style: Theme.of(context).textTheme.titleMedium),
+    style: context.textTheme.titleMedium),
     Text('${controller.count}',
-    style: Theme.of(context).textTheme.displayMedium),
+    style: context.textTheme.displayMedium),
     ],
     ),
     ),

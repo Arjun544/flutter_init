@@ -1,50 +1,102 @@
 import 'package:flutter/material.dart';
 {{#if (eq flags.routerPackage "go_router")}}import 'package:go_router/go_router.dart';{{/if}}
 
+import '../theme/color_schemes.dart';
+import '../theme/theme.dart';
+
 extension ContextExtension on BuildContext {
-  // Theme shortcuts
+  // ── Theme shortcuts ──────────────────────────────────────────────────────
   ThemeData get theme => Theme.of(this);
   TextTheme get typography => theme.textTheme;
   TextTheme get textTheme => theme.textTheme;
   ColorScheme get colors => theme.colorScheme;
   bool get isDarkMode => theme.brightness == Brightness.dark;
 
-  // MediaQuery shortcuts
+  /// Semantic/custom colors (success, warning, info).
+  AppColorsExtension get appColors =>
+      theme.extension<AppColorsExtension>()!;
+
+  /// Design tokens (spacing, border radii, elevation defaults).
+  AppDesignTokens get designTokens =>
+      theme.extension<AppDesignTokens>()!;
+
+  // ── MediaQuery shortcuts ─────────────────────────────────────────────────
   Size get mediaQuerySize => MediaQuery.sizeOf(this);
   Size get screenSize => mediaQuerySize;
   double get width => mediaQuerySize.width;
   double get height => mediaQuerySize.height;
 
-  // Keyboard state
+  /// Safe-area insets for the current view.
+  EdgeInsets get safeArea => MediaQuery.paddingOf(this);
+
+  // ── Keyboard ──────────────────────────────────────────────────────────────
   bool get isKeyboardVisible => MediaQuery.viewInsetsOf(this).bottom > 0;
   void hideKeyboard() => FocusScope.of(this).unfocus();
 
-  // Platform checks
+  // ── Platform ─────────────────────────────────────────────────────────────
   bool get isIOS => theme.platform == TargetPlatform.iOS;
   bool get isAndroid => theme.platform == TargetPlatform.android;
 
-  // Overlays
-  void showSnackBar(String message, {SnackBarAction? action}) {
-    ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        action: action,
-      ),
-    );
+  // ── Overlays ─────────────────────────────────────────────────────────────
+  void showSnackBar(
+    String message, {
+    SnackBarAction? action,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    ScaffoldMessenger.of(this)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          action: action,
+          duration: duration,
+        ),
+      );
   }
 
-  Future<T?> showBottomSheet<T>({
+  void showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(this)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: appColors.success,
+        ),
+      );
+  }
+
+  void showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(this)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: colors.error,
+        ),
+      );
+  }
+
+  Future<T?> showAppBottomSheet<T>({
     required WidgetBuilder builder,
-    bool isScrollControlled = false,
+    bool isScrollControlled = true,
+    bool useSafeArea = true,
   }) {
     return showModalBottomSheet<T>(
       context: this,
       builder: builder,
       isScrollControlled: isScrollControlled,
+      useSafeArea: useSafeArea,
     );
   }
 
-  // Routing shortcuts
+  Future<T?> showAppDialog<T>({required WidgetBuilder builder}) {
+    return showDialog<T>(
+      context: this,
+      builder: builder,
+    );
+  }
+
+  // ── Routing shortcuts ────────────────────────────────────────────────────
   {{#if (eq flags.routerPackage "go_router")}}
   String get currentRoute {
     final router = GoRouter.of(this);
