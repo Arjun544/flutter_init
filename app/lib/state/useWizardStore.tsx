@@ -26,6 +26,8 @@ type WizardContextValue = {
     next: () => void
     prev: () => void
     reset: () => void
+    selectedItem: string | null
+    setSelectedItem: (item: string | null) => void
 }
 
 const WizardContext = React.createContext<WizardContextValue | null>(null)
@@ -44,6 +46,7 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     const [config, setConfig] = React.useState<ScaffoldConfig>(defaultConfig)
     const [step, setStepInternal] = React.useState<StepId>(stepOrder[0])
     const [isHydrated, setIsHydrated] = React.useState(false)
+    const [selectedItem, setSelectedItem] = React.useState<string | null>(null)
 
     React.useEffect(() => {
         if (typeof window === "undefined") return
@@ -93,18 +96,21 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
 
     const setStep = React.useCallback((nextStep: StepId) => {
         setStepInternal(clampStep(nextStep))
+        setSelectedItem(null) // Reset selection when step changes
     }, [])
 
     const next = React.useCallback(() => {
         const currentIndex = stepOrder.indexOf(step)
         const nextStep = stepOrder[currentIndex + 1] ?? step
         setStepInternal(nextStep)
+        setSelectedItem(null)
     }, [step])
 
     const prev = React.useCallback(() => {
         const currentIndex = stepOrder.indexOf(step)
         const prevStep = stepOrder[currentIndex - 1] ?? step
         setStepInternal(prevStep)
+        setSelectedItem(null)
     }, [step])
 
     const reset = React.useCallback(() => {
@@ -128,13 +134,15 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
             step,
             stepIndex,
             isHydrated,
+            selectedItem,
             updateConfig,
             setStep,
             next,
             prev,
             reset,
+            setSelectedItem,
         }),
-        [config, isHydrated, next, prev, setStep, step, stepIndex, updateConfig]
+        [config, isHydrated, next, prev, setStep, step, stepIndex, updateConfig, selectedItem, setSelectedItem]
     )
 
     return (

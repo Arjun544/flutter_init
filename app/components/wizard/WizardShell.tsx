@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 import * as React from "react"
 import { StepContent } from "./StepContent"
+import { PackageInfoPanel } from "./PackageInfoPanel"
 
 const steps: Record<
     StepId,
@@ -178,6 +179,9 @@ export function WizardShell() {
                         <StepContent step={step} />
                     </div>
                 </section>
+
+                {/* Right Panel */}
+                <PackageInfoPanel />
             </div>
         </main>
     )

@@ -4,10 +4,12 @@ import { NavigationStyle, navigationOptions } from "@/app/lib/config/schema"
 import { useWizard } from "@/app/lib/state/useWizardStore"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { InformationCircleIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { StepFooter } from "../StepFooter"
 
 export function NavigationStep() {
-    const { config, updateConfig, next, prev } = useWizard()
+    const { config, updateConfig, next, prev, setSelectedItem } = useWizard()
 
     // Filter options based on state management selection
     const filteredOptions = navigationOptions.filter(option => {
@@ -26,7 +28,9 @@ export function NavigationStep() {
             <CardContent>
                 <RadioGroup
                     value={config.navigation}
-                    onValueChange={(value) => updateConfig({ navigation: value as NavigationStyle })}
+                    onValueChange={(value) => {
+                        updateConfig({ navigation: value as NavigationStyle })
+                    }}
                     className="grid gap-3"
                 >
                     {filteredOptions.map((option) => {
@@ -52,6 +56,18 @@ export function NavigationStep() {
                                         <p className="text-xs text-muted-foreground">{option.description}</p>
                                     </div>
                                 </div>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        setSelectedItem(option.value)
+                                    }}
+                                    className="p-1.5 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden"
+                                    title="View details"
+                                >
+                                    <HugeiconsIcon icon={InformationCircleIcon} size={20} />
+                                </button>
                             </label>
                         )
                     })}

@@ -4,10 +4,12 @@ import { StateManagement, stateManagementOptions } from "@/app/lib/config/schema
 import { useWizard } from "@/app/lib/state/useWizardStore"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { InformationCircleIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { StepFooter } from "../StepFooter"
 
 export function StateStep() {
-    const { config, updateConfig, next, prev } = useWizard()
+    const { config, updateConfig, next, prev, setSelectedItem } = useWizard()
 
     return (
         <Card className="border-border/40 bg-background/60 shadow-xl backdrop-blur-xl transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
@@ -18,7 +20,9 @@ export function StateStep() {
             <CardContent>
                 <RadioGroup
                     value={config.stateManagement}
-                    onValueChange={(value) => updateConfig({ stateManagement: value as StateManagement })}
+                    onValueChange={(value) => {
+                        updateConfig({ stateManagement: value as StateManagement })
+                    }}
                     className="grid gap-3"
                 >
                     {stateManagementOptions.map((option) => (
@@ -38,6 +42,18 @@ export function StateStep() {
                                     <p className="text-xs text-muted-foreground">{option.description}</p>
                                 </div>
                             </div>
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    setSelectedItem(option.value)
+                                }}
+                                className="p-1.5 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden"
+                                title="View details"
+                            >
+                                <HugeiconsIcon icon={InformationCircleIcon} size={20} />
+                            </button>
                         </label>
                     ))}
                 </RadioGroup>

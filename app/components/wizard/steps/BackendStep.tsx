@@ -8,9 +8,11 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { StepFooter } from "../StepFooter"
 import { ToggleRow } from "../ToggleRow"
+import { InformationCircleIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 
 export function BackendStep() {
-    const { config, updateConfig, next, prev } = useWizard()
+    const { config, updateConfig, next, prev, setSelectedItem } = useWizard()
 
     const handleProviderChange = (provider: BackendProvider) => {
         updateConfig({
@@ -50,7 +52,26 @@ export function BackendStep() {
                         <SelectContent className="bg-background/90 backdrop-blur-xl border-border/50">
                             {backendOptions.map((option) => (
                                 <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
+                                    <div className="flex items-center justify-between w-full">
+                                        <span>{option.label}</span>
+                                        <button
+                                            type="button"
+                                            onPointerDown={(e) => {
+                                                e.preventDefault()
+                                                e.stopPropagation()
+                                                setSelectedItem(option.value)
+                                            }}
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                e.stopPropagation()
+                                                setSelectedItem(option.value)
+                                            }}
+                                            className="p-1 -mr-1 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden [&_svg]:pointer-events-auto z-10"
+                                            title="View details"
+                                        >
+                                            <HugeiconsIcon icon={InformationCircleIcon} size={16} />
+                                        </button>
+                                    </div>
                                 </SelectItem>
                             ))}
                         </SelectContent>

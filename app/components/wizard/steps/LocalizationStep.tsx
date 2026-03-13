@@ -5,10 +5,12 @@ import { useWizard } from "@/app/lib/state/useWizardStore"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
+import { InformationCircleIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { StepFooter } from "../StepFooter"
 
 export function LocalizationStep() {
-    const { config, updateConfig, next, prev } = useWizard()
+    const { config, updateConfig, next, prev, setSelectedItem } = useWizard()
 
     const { enabled, supportedLocales } = config.localization
 
@@ -83,6 +85,18 @@ export function LocalizationStep() {
                                         <p className="text-sm font-medium leading-none text-foreground/90">{locale.label}</p>
                                         <p className="text-xs text-muted-foreground">{locale.value}</p>
                                     </div>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            e.stopPropagation()
+                                            setSelectedItem(`localization_${locale.value}`)
+                                        }}
+                                        className="p-1 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden"
+                                        title="View details"
+                                    >
+                                        <HugeiconsIcon icon={InformationCircleIcon} size={16} />
+                                    </button>
                                 </label>
                             )
                         })}

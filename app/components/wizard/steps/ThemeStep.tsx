@@ -7,10 +7,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
+import { InformationCircleIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { StepFooter } from "../StepFooter"
 
 export function ThemeStep() {
-    const { config, updateConfig, next, prev } = useWizard()
+    const { config, updateConfig, next, prev, setSelectedItem } = useWizard()
     const { theme } = config
 
     return (
@@ -35,9 +37,30 @@ export function ThemeStep() {
                                 <SelectValue placeholder="Select theme" />
                             </SelectTrigger>
                             <SelectContent className="bg-background/90 backdrop-blur-xl border-border/50">
-                                <SelectItem value="material3">Material 3</SelectItem>
-                                <SelectItem value="cupertino">Cupertino</SelectItem>
-                                <SelectItem value="custom">Custom</SelectItem>
+                                {["material3", "cupertino", "custom"].map((val) => (
+                                    <SelectItem key={val} value={val}>
+                                        <div className="flex items-center justify-between w-full">
+                                            <span>{val === 'material3' ? 'Material 3' : val === 'cupertino' ? 'Cupertino' : 'Custom'}</span>
+                                            <button
+                                                type="button"
+                                                onPointerDown={(e) => {
+                                                    e.preventDefault()
+                                                    e.stopPropagation()
+                                                    setSelectedItem(`theme_${val}`)
+                                                }}
+                                                onClick={(e) => {
+                                                    e.preventDefault()
+                                                    e.stopPropagation()
+                                                    setSelectedItem(`theme_${val}`)
+                                                }}
+                                                className="p-1 -mr-1 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden [&_svg]:pointer-events-auto z-10"
+                                                title="View details"
+                                            >
+                                                <HugeiconsIcon icon={InformationCircleIcon} size={16} />
+                                            </button>
+                                        </div>
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>
