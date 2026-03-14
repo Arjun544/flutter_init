@@ -3,7 +3,7 @@
 import { Switch } from '@/components/ui/switch';
 import { Folder01Icon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { Database, Flame, Globe, Package, Route, Waves } from 'lucide-react';
+import { Database, Flame, Globe, Package, Route, LayoutDashboard } from 'lucide-react';
 import { useState } from 'react';
 
 export function NodePattern() {
@@ -217,7 +217,7 @@ export function NodePattern() {
         stateKey="riverpod"
         top="25%" left="22.5%"
         bgClass="bg-linear-to-tr from-blue-600 to-blue-400 shadow-blue-500/25"
-        Icon={Waves}
+        Icon={LayoutDashboard}
         label="Riverpod"
       />
       <NodeSwitch
