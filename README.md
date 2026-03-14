@@ -16,7 +16,7 @@
   <p>
     <a href="https://github.com/Arjun544/flutter_init/stargazers"><img src="https://img.shields.io/github/stars/Arjun544/flutter_init?style=for-the-badge&color=2ecc71&logo=github" alt="Stars" /></a>
     <a href="https://github.com/Arjun544/flutter_init/network/members"><img src="https://img.shields.io/github/forks/Arjun544/flutter_init?style=for-the-badge&color=3498db&logo=github" alt="Forks" /></a>
-    <a href="https://flutterinit.vercel.app"><img src="https://img.shields.io/badge/Generate-Now-6366f1?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Generate Now" /></a>
+    <a href="https://flutterinit.com/"><img src="https://img.shields.io/badge/Generate-Now-6366f1?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Generate Now" /></a>
     <a href="https://github.com/Arjun544/flutter_init/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-10b981?style=for-the-badge" alt="License" /></a>
   </p>
 

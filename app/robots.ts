@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/private/',
     },
-    sitemap: 'https://flutterinit.vercel.app/sitemap.xml',
+    sitemap: 'https://flutterinit.com/sitemap.xml',
   }
 }
