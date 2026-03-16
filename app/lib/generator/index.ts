@@ -51,6 +51,7 @@ type TemplateContext = ScaffoldConfig & {
         usesUrlLauncher: boolean
         usesDeviceInfoPlus: boolean
         usesAppVersionUpdate: boolean
+        usesGeolocator: boolean
     }
 }
 
@@ -154,6 +155,7 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             usesUrlLauncher: config.misc.usesUrlLauncher,
             usesDeviceInfoPlus: config.misc.usesDeviceInfoPlus,
             usesAppVersionUpdate: config.misc.usesAppVersionUpdate,
+            usesGeolocator: config.misc.usesGeolocator,
         },
     }
 }
@@ -192,6 +194,7 @@ async function resolveOverlayDirs(
         [path.join(root, "overlays", "utilities", "share_plus"), config.misc.usesSharePlus],
         [path.join(root, "overlays", "utilities", "permission_handler"), config.misc.usesPermissionHandler],
         [path.join(root, "overlays", "utilities", "url_launcher"), config.misc.usesUrlLauncher],
+        [path.join(root, "overlays", "utilities", "geolocator"), config.misc.usesGeolocator],
         [
             path.join(root, "overlays", "media"),
             config.misc.usesImagePicker || config.misc.usesFilePicker,

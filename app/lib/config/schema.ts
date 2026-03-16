@@ -146,6 +146,7 @@ const miscSchema = z.object({
     // Device
     usesDeviceInfoPlus: z.boolean(),
     usesAppVersionUpdate: z.boolean(),
+    usesGeolocator: z.boolean(),
 })
 export type MiscConfig = z.infer<typeof miscSchema>
 
@@ -192,6 +193,7 @@ export const scaffoldConfigSchema = z.object({
         usesPermissionHandler: true,
         usesDeviceInfoPlus: true,
         usesAppVersionUpdate: true,
+        usesGeolocator: false,
 
     }),
 }).refine((data) => {
@@ -260,6 +262,7 @@ export const defaultConfig: ScaffoldConfig = {
         usesPermissionHandler: true,
         usesDeviceInfoPlus: true,
         usesAppVersionUpdate: true,
+        usesGeolocator: false,
 
     },
 }

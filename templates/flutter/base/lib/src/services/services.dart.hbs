@@ -18,6 +18,9 @@ export 'secure_storage_service.dart';
 {{#if flags.usesPathProvider}}
 export 'path_service.dart';
 {{/if}}
+{{#if flags.usesGeolocator}}
+export 'location_service.dart';
+{{/if}}
 {{#unless flags.usesFlutterHooks}}
 export 'copy_service.dart';
 {{#if flags.usesSharePlus}}

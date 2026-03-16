@@ -88,6 +88,9 @@ export 'package:share_plus/share_plus.dart';
 {{#if flags.usesPermissionHandler}}
 export 'package:permission_handler/permission_handler.dart';
 {{/if}}
+{{#if flags.usesGeolocator}}
+export 'package:geolocator/geolocator.dart';
+{{/if}}
 {{#if flags.usesDeviceInfoPlus}}
 export 'package:device_info_plus/device_info_plus.dart';
 {{/if}}

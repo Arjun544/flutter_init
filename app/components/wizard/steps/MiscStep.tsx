@@ -160,6 +160,12 @@ export function MiscStep() {
                     label: "Permission Handler",
                     description: "Generic API to check and request permissions",
                     badge: "Essential"
+                },
+                {
+                    key: "usesGeolocator",
+                    label: "Geolocator",
+                    description: "Get current location and monitor location updates",
+                    badge: "Location"
                 }
             ]
         },

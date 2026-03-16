@@ -72,6 +72,10 @@ const PACKAGE_INFO: Record<string, {
         title: "Hugeicons",
         packageName: "hugeicons",
     },
+    geolocator: {
+        title: "Geolocator",
+        packageName: "geolocator",
+    },
     default_flutter_icons: {
         title: "Default Flutter Icons",
         description: "The default Material Design icons provided natively by the Flutter SDK.",
