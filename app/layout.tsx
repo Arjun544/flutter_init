@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  keywords: ["Flutter", "Scaffolding", "Boilerplate", "Clean Architecture", "MVVM", "Project Generator", "Dart"],
+  keywords: ["Flutter", "Scaffolding", "Boilerplate", "Clean Architecture", "MVVM", "Project Generator", "Dart", "Development Tools"],
   authors: [{ name: "Arjun544", url: "https://github.com/Arjun544" }],
   openGraph: {
     title: "Flutter Init",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     siteName: "Flutter Init",
     images: [
       {
-        url: "/og-image.png", // Ensure this exists in public/
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Flutter Init - Professional Scaffolding",
@@ -62,6 +62,7 @@ export const metadata: Metadata = {
     },
   },
 };
+
 
 export default function RootLayout({
   children,

@@ -107,7 +107,7 @@ export function WizardShell() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Progress value={40} className="h-2 bg-primary/10" />
+                        <Progress value={40} className="h-2 bg-primary/10" aria-label="Restoring session" />
                     </CardContent>
                 </Card>
             </main>
@@ -170,6 +170,7 @@ export function WizardShell() {
                     <main className="mx-auto max-w-4xl p-4 sm:p-6 lg:p-10 pb-32">
                         {/* Step Content Area */}
                         <div className="relative fade-in animate-in slide-in-from-bottom-2 duration-500">
+                            <h1 className="sr-only">Flutter Project Configuration Wizard - {steps[step].title}</h1>
                             <StepContent step={step} />
                         </div>
                     </main>
@@ -200,6 +201,7 @@ function WizardSidebar() {
                         width={24}
                         height={24}
                         className="h-6 w-6"
+                        priority
                     />
                     <Badge variant="outline" className="ml-auto bg-background/50 backdrop-blur-sm border-primary/20 text-primary hover:bg-transparent">
                         1.0
@@ -266,7 +268,7 @@ function WizardSidebar() {
                     <span>Progress</span>
                     <span>{Math.round(progress)}%</span>
                 </div>
-                <Progress value={progress} className="h-2 bg-muted/50" />
+                <Progress value={progress} className="h-2 bg-muted/50" aria-label="Wizard progress" />
             </SidebarFooter>
         </Sidebar>
     )

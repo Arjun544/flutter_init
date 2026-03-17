@@ -51,7 +51,12 @@ export function ToggleRow({
                 >
                     <HugeiconsIcon icon={InformationCircleIcon} size={18} />
                 </button>
-                <Switch checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} />
+                <Switch 
+                  checked={checked} 
+                  onCheckedChange={onCheckedChange} 
+                  disabled={disabled} 
+                  aria-label={`Enable ${label}`}
+                />
             </div>
         </label>
     )

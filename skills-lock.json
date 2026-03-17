@@ -11,6 +11,11 @@
       "sourceType": "github",
       "computedHash": "fc87b1a02397a9dbcfdff39cdcf627659d433608bafbd347c60049dd2766a227"
     },
+    "performance-lighthouse-runner": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "computedHash": "b5f4671cac3f8b6a812a415ddff6f9ed9e37a0daee7260951a479321fca3d509"
+    },
     "shadcn": {
       "source": "shadcn/ui",
       "sourceType": "github",
