@@ -72,19 +72,52 @@ const steps: Record<
     generate: {
         title: "Generate",
         description: "Review choices and download the scaffold.",
-        actionLabel: "Generate",
+        actionLabel: "Generate ZIP",
     },
 }
 
 export function WizardShell() {
-    const { step, setStep, stepIndex, isHydrated } = useWizard()
+    const { step, setStep, stepIndex, isHydrated, config } = useWizard()
+    const [isGenerating, setIsGenerating] = React.useState(false)
+    const [error, setError] = React.useState<string | null>(null)
+
+    const handleGenerate = async () => {
+        setIsGenerating(true)
+        setError(null)
+        try {
+            const response = await fetch("/api/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(config),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to generate project")
+            }
+
+            const blob = await response.blob()
+            const url = window.URL.createObjectURL(blob)
+            const link = document.createElement("a")
+            link.href = url
+            link.download = `${config.appName.replace(/\s+/g, "-").toLowerCase()}.zip`
+            link.click()
+            window.URL.revokeObjectURL(url)
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Something went wrong")
+        } finally {
+            setIsGenerating(false)
+        }
+    }
+
     const progress = React.useMemo(
         () => Math.round(((stepIndex + 1) / stepOrder.length) * 100),
         [stepIndex]
     )
 
-    const handleNext = () => {
-        if (stepIndex < stepOrder.length - 1) {
+    const handleNext = async () => {
+        if (stepIndex === stepOrder.length - 1) {
+            await handleGenerate()
+        } else if (stepIndex < stepOrder.length - 1) {
             setStep(stepOrder[stepIndex + 1])
         }
     }
@@ -141,8 +174,8 @@ export function WizardShell() {
                         <Button
                             variant="outline"
                             onClick={handleBack}
-                            disabled={stepIndex === 0}
-                            className="h-10 px-4 border-border/40 bg-background/50 shadow-sm"
+                            disabled={stepIndex === 0 || isGenerating}
+                            className="h-10 px-4 border-border/40 bg-background/50 shadow-sm cursor-pointer"
                         >
                             <HugeiconsIcon icon={ArrowLeft02Icon} className="size-4 mr-1.5 hidden sm:block" />
                             <span className="hidden sm:inline">Back</span>
@@ -150,10 +183,15 @@ export function WizardShell() {
                         </Button>
                         <Button
                             onClick={handleNext}
-                            disabled={stepIndex === stepOrder.length - 1}
-                            className="h-10 px-5 shadow-sm"
+                            disabled={isGenerating}
+                            className={cn(
+                                "h-10 px-5 shadow-sm cursor-pointer min-w-[100px]",
+                                stepIndex === stepOrder.length - 1 && "bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 font-semibold text-primary-foreground"
+                            )}
                         >
-                            {stepIndex === stepOrder.length - 1 ? (
+                            {isGenerating ? (
+                                "Generating…"
+                            ) : stepIndex === stepOrder.length - 1 ? (
                                 steps[step].actionLabel || "Finish"
                             ) : (
                                 <>
@@ -171,7 +209,7 @@ export function WizardShell() {
                         {/* Step Content Area */}
                         <div className="relative fade-in animate-in slide-in-from-bottom-2 duration-500">
                             <h1 className="sr-only">Flutter Project Configuration Wizard - {steps[step].title}</h1>
-                            <StepContent step={step} />
+                            <StepContent step={step} error={error} isGenerating={isGenerating} />
                         </div>
                     </main>
                 </div>

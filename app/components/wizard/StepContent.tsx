@@ -23,7 +23,7 @@ function StepSkeleton() {
     )
 }
 
-export function StepContent({ step }: { step: StepId }) {
+export function StepContent({ step, error, isGenerating }: { step: StepId, error: string | null, isGenerating: boolean }) {
     switch (step) {
         case "basics":
             return <BasicsStep />
@@ -45,7 +45,7 @@ export function StepContent({ step }: { step: StepId }) {
             return <MiscStep />
         case "generate":
         default:
-            return <GenerateStep />
+            return <GenerateStep error={error} isGenerating={isGenerating} />
     }
 }
 

@@ -52,7 +52,7 @@ export function ThemeStep() {
                                                     e.stopPropagation()
                                                     setSelectedItem(`theme_${val}`)
                                                 }}
-                                                className="p-1 -mr-1 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden [&_svg]:pointer-events-auto z-10"
+                                                className="p-1 -mr-1 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden [&_svg]:pointer-events-auto z-10 cursor-pointer"
                                                 title="View details"
                                             >
                                                 <HugeiconsIcon icon={InformationCircleIcon} size={16} />

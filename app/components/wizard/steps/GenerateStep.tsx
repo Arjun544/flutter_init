@@ -1,43 +1,12 @@
 "use client"
 
 import { useWizard } from "@/app/lib/state/useWizardStore"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import * as React from "react"
 import { SummaryItem, SummaryTagItem } from "../SummaryItem"
 
-export function GenerateStep() {
-    const { config, prev } = useWizard()
-    const [isGenerating, setIsGenerating] = React.useState(false)
-    const [error, setError] = React.useState<string | null>(null)
-
-    const handleGenerate = async () => {
-        setIsGenerating(true)
-        setError(null)
-        try {
-            const response = await fetch("/api/generate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(config),
-            })
-
-            if (!response.ok) {
-                throw new Error("Failed to generate project")
-            }
-
-            const blob = await response.blob()
-            const url = window.URL.createObjectURL(blob)
-            const link = document.createElement("a")
-            link.href = url
-            link.download = `${config.appName.replace(/\s+/g, "-").toLowerCase()}.zip`
-            link.click()
-            window.URL.revokeObjectURL(url)
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Something went wrong")
-        } finally {
-            setIsGenerating(false)
-        }
-    }
+export function GenerateStep({ error, isGenerating }: { error: string | null, isGenerating: boolean }) {
+    const { config } = useWizard()
 
     return (
         <Card className="border-border/40 bg-background/60 shadow-xl backdrop-blur-xl transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
@@ -95,19 +64,6 @@ export function GenerateStep() {
                         Error: {error}
                     </div>
                 ) : null}
-            </CardContent>
-            <CardContent className="flex items-center justify-between gap-4 border-t border-border/40 bg-muted/20 px-6 py-4 backdrop-blur-sm">
-                <Button variant="ghost" onClick={prev} className="hover:bg-background/80 hover:shadow-sm">
-                    Back
-                </Button>
-                <Button
-                    onClick={handleGenerate}
-                    disabled={isGenerating}
-                    size="lg"
-                    className="bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 font-semibold text-primary-foreground min-w-[140px]"
-                >
-                    {isGenerating ? "Generating…" : "Generate ZIP"}
-                </Button>
             </CardContent>
         </Card>
     )

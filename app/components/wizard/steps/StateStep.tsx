@@ -58,7 +58,7 @@ export function StateStep() {
                                     e.stopPropagation()
                                     setSelectedItem(option.value)
                                 }}
-                                className="p-1.5 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden"
+                                className="p-1.5 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden cursor-pointer"
                                 title="View details"
                             >
                                 <HugeiconsIcon icon={InformationCircleIcon} size={20} />
