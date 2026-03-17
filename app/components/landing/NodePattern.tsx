@@ -39,6 +39,7 @@ export function NodePattern() {
       <div
         className="absolute z-20 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:scale-[1.03] transition-transform duration-300"
         style={{ top, left }}
+        aria-label={label}
         onClick={(e) => {
           toggleNode(stateKey);
         }}
@@ -52,6 +53,7 @@ export function NodePattern() {
             <HugeiconsIcon 
               icon={Icon} 
               size={20} 
+              aria-hidden="true"
               className={`transition-colors duration-300 ${active ? 'text-white' : 'text-zinc-400'}`} 
             />
           </div>
@@ -64,6 +66,7 @@ export function NodePattern() {
             <Switch
               checked={active}
               onCheckedChange={() => toggleNode(stateKey)}
+              aria-label={label}
               className={`cursor-pointer transition-colors duration-300 ${active ? 'data-[state=checked]:bg-primary' : ''}`}
             />
           </div>
