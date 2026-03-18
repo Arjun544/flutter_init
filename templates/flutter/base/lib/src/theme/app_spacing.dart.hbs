@@ -1,3 +1,7 @@
+{{#if flags.usesScreenutil}}
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+{{/if}}
+
 /// Named spacing constants aligned with an 8-pt grid.
 ///
 /// Usage:
@@ -8,47 +12,69 @@
 abstract final class AppSpacing {
   AppSpacing._();
 
+  static const double _xxs = 2;
+  static const double _xs = 4;
+  static const double _sm = 8;
+  static const double _ms = 12;
+  static const double _md = 16;
+  static const double _ml = 20;
+  static const double _lg = 24;
+  static const double _xl = 32;
+  static const double _xxl = 48;
+  static const double _xxxl = 64;
+
   /// 2 pt — hairline gap, icon-to-label spacing.
-  static const double xxs = 2;
+  static double get xxs => {{#if flags.usesScreenutil}}_xxs.r{{else}}_xxs{{/if}};
 
   /// 4 pt — tightest spacing, between tightly coupled elements.
-  static const double xs = 4;
+  static double get xs => {{#if flags.usesScreenutil}}_xs.r{{else}}_xs{{/if}};
 
   /// 8 pt — small spacing, inside compact components (chip padding, icon gap).
-  static const double sm = 8;
+  static double get sm => {{#if flags.usesScreenutil}}_sm.r{{else}}_sm{{/if}};
 
   /// 12 pt — medium-small, inner card padding on dense layouts.
-  static const double ms = 12;
+  static double get ms => {{#if flags.usesScreenutil}}_ms.r{{else}}_ms{{/if}};
 
   /// 16 pt — base unit, standard component padding and list item gaps.
-  static const double md = 16;
+  static double get md => {{#if flags.usesScreenutil}}_md.r{{else}}_md{{/if}};
 
   /// 20 pt — medium-large, comfortable section spacing.
-  static const double ml = 20;
+  static double get ml => {{#if flags.usesScreenutil}}_ml.r{{else}}_ml{{/if}};
 
   /// 24 pt — large, between content sections on a page.
-  static const double lg = 24;
+  static double get lg => {{#if flags.usesScreenutil}}_lg.r{{else}}_lg{{/if}};
 
   /// 32 pt — extra large, major section breaks or hero padding.
-  static const double xl = 32;
+  static double get xl => {{#if flags.usesScreenutil}}_xl.r{{else}}_xl{{/if}};
 
   /// 48 pt — 2× large, top-of-page safe area offsets, empty state padding.
-  static const double xxl = 48;
+  static double get xxl => {{#if flags.usesScreenutil}}_xxl.r{{else}}_xxl{{/if}};
 
   /// 64 pt — maximum, full-bleed header heights.
-  static const double xxxl = 64;
+  static double get xxxl => {{#if flags.usesScreenutil}}_xxxl.r{{else}}_xxxl{{/if}};
 
   // ── Semantic aliases ──────────────────────────────────────────────────────
 
   /// Standard horizontal page margin.
-  static const double pagePadding = md;
+  static double get pagePadding => md;
 
   /// Gap between list/grid items.
-  static const double itemGap = sm;
+  static double get itemGap => sm;
 
   /// Inner padding for cards.
-  static const double cardPadding = md;
+  static double get cardPadding => md;
 
   /// Vertical gap between form fields.
-  static const double formFieldGap = ms;
+  static double get formFieldGap => ms;
 }
+
+{{#unless flags.usesScreenutil}}
+/// Extension to provide identity scaling when ScreenUtil is disabled.
+/// This allows using .h, .w, .sp, .r on numbers without conditional checks.
+extension ResponsiveNumberExtension on num {
+  double get h => toDouble();
+  double get w => toDouble();
+  double get sp => toDouble();
+  double get r => toDouble();
+}
+{{/unless}}

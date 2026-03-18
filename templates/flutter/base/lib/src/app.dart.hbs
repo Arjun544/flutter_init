@@ -8,10 +8,6 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget current = _buildMaterialApp(context);
 
-    {{#if flags.usesSkeletonizer}}
-    current = SkeletonWrapper(child: current);
-    {{/if}}
-
     {{#if flags.usesScreenutil}}
     current = ScreenUtilWrapper(child: current);
     {{/if}}
@@ -21,7 +17,9 @@ class App extends StatelessWidget {
 
   Widget _buildMaterialApp(BuildContext context) {
     return MaterialApp{{#if flags.routerPackage}}.router{{/if}}(
-      key: rootNavigatorKey,
+      {{#unless flags.routerPackage}}
+      navigatorKey: rootNavigatorKey,
+      {{/unless}}
       title: '{{appName}}',
       debugShowCheckedModeBanner: false,
       theme: buildLightTheme(primaryColorHex: '{{theme.primaryColor}}'),
@@ -41,7 +39,11 @@ class App extends StatelessWidget {
       locale: context.locale,
       {{/if}}
       builder: (context, child) {
-        return child!;
+        Widget current = child!;
+        {{#if flags.usesSkeletonizer}}
+        current = SkeletonWrapper(child: current);
+        {{/if}}
+        return current;
       },
     );
   }

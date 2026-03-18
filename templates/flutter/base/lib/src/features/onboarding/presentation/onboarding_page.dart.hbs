@@ -172,8 +172,8 @@ class _OnboardingView extends StatelessWidget {
             // Top branding
             Padding(
               padding: EdgeInsets.only(
-                top: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}},
-                bottom: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}},
+                top: AppSpacing.lg,
+                bottom: AppSpacing.md,
               ),
               child: Text(
                 'WanderWise.',
@@ -199,7 +199,7 @@ class _OnboardingView extends StatelessWidget {
                         child: Center(
                           child: Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: {{res 'AppSpacing.lg' 'w' flags.usesScreenutil}},
+                              horizontal: AppSpacing.lg,
                             ),
                             child: onboardingData[index]['pageWidget'] as Widget,
                           ),
@@ -209,7 +209,7 @@ class _OnboardingView extends StatelessWidget {
                       // Text Section
                       Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: {{res 'AppSpacing.xl' 'w' flags.usesScreenutil}},
+                          horizontal: AppSpacing.xl,
                         ),
                         child: Column(
                           children: [
@@ -223,7 +223,7 @@ class _OnboardingView extends StatelessWidget {
                                 fontSize: {{res 24 'sp' flags.usesScreenutil}},
                               ),
                             ),
-                            SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
+                            SizedBox(height: AppSpacing.md),
                             Text(
                               onboardingData[index]['subtitle'] as String,
                               textAlign: TextAlign.center,
@@ -245,7 +245,7 @@ class _OnboardingView extends StatelessWidget {
 
             // Bottom Section: Dots and Button
             Padding(
-              padding: EdgeInsets.all({{res 'AppSpacing.xl' 'w' flags.usesScreenutil}}),
+              padding: EdgeInsets.all(AppSpacing.xl),
               child: Column(
                 children: [
                   // Dot Indicators
@@ -255,12 +255,13 @@ class _OnboardingView extends StatelessWidget {
                     effect: ExpandingDotsEffect(
                       activeDotColor: colorScheme.primary,
                       dotColor: colorScheme.primary.withOpacity(0.2),
-                      dotHeight: {{res 8 'h' flags.usesScreenutil}},
-                      dotWidth: {{res 8 'w' flags.usesScreenutil}},
-                      spacing: {{res 8 'w' flags.usesScreenutil}},
+                      dotHeight: {{res 6 'h' flags.usesScreenutil}},
+                      dotWidth: {{res 6 'w' flags.usesScreenutil}},
+                      expansionFactor: 5,
+                      spacing: {{res 6 'w' flags.usesScreenutil}},
                     ),
                   ),
-                  SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
+                  SizedBox(height: AppSpacing.xl),
                   // Get Started Button
                   AppButton(
                     label: {{#if flags.supportsLocalization}}'shared.get_started'.tr(){{else}}'Get Started'{{/if}},
@@ -269,7 +270,7 @@ class _OnboardingView extends StatelessWidget {
                     height: ButtonSize.medium,
                     width: ButtonSize.medium,
                   ),
-                  SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
+                  SizedBox(height: AppSpacing.md),
                 ],
               ),
             ),

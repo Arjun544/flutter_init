@@ -26,7 +26,7 @@ class HomePage extends StatelessWidget {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all({{res 'AppSpacing.xl' 'w' flags.usesScreenutil}}),
+          padding: EdgeInsets.all(AppSpacing.xl),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -41,26 +41,26 @@ class HomePage extends StatelessWidget {
                 {{else}}
                 Icons.home_rounded,
                 {{/if}}
-                size: {{res 60 'sp' flags.usesScreenutil}},
+                size: 60.sp,
                 color: colorScheme.primary,
               ),
-              SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
+              SizedBox(height: AppSpacing.lg),
               Text(
                 {{#if flags.supportsLocalization}}'home.welcome_home'.tr(){{else}}'Welcome Home!'{{/if}},
                 textAlign: TextAlign.center,
                 style: textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w900,
                   color: colorScheme.onSurface,
-                  fontSize: {{res 28 'sp' flags.usesScreenutil}},
+                  fontSize: 28.sp,
                 ),
               ),
-              SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
+              SizedBox(height: AppSpacing.md),
               Text(
                 {{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}},
                 textAlign: TextAlign.center,
                 style: textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
-                  fontSize: {{res 14 'sp' flags.usesScreenutil}},
+                  fontSize: 14.sp,
                 ),
               ),
             ],

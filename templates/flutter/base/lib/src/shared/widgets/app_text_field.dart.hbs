@@ -75,7 +75,9 @@ class AppTextField extends StatelessWidget {
       minLines: minLines,
       autofocus: autofocus,
       style: tt.bodyLarge?.copyWith(color: cs.onSurface),
+      cursorColor: cs.primary,
       decoration: InputDecoration(
+        isDense: true,
         labelText: label,
         hintText: hint,
         prefixIcon: prefixIcon,

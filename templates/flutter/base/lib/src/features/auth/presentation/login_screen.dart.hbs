@@ -61,7 +61,9 @@ class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}H
     final tt = context.theme.textTheme;
 
     Future<void> handleLogin() async {
-      if (!(formKey.currentState?.validate() ?? false)) return;
+      if (!(formKey.currentState?.validate() ?? false)) {
+        return;
+      }
 
       {{#if flags.isRiverpod}}
       ref.read(authControllerProvider.notifier).login(
@@ -133,114 +135,204 @@ class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}H
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  height: 80, width: 80,
-                  decoration: BoxDecoration(color: cs.primary.withValues(alpha: 0.1), borderRadius: AppBorders.lg),
-                  child: Icon(Icons.person, size: 40, color: cs.primary),
-                ).animate().scale(duration: 600.milliseconds),
-                
                 SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
-                
                 Text(
                   {{#if flags.supportsLocalization}}'auth.log_in'.tr(){{else}}'Welcome Back'{{/if}},
                   style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-                ).animate().fadeIn().slideY(begin: 0.2),
-                
-                SizedBox(height: {{res 'AppSpacing.xxl' 'h' flags.usesScreenutil}}),
-                
+                ),
+                SizedBox(height: {{res 'AppSpacing.sm' 'h' flags.usesScreenutil}}),
+                Text(
+                  {{#if flags.supportsLocalization}}'auth.log_in_subtitle'.tr(){{else}}'Log in to continue your journey'{{/if}},
+                  textAlign: TextAlign.center,
+                  style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                ),
+                SizedBox(height: {{res 'AppSpacing.xxxl' 'h' flags.usesScreenutil}}),
                 // Form Card
-                Container(
-                  padding: EdgeInsets.all({{res 'AppSpacing.lg' 'w' flags.usesScreenutil}}),
-                  decoration: BoxDecoration(
-                    color: cs.surface,
-                    borderRadius: AppBorders.card,
-                    boxShadow: AppShadows.card,
-                    border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.5)),
-                  ),
-                  child: Form(
-                    key: formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        AppTextField(
-                          controller: emailController,
-                          enabled: !isLoading,
-                          label: 'Email',
-                          prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusLinear.sms{{else}}Icons.email_outlined{{/if}}),
+                Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      AppTextField(
+                        controller: emailController,
+                        enabled: !isLoading,
+                        label: {{#if flags.supportsLocalization}}'auth.email'.tr(){{else}}'Email'{{/if}},
+                        prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.sms{{else}}Icons.email_outlined{{/if}}),
+                        validator: (v) {
+                          if (AppUtils.isBlank(v)) {
+                            return {{#if flags.supportsLocalization}}'auth.email_required'.tr(){{else}}'Email is required'{{/if}};
+                          }
+                          if (!AppUtils.isValidEmail(v!)) {
+                            return {{#if flags.supportsLocalization}}'auth.email_invalid'.tr(){{else}}'Enter a valid email'{{/if}};
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
+                      AppTextField(
+                        controller: passwordController,
+                        enabled: !isLoading,
+                        label: {{#if flags.supportsLocalization}}'auth.password'.tr(){{else}}'Password'{{/if}},
+                        obscureText: {{#if flags.usesFlutterHooks}}obscurePassword.value{{else}}obscurePassword{{/if}},
+                        prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.lock{{else}}Icons.lock_outline{{/if}}),
+                        suffixIcon: IconButton(
+                          icon: Icon({{#if flags.usesFlutterHooks}}obscurePassword.value ? Icons.visibility_off : Icons.visibility{{else}}Icons.visibility{{/if}}),
+                          onPressed: () => {{#if flags.usesFlutterHooks}}obscurePassword.value = !obscurePassword.value{{else}}null{{/if}},
                         ),
+                         validator: (v) {
+                          if (AppUtils.isBlank(v)) {
+                            return {{#if flags.supportsLocalization}}'auth.password_required'.tr(){{else}}'Password is required'{{/if}};
+                          }
+                          if (v!.length < 6) {
+                            return {{#if flags.supportsLocalization}}'auth.password_too_short'.tr(){{else}}'Password must be at least 6 characters'{{/if}};
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: {{res 'AppSpacing.sm' 'h' flags.usesScreenutil}}),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            spacing: {{res 5 'w' flags.usesScreenutil}},
+                            children: [
+                              SizedBox(
+                                width: {{res 20 'w' flags.usesScreenutil}},
+                                height: {{res 20 'h' flags.usesScreenutil}},
+                                child: Checkbox(
+                                  value: true,
+                                  onChanged: (value) {},
+                                ),
+                              ),
+                              Text(
+                                {{#if flags.supportsLocalization}}'auth.remember_me'.tr(){{else}}'Remember Me'{{/if}},
+                                style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                              ),
+                            ],
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                            ),
+                            onPressed: () {
+                              {{#if (eq flags.routerPackage "go_router")}}
+                              context.push(AppRoutes.forgotPassword);
+                              {{else if (eq flags.routerPackage "auto_route")}}
+                              context.pushRoute(const ForgotPasswordRoute());
+                              {{else}}
+                              Navigator.pushNamed(context, AppRoutes.forgotPassword);
+                              {{/if}}
+                            },
+                            child: Text(
+                              {{#if flags.supportsLocalization}}'auth.forgot_password'.tr(){{else}}'Forgot Password?'{{/if}},
+                              style: tt.bodySmall?.copyWith(
+                                color: cs.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
+                      {{#if (or flags.isBloc flags.isProvider flags.isGetX)}}
+                      if (errorMessage != null) ...[
+                        SizedBox(height: {{res 'AppSpacing.sm' 'h' flags.usesScreenutil}}),
+                        Text(errorMessage, style: tt.bodySmall?.copyWith(color: cs.error), textAlign: TextAlign.center),
                         SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
-                        AppTextField(
-                          controller: passwordController,
-                          enabled: !isLoading,
-                          label: 'Password',
-                          obscureText: {{#if flags.usesFlutterHooks}}obscurePassword.value{{else}}obscurePassword{{/if}},
-                          prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusLinear.lock{{else}}Icons.lock_outline{{/if}}),
-                          suffixIcon: IconButton(
-                            icon: Icon({{#if flags.usesFlutterHooks}}obscurePassword.value ? Icons.visibility_off : Icons.visibility{{else}}Icons.visibility{{/if}}),
-                            onPressed: () => {{#if flags.usesFlutterHooks}}obscurePassword.value = !obscurePassword.value{{else}}null{{/if}},
+                      ],
+                      {{/if}}
+                      AppButton(
+                        label: 'Sign In',
+                        isLoading: isLoading,
+                        onPressed: isLoading ? null : handleLogin,
+                        width: ButtonSize.large,
+                        isFullWidth: false,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: {{res 'AppSpacing.xxxl' 'h' flags.usesScreenutil}}),
+                {{#if flags.usesFlutterSvg}}
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: {{res 20 'w' flags.usesScreenutil}},
+                      children: [
+                        SizedBox(
+                          width: {{res 50 'w' flags.usesScreenutil}},
+                          height: {{res 50 'w' flags.usesScreenutil}},
+                          child: TextButton(
+                            onPressed: () {},
+                            style: TextButton.styleFrom(
+                              backgroundColor: const Color(0xFFEA4335).withValues(alpha: 0.8),
+                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: AppBorders.button,
+                              ),
+                            ),
+                            child: SvgPicture.asset(AppAssets.googleIcon),
                           ),
                         ),
-                        {{#if (or flags.isBloc flags.isProvider flags.isGetX)}}
-                        if (errorMessage != null) ...[
-                          SizedBox(height: {{res 'AppSpacing.sm' 'h' flags.usesScreenutil}}),
-                          Text(errorMessage, style: tt.bodySmall?.copyWith(color: cs.error), textAlign: TextAlign.center),
-                        ],
-                        {{/if}}
-                        SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
-                        AppButton(
-                          label: 'Sign In',
-                          isLoading: isLoading,
-                          onPressed: isLoading ? null : handleLogin,
+                        SizedBox(
+                          width: {{res 50 'w' flags.usesScreenutil}},
+                          height: {{res 50 'w' flags.usesScreenutil}},
+                          child: TextButton(
+                            onPressed: () {},
+                            style: TextButton.styleFrom(
+                              backgroundColor: const Color(0xFF4285F4),
+                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: AppBorders.button,
+                              ),
+                            ),
+                            child: SvgPicture.asset(AppAssets.facebookIcon),
+                          ),
+                        ),
+                        SizedBox(
+                          width: {{res 50 'w' flags.usesScreenutil}},
+                          height: {{res 50 'w' flags.usesScreenutil}},
+                          child: TextButton(
+                            onPressed: () {},
+                            style: TextButton.styleFrom(
+                              backgroundColor: const Color(0xFF000000),
+                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: AppBorders.button,
+                              ),
+                            ),
+                            child: SvgPicture.asset(AppAssets.appleIcon),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
+                  ],
+                ),
+                {{/if}}
+                InkWell(
+                  onTap: () {
+                    {{#if (eq flags.routerPackage "go_router")}}
+                    context.push(AppRoutes.signup);
+                    {{else if (eq flags.routerPackage "auto_route")}}
+                    context.pushRoute(const SignupRoute());
+                    {{else}}
+                    Navigator.pushNamed(context, AppRoutes.signup);
+                    {{/if}}
+                  },
+                  child: RichText(
+                    text: TextSpan(
+                      text: {{#if flags.supportsLocalization}}'auth.dont_have_account'.tr(){{else}}'Don\'t have an account? '{{/if}},
+                      style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                      children: [
+                        TextSpan(
+                          text: {{#if flags.supportsLocalization}}'auth.sign_up'.tr(){{else}}'Sign Up'{{/if}},
+                          style: TextStyle(
+                            color: cs.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ).animate().fadeIn(delay: 400.milliseconds).slideY(begin: 0.1),
-                
-                SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
-                
-                Column(
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        {{#if (eq flags.routerPackage "go_router")}}
-                        context.push(AppRoutes.forgotPassword);
-                        {{else if (eq flags.routerPackage "auto_route")}}
-                        context.pushRoute(const ForgotPasswordRoute());
-                        {{else}}
-                        Navigator.pushNamed(context, AppRoutes.forgotPassword);
-                        {{/if}}
-                      }, 
-                      child: Text(
-                        {{#if flags.supportsLocalization}}'auth.forgot_password'.tr(){{else}}'Forgot Password?'{{/if}},
-                        style: tt.labelLarge?.copyWith(color: cs.primary, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
-                    InkWell(
-                      onTap: () {
-                        {{#if (eq flags.routerPackage "go_router")}}
-                        context.push(AppRoutes.signup);
-                        {{else if (eq flags.routerPackage "auto_route")}}
-                        context.pushRoute(const SignupRoute());
-                        {{else}}
-                        Navigator.pushNamed(context, AppRoutes.signup);
-                        {{/if}}
-                      },
-                      child: RichText(
-                        text: TextSpan(
-                          text: {{#if flags.supportsLocalization}}'auth.dont_have_account'.tr(){{else}}'New here? '{{/if}},
-                          style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                          children: [
-                            TextSpan(
-                              text: {{#if flags.supportsLocalization}}'auth.sign_up_here'.tr(){{else}}'Create Account'{{/if}},
-                              style: TextStyle(color: cs.primary, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),
@@ -274,7 +366,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final tt = context.theme.textTheme;
 
     Future<void> handleLogin() async {
-      if (!(_formKey.currentState?.validate() ?? false)) return;
+      if (!(_formKey.currentState?.validate() ?? false)) {
+        return;
+      }
       setState(() { _isLoading = true; });
       try {
         final result = await AuthService.instance.login(
@@ -299,7 +393,9 @@ class _LoginScreenState extends State<LoginScreen> {
       } catch (e) {
         setState(() => _errorMessage = e.toString());
       } finally {
-        if (mounted) setState(() => _isLoading = false);
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
       }
     }
 
@@ -311,85 +407,197 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  height: 80, width: 80,
-                  decoration: BoxDecoration(color: cs.primary.withValues(alpha: 0.1), borderRadius: AppBorders.lg),
-                  child: Icon(Icons.person, size: 40, color: cs.primary),
-                ).animate().scale(duration: 600.milliseconds),
-                
                 SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
-                
-                Text('Welcome Back', style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
-                
-                SizedBox(height: {{res 'AppSpacing.xxl' 'h' flags.usesScreenutil}}),
-                
-                Container(
-                  padding: EdgeInsets.all({{res 'AppSpacing.lg' 'w' flags.usesScreenutil}}),
-                  decoration: BoxDecoration(
-                    color: cs.surface,
-                    borderRadius: AppBorders.card,
-                    boxShadow: AppShadows.card,
+                Text(
+                  {{#if flags.supportsLocalization}}'auth.log_in'.tr(){{else}}'Welcome Back'{{/if}},
+                  style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: {{res 'AppSpacing.sm' 'h' flags.usesScreenutil}}),
+                Text(
+                  {{#if flags.supportsLocalization}}'auth.log_in_subtitle'.tr(){{else}}'Log in to continue your journey'{{/if}},
+                  textAlign: TextAlign.center,
+                  style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                ),
+                SizedBox(height: {{res 'AppSpacing.xxxl' 'h' flags.usesScreenutil}}),
+                // Form Card
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      AppTextField(
+                        controller: _emailController,
+                        enabled: !_isLoading,
+                        label: {{#if flags.supportsLocalization}}'auth.email'.tr(){{else}}'Email'{{/if}},
+                        prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.sms{{else}}Icons.email_outlined{{/if}}),
+                        validator: (v) {
+                          if (AppUtils.isBlank(v)) {
+                            return {{#if flags.supportsLocalization}}'auth.email_required'.tr(){{else}}'Email is required'{{/if}};
+                          }
+                          if (!AppUtils.isValidEmail(v!)) {
+                            return {{#if flags.supportsLocalization}}'auth.email_invalid'.tr(){{else}}'Enter a valid email'{{/if}};
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
+                      AppTextField(
+                        controller: _passwordController,
+                        enabled: !_isLoading,
+                        label: {{#if flags.supportsLocalization}}'auth.password'.tr(){{else}}'Password'{{/if}},
+                        obscureText: _obscurePassword,
+                        prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.lock{{else}}Icons.lock_outline{{/if}}),
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        ),
+                         validator: (v) {
+                          if (AppUtils.isBlank(v)) {
+                            return {{#if flags.supportsLocalization}}'auth.password_required'.tr(){{else}}'Password is required'{{/if}};
+                          }
+                          if (v!.length < 6) {
+                            return {{#if flags.supportsLocalization}}'auth.password_too_short'.tr(){{else}}'Password must be at least 6 characters'{{/if}};
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: {{res 'AppSpacing.sm' 'h' flags.usesScreenutil}}),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            spacing: {{res 5 'w' flags.usesScreenutil}},
+                            children: [
+                              SizedBox(
+                                width: {{res 20 'w' flags.usesScreenutil}},
+                                height: {{res 20 'h' flags.usesScreenutil}},
+                                child: Checkbox(
+                                  value: true,
+                                  onChanged: (value) {},
+                                ),
+                              ),
+                              Text(
+                                {{#if flags.supportsLocalization}}'auth.remember_me'.tr(){{else}}'Remember Me'{{/if}},
+                                style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                              ),
+                            ],
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                            ),
+                            onPressed: () {
+                              {{#if (eq flags.routerPackage "go_router")}}
+                              context.push(AppRoutes.forgotPassword);
+                              {{else if (eq flags.routerPackage "auto_route")}}
+                              context.pushRoute(const ForgotPasswordRoute());
+                              {{else}}
+                              Navigator.pushNamed(context, AppRoutes.forgotPassword);
+                              {{/if}}
+                            },
+                            child: Text(
+                              {{#if flags.supportsLocalization}}'auth.forgot_password'.tr(){{else}}'Forgot Password?'{{/if}},
+                              style: tt.bodySmall?.copyWith(
+                                color: cs.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
+                      AppButton(
+                        label: 'Sign In',
+                        isLoading: _isLoading,
+                        onPressed: _isLoading ? null : handleLogin,
+                        width: ButtonSize.large,
+                        isFullWidth: false,
+                      ),
+                    ],
                   ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                ),
+                SizedBox(height: {{res 'AppSpacing.xxxl' 'h' flags.usesScreenutil}}),
+                {{#if flags.usesFlutterSvg}}
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: {{res 20 'w' flags.usesScreenutil}},
                       children: [
-                        AppTextField(controller: _emailController, label: 'Email', enabled: !_isLoading),
-                        SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
-                        AppTextField(
-                          controller: _passwordController,
-                          label: 'Password',
-                          obscureText: _obscurePassword,
-                          enabled: !_isLoading,
-                          suffixIcon: IconButton(
-                            icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        SizedBox(
+                          width: {{res 50 'w' flags.usesScreenutil}},
+                          height: {{res 50 'w' flags.usesScreenutil}},
+                          child: TextButton(
+                            onPressed: () {},
+                            style: TextButton.styleFrom(
+                              backgroundColor: const Color(0xFFEA4335).withValues(alpha: 0.8),
+                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: AppBorders.button,
+                              ),
+                            ),
+                            child: SvgPicture.asset(AppAssets.googleIcon),
                           ),
                         ),
-                        SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
-                        AppButton(label: 'Sign In', isLoading: _isLoading, onPressed: _isLoading ? null : handleLogin),
+                        SizedBox(
+                          width: {{res 50 'w' flags.usesScreenutil}},
+                          height: {{res 50 'w' flags.usesScreenutil}},
+                          child: TextButton(
+                            onPressed: () {},
+                            style: TextButton.styleFrom(
+                              backgroundColor: const Color(0xFF4285F4),
+                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: AppBorders.button,
+                              ),
+                            ),
+                            child: SvgPicture.asset(AppAssets.facebookIcon),
+                          ),
+                        ),
+                        SizedBox(
+                          width: {{res 50 'w' flags.usesScreenutil}},
+                          height: {{res 50 'w' flags.usesScreenutil}},
+                          child: TextButton(
+                            onPressed: () {},
+                            style: TextButton.styleFrom(
+                              backgroundColor: const Color(0xFF000000),
+                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: AppBorders.button,
+                              ),
+                            ),
+                            child: SvgPicture.asset(AppAssets.appleIcon),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
+                  ],
+                ),
+                {{/if}}
+                InkWell(
+                  onTap: () {
+                    {{#if (eq flags.routerPackage "go_router")}}
+                    context.push(AppRoutes.signup);
+                    {{else if (eq flags.routerPackage "auto_route")}}
+                    context.pushRoute(const SignupRoute());
+                    {{else}}
+                    Navigator.pushNamed(context, AppRoutes.signup);
+                    {{/if}}
+                  },
+                  child: RichText(
+                    text: TextSpan(
+                      text: {{#if flags.supportsLocalization}}'auth.dont_have_account'.tr(){{else}}'Don\'t have an account? '{{/if}},
+                      style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                      children: [
+                        TextSpan(
+                          text: {{#if flags.supportsLocalization}}'auth.sign_up'.tr(){{else}}'Sign Up'{{/if}},
+                          style: TextStyle(
+                            color: cs.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                ),
-                
-                SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
-                
-                Column(
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        {{#if (eq flags.routerPackage "go_router")}}
-                        context.push(AppRoutes.forgotPassword);
-                        {{else if (eq flags.routerPackage "auto_route")}}
-                        context.pushRoute(const ForgotPasswordRoute());
-                        {{else}}
-                        Navigator.pushNamed(context, AppRoutes.forgotPassword);
-                        {{/if}}
-                      }, 
-                      child: Text('Forgot Password?', style: tt.labelLarge?.copyWith(color: cs.primary, fontWeight: FontWeight.bold)),
-                    ),
-                    SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
-                    InkWell(
-                      onTap: () {
-                        {{#if (eq flags.routerPackage "go_router")}}
-                        context.push(AppRoutes.signup);
-                        {{else if (eq flags.routerPackage "auto_route")}}
-                        context.pushRoute(const SignupRoute());
-                        {{else}}
-                        Navigator.pushNamed(context, AppRoutes.signup);
-                        {{/if}}
-                      },
-                      child: RichText(
-                        text: TextSpan(
-                          text: 'New here? ',
-                          style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                          children: [TextSpan(text: 'Create Account', style: TextStyle(color: cs.primary, fontWeight: FontWeight.bold))],
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),

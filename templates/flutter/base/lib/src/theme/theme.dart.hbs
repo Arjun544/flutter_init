@@ -28,6 +28,16 @@ class AppDesignTokens extends ThemeExtension<AppDesignTokens> {
   final double borderRadiusLarge;
   final double cardElevation;
 
+  static const fallback = AppDesignTokens(
+    paddingSmall: 8.0,
+    paddingMedium: 16.0,
+    paddingLarge: 24.0,
+    borderRadiusSmall: 4.0,
+    borderRadiusMedium: 12.0,
+    borderRadiusLarge: 24.0,
+    cardElevation: 0.0,
+  );
+
   @override
   ThemeExtension<AppDesignTokens> copyWith({
     double? paddingSmall,
@@ -74,16 +84,6 @@ class AppDesignTokens extends ThemeExtension<AppDesignTokens> {
   }
 }
 
-const _defaultTokens = AppDesignTokens(
-  paddingSmall: 8.0,
-  paddingMedium: 16.0,
-  paddingLarge: 24.0,
-  borderRadiusSmall: 4.0,
-  borderRadiusMedium: 12.0,
-  borderRadiusLarge: 24.0,
-  cardElevation: 0.0,
-);
-
 ThemeData _buildTheme(ColorScheme colorScheme, AppColorsExtension customColors) {
   final textTheme = buildTextTheme();
   
@@ -94,7 +94,7 @@ ThemeData _buildTheme(ColorScheme colorScheme, AppColorsExtension customColors) 
     textTheme: textTheme,
     extensions: [
       customColors,
-      _defaultTokens,
+      AppDesignTokens.fallback,
     ],
     
     // --- Basic Elements ---
@@ -167,7 +167,7 @@ ThemeData _buildTheme(ColorScheme colorScheme, AppColorsExtension customColors) 
     // Card Theme
     cardTheme: CardThemeData(
       clipBehavior: Clip.antiAlias,
-      elevation: _defaultTokens.cardElevation,
+      elevation: AppDesignTokens.fallback.cardElevation,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         side: BorderSide(color: colorScheme.outlineVariant, width: 1),
@@ -180,7 +180,6 @@ ThemeData _buildTheme(ColorScheme colorScheme, AppColorsExtension customColors) 
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: colorScheme.outline),
@@ -198,7 +197,8 @@ ThemeData _buildTheme(ColorScheme colorScheme, AppColorsExtension customColors) 
         borderSide: BorderSide(color: colorScheme.error),
       ),
       floatingLabelStyle: TextStyle(color: colorScheme.primary),
-      hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant.withOpacity(0.6)),
+      labelStyle: textTheme.labelMedium?.copyWith(color: colorScheme.onSurfaceVariant.withOpacity(0.6)),
+      hintStyle: textTheme.labelMedium?.copyWith(color: colorScheme.onSurfaceVariant.withOpacity(0.6)),
     ),
 
     // Navigation Bar Theme
