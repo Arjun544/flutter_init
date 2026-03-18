@@ -24,12 +24,17 @@ export function HeroSection() {
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col items-center text-center pt-8">
         {/* Clean Pill Badge */}
-        <div className="group mt-4 mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-zinc-200/80 hover:border-primary/40 hover:shadow-[0_4px_15px_-5px_hsl(var(--primary)/0.2)] transition-all duration-300 cursor-pointer">
+        <Link 
+          href="https://github.com/Arjun544/flutter_init"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group mt-4 mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-zinc-200/80 hover:border-primary/40 hover:shadow-[0_4px_15px_-5px_hsl(var(--primary)/0.2)] transition-all duration-300 cursor-pointer"
+        >
           <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
           <span className="text-[13px] font-semibold tracking-wide text-zinc-900">Open Source</span>
           <div className="w-px h-3.5 bg-zinc-200 mx-1" />
           <span className="text-[13px] font-medium text-zinc-500 group-hover:text-primary transition-colors">Contribute on GitHub &rarr;</span>
-        </div>
+        </Link>
 
         {/* Ultra-sharp Typography */}
         <h1 className="text-5xl mt-10 sm:text-7xl md:text-[5rem] lg:text-[6rem] font-medium text-primary leading-[0.95] mb-6 max-w-5xl mx-auto relative z-20">

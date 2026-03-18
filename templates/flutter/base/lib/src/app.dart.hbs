@@ -39,6 +39,18 @@ class App extends StatelessWidget {
         {{#if flags.usesSkeletonizer}}
         current = SkeletonWrapper(child: current);
         {{/if}}
+        
+        // Ensure Material themes (tokens, widget styles like dialogs/buttons/inputs) 
+        // are available even in Cupertino mode, as many apps use a mix of both.
+        {{#if flags.isCupertino}}
+        current = Theme(
+          data: {{#if flags.hasDarkMode}}{{#if theme.darkMode.system}}(MediaQuery.of(context).platformBrightness == Brightness.dark){{else}}true{{/if}}{{else}}false{{/if}}
+              ? buildDarkTheme(primaryColorHex: '{{theme.primaryColor}}')
+              : buildLightTheme(primaryColorHex: '{{theme.primaryColor}}'),
+          child: current,
+        );
+        {{/if}}
+        
         return current;
       },
     );

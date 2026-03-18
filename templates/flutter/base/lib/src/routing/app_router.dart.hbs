@@ -132,6 +132,9 @@ class HomeRoute extends PageRouteInfo<void> {
 }
 {{else}}
 import 'package:flutter/material.dart';
+{{#if flags.isCupertino}}
+import 'package:flutter/cupertino.dart';
+{{/if}}
 import 'app_routes.dart';
 import '../features/home/presentation/home_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
@@ -143,32 +146,32 @@ class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case AppRoutes.onboarding:
-        return MaterialPageRoute(
+        return {{#if flags.isCupertino}}CupertinoPageRoute{{else}}MaterialPageRoute{{/if}}(
           builder: (_) => const OnboardingPage(),
           settings: settings,
         );
       case AppRoutes.login:
-        return MaterialPageRoute(
+        return {{#if flags.isCupertino}}CupertinoPageRoute{{else}}MaterialPageRoute{{/if}}(
           builder: (_) => const LoginScreen(),
           settings: settings,
         );
       case AppRoutes.signup:
-        return MaterialPageRoute(
+        return {{#if flags.isCupertino}}CupertinoPageRoute{{else}}MaterialPageRoute{{/if}}(
           builder: (_) => const SignupScreen(),
           settings: settings,
         );
       case AppRoutes.forgotPassword:
-        return MaterialPageRoute(
+        return {{#if flags.isCupertino}}CupertinoPageRoute{{else}}MaterialPageRoute{{/if}}(
           builder: (_) => const ForgotPasswordScreen(),
           settings: settings,
         );
       case AppRoutes.home:
-        return MaterialPageRoute(
+        return {{#if flags.isCupertino}}CupertinoPageRoute{{else}}MaterialPageRoute{{/if}}(
           builder: (_) => const HomePage(),
           settings: settings,
         );
       default:
-        return MaterialPageRoute(
+        return {{#if flags.isCupertino}}CupertinoPageRoute{{else}}MaterialPageRoute{{/if}}(
           builder: (_) => const HomePage(),
           settings: settings,
         );

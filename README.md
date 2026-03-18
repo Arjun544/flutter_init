@@ -58,35 +58,10 @@
     </td>
     <td width="50%" valign="top">
       <h3>⚙️ Industrial Strength</h3>
-      <p>Includes a custom CLI and Web Dashboard for managing your project lifecycle from initialization to deployment.</p>
+      <p>Includes an intuitive Web Dashboard for managing your project lifecycle from initialization to deployment.</p>
     </td>
   </tr>
 </table>
-
----
-
-## ⚡ Quick Start
-
-### CLI Installation
-```bash
-# Clone the repository
-git clone https://github.com/Arjun544/flutter_init.git
-
-# Install dependencies
-npm install
-
-# Start the interactive UI
-npm run dev
-```
-
-<details>
-<summary><b>View Advanced Setup Options</b></summary>
-
-- **Custom Root Directory**: `--root <path>`
-- **Skip Interactive Mode**: `--yes`
-- **Output JSON Log**: `--json`
-
-</details>
 
 ---
 
