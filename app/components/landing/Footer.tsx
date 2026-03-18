@@ -42,7 +42,7 @@ export function Footer() {
           <Link href="/" className="inline-block">
             <Image
               src="/logo.svg"
-              alt="Flutter Init Logo"
+              alt="FlutterInit Logo"
               width={32}
               height={32}
               className="h-12 w-12"
@@ -54,7 +54,7 @@ export function Footer() {
               href="https://github.com/Arjun544/flutter_init"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="View Flutter Init on GitHub"
+              aria-label="View FlutterInit on GitHub"
               className="p-2 rounded-xl bg-zinc-50 border border-zinc-100 text-zinc-600 hover:text-primary hover:border-primary/20 hover:bg-primary/5 transition-all duration-300"
             >
               <HugeiconsIcon icon={GithubIcon} size={20} />

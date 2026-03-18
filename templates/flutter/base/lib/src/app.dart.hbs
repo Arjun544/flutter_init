@@ -1,12 +1,11 @@
 import 'imports/imports.dart';
-import 'routing/global_navigator.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Widget current = _buildMaterialApp(context);
+    Widget current = {{#if flags.isCupertino}}_buildCupertinoApp(context){{else}}_buildMaterialApp(context){{/if}};
 
     {{#if flags.usesScreenutil}}
     current = ScreenUtilWrapper(child: current);
@@ -15,6 +14,36 @@ class App extends StatelessWidget {
     return current;
   }
 
+  {{#if flags.isCupertino}}
+  Widget _buildCupertinoApp(BuildContext context) {
+    return CupertinoApp{{#if flags.routerPackage}}.router{{/if}}(
+      {{#unless flags.routerPackage}}
+      navigatorKey: rootNavigatorKey,
+      {{/unless}}
+      title: '{{appName}}',
+      debugShowCheckedModeBanner: false,
+      theme: buildCupertinoTheme(primaryColorHex: '{{theme.primaryColor}}'),
+      {{#if flags.routerPackage}}
+      routerConfig: {{#if (eq flags.routerPackage "go_router")}}appRouter{{else}}AppRouter().config(){{/if}},
+      {{else}}
+      home: const OnboardingPage(),
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      {{/if}}
+      {{#if flags.supportsLocalization}}
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      {{/if}}
+      builder: (context, child) {
+        Widget current = child!;
+        {{#if flags.usesSkeletonizer}}
+        current = SkeletonWrapper(child: current);
+        {{/if}}
+        return current;
+      },
+    );
+  }
+  {{else}}
   Widget _buildMaterialApp(BuildContext context) {
     return MaterialApp{{#if flags.routerPackage}}.router{{/if}}(
       {{#unless flags.routerPackage}}
@@ -47,4 +76,5 @@ class App extends StatelessWidget {
       },
     );
   }
+  {{/if}}
 }

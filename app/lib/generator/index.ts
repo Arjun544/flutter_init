@@ -42,6 +42,8 @@ type TemplateContext = ScaffoldConfig & {
         fallbackLocale: string
         hasFlavors: boolean
         hasDarkMode: boolean
+        isCupertino: boolean
+        isCustomTheme: boolean
         usesFlutterHooks: boolean
         usesImagePicker: boolean
         usesFilePicker: boolean
@@ -143,6 +145,8 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             fallbackLocale: config.localization.supportedLocales.length > 0 ? config.localization.supportedLocales[0] : "en",
             hasFlavors: true,
             hasDarkMode: config.theme.darkMode.enabled,
+            isCupertino: config.theme.preset === "cupertino",
+            isCustomTheme: config.theme.preset === "custom",
             usesIconsaxPlus: config.icons.iconsax_plus,
             usesFlutterRemix: config.icons.flutter_remix,
             usesHugeicons: config.icons.hugeicons,

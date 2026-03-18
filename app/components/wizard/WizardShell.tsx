@@ -235,7 +235,7 @@ function WizardSidebar() {
                 <div className="flex items-center gap-3">
                     <Image
                         src="/logo.svg"
-                        alt="Flutter Init Logo"
+                        alt="FlutterInit Logo"
                         width={24}
                         height={24}
                         className="h-6 w-6"

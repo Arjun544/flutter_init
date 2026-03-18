@@ -5,12 +5,12 @@
 -->
 
 <div align="center">
-  <img src="public/logo.svg" width="120" alt="Flutter Init Logo" />
+  <img src="public/logo.svg" width="120" alt="FlutterInit Logo" />
   
   <br />
 
   
-  <h1><b>Flutter Init</b></h1>
+  <h1><b>FlutterInit</b></h1>
   <p><i>The High-Performance Scaffolding Engine for Modern Flutter Apps</i></p>
 
   <p>
@@ -22,16 +22,16 @@
 
   <br />
 
-  <img src="assets/hero.png" width="100%" alt="Flutter Init Node Pattern Interface" style="border-radius: 20px;" />
+  <img src="assets/hero.png" width="100%" alt="FlutterInit Node Pattern Interface" style="border-radius: 20px;" />
 </div>
 
 ---
 
 ## 🏛️ The Architecture of Speed
 
-**Flutter Init** is an open-source project designed to eliminate the "initial drag" of Flutter development. It provides a highly opinionated yet flexible scaffolding system that maps your architectural vision to a production-ready codebase in seconds.
+**FlutterInit** is an open-source project designed to eliminate the "initial drag" of Flutter development. It provides a highly opinionated yet flexible scaffolding system that maps your architectural vision to a production-ready codebase in seconds.
 
-### 🎯 Why use Flutter Init?
+### 🎯 Why use FlutterInit?
 - **Elite Quality**: Follows `flutter_lints` and SOLID principles by default.
 - **Extreme Speed**: From a blank screen to a running app with routing & state in < 60s.
 - **Enterprise DNA**: Pre-configured with logging, error handling, and environment management.
@@ -124,5 +124,5 @@ This repository is built on the principle of **Contribution Based Evolution**. W
 </p>
 
 <div align="center">
-  <p>© 2026 Flutter Init Project. Released under the MIT License.</p>
+  <p>© 2026 FlutterInit Project. Released under the MIT License.</p>
 </div>

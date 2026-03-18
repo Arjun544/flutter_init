@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'text_theme.dart';
 import 'color_schemes.dart';
@@ -360,3 +361,44 @@ ThemeData buildDarkTheme({required String primaryColorHex}) {
   );
   return _buildTheme(colorScheme, AppPalettes.dark);
 }
+
+CupertinoThemeData buildCupertinoTheme({required String primaryColorHex}) {
+  final seed = _colorFromHex(primaryColorHex.isNotEmpty ? primaryColorHex : '#007AFF');
+
+  return CupertinoThemeData(
+    primaryColor: seed,
+    primaryContrastingColor: CupertinoColors.white,
+    {{#if flags.hasDarkMode}}
+    {{#if theme.darkMode.system}}
+    brightness: null, // Allow system-wide dark mode support
+    {{else}}
+    brightness: Brightness.dark,
+    {{/if}}
+    {{else}}
+    brightness: Brightness.light,
+    {{/if}}
+    scaffoldBackgroundColor: CupertinoColors.systemBackground,
+    barBackgroundColor: CupertinoColors.systemGrey6,
+    textTheme: CupertinoTextThemeData(
+      primaryColor: seed,
+      navTitleTextStyle: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 17,
+      ),
+      navLargeTitleTextStyle: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 34,
+        letterSpacing: 0.41,
+      ),
+      actionTextStyle: TextStyle(
+        color: seed,
+        fontSize: 17,
+        fontWeight: FontWeight.w400,
+      ),
+      tabLabelTextStyle: const TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+  );
+}

@@ -1,6 +1,6 @@
 # 🛠️ Template Development & Debugging Guide
 
-This guide explains how to efficiently develop, test, and debug Flutter templates within the **Flutter Init** project.
+This guide explains how to efficiently develop, test, and debug Flutter templates within the **FlutterInit** project.
 
 ## 🚀 The Development Loop
 
