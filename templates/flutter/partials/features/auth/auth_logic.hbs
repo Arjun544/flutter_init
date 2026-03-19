@@ -97,9 +97,6 @@ import 'package:{{flags.appSnake}}/src/routing/app_routes.dart';
 import 'package:{{flags.appSnake}}/src/utils/utils.dart';
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
 
-part 'auth_event.dart';
-part 'auth_state.dart';
-
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _repository;
 
@@ -177,6 +174,152 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (success) {
         emit(state.copyWith(isLoading: false));
+      },
+    );
+  }
+}
+
+abstract class AuthEvent extends Equatable {
+  const AuthEvent();
+  @override
+  List<Object> get props => [];
+}
+
+class LoginRequested extends AuthEvent {
+  final BuildContext context;
+  final String email;
+  final String password;
+  const LoginRequested({required this.context, required this.email, required this.password});
+}
+
+class SignUpRequested extends AuthEvent {
+  final BuildContext context;
+  final String name;
+  final String email;
+  final String password;
+  const SignUpRequested({required this.context, required this.name, required this.email, required this.password});
+}
+
+class ForgotPasswordRequested extends AuthEvent {
+  final String email;
+  const ForgotPasswordRequested({required this.email});
+}
+
+class AuthState extends Equatable {
+  final bool isLoading;
+  final String? errorMessage;
+  const AuthState({required this.isLoading, this.errorMessage});
+  const AuthState.initial() : isLoading = false, errorMessage = null;
+  AuthState copyWith({bool? isLoading, String? errorMessage}) {
+    return AuthState(isLoading: isLoading ?? this.isLoading, errorMessage: errorMessage);
+  }
+  @override
+  List<Object?> get props => [isLoading, errorMessage];
+}
+{{else if flags.isNoneState}}
+import 'package:flutter/material.dart';
+import 'package:{{flags.appSnake}}/src/routing/app_routes.dart';
+{{#if (eq flags.routerPackage "go_router")}}
+import 'package:go_router/go_router.dart';
+{{/if}}
+{{#if (eq flags.routerPackage "auto_route")}}
+import 'package:auto_route/auto_route.dart';
+{{/if}}
+import 'package:{{flags.appSnake}}/src/utils/utils.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
+
+class AuthViewModel extends ChangeNotifier {
+  final AuthRepository _repository;
+
+  AuthViewModel({required AuthRepository repository}) : _repository = repository;
+
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  void _setError(String? message) {
+    _errorMessage = message;
+    notifyListeners();
+  }
+
+  Future<bool> login({required BuildContext context, required String email, required String password}) async {
+    _setLoading(true);
+    _setError(null);
+    
+    final result = await _repository.login(email: email, password: password);
+    
+    return result.fold(
+      (failure) {
+        _setError(failure.message);
+        _setLoading(false);
+        return false;
+      },
+      (user) {
+        _setLoading(false);
+        if (context.mounted) {
+          {{#if (eq flags.routerPackage "go_router")}}
+          context.go(AppRoutes.home);
+          {{else if (eq flags.routerPackage "auto_route")}}
+          context.replaceRoute(const HomeRoute());
+          {{else}}
+          Navigator.pushReplacementNamed(context, AppRoutes.home);
+          {{/if}}
+        }
+        return true;
+      },
+    );
+  }
+
+  Future<bool> signUp({required BuildContext context, required String name, required String email, required String password}) async {
+    _setLoading(true);
+    _setError(null);
+    
+    final result = await _repository.signUp(name: name, email: email, password: password);
+    
+    return result.fold(
+      (failure) {
+        _setError(failure.message);
+        _setLoading(false);
+        return false;
+      },
+      (user) {
+        _setLoading(false);
+        if (context.mounted) {
+          {{#if (eq flags.routerPackage "go_router")}}
+          context.go(AppRoutes.home);
+          {{else if (eq flags.routerPackage "auto_route")}}
+          context.replaceRoute(const HomeRoute());
+          {{else}}
+          Navigator.pushReplacementNamed(context, AppRoutes.home);
+          {{/if}}
+        }
+        return true;
+      },
+    );
+  }
+
+  Future<bool> forgotPassword({required BuildContext context, required String email}) async {
+    _setLoading(true);
+    _setError(null);
+    
+    final result = await _repository.forgotPassword(email: email);
+    
+    return result.fold(
+      (failure) {
+        _setError(failure.message);
+        _setLoading(false);
+        return false;
+      },
+      (success) {
+        _setLoading(false);
+        return true;
       },
     );
   }

@@ -58,11 +58,26 @@ class SignupScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}
     final controller = Get.find<AuthController>();
     final isLoading = controller.isLoading.value;
     final errorMessage = controller.errorMessage.value;
+    {{else if flags.isMobX}}
+    final authStore = {{#if flags.usesFlutterHooks}}useMemoized{{else}}null; // Add your MobX store here{{/if}}(() => AuthStore(repository: AuthRepositoryImpl()), []);
+    final isLoading = authStore.isLoading;
+    final errorMessage = authStore.errorMessage;
+    {{else if flags.isNoneState}}
+    {{#if flags.usesFlutterHooks}}
+    final viewModel = useMemoized(() => AuthViewModel(repository: AuthRepositoryImpl()), []);
+    useListenable(viewModel);
+    final isLoading = viewModel.isLoading;
+    final errorMessage = viewModel.errorMessage;
+    {{else}}
+    final isLoading = false;
+    final errorMessage = null;
+    {{/if}}
     {{else if flags.usesFlutterHooks}}
     final isLoadingState = useState(false);
     final isLoading = isLoadingState.value;
     {{else}}
     final isLoading = false;
+    final errorMessage = null;
     {{/if}}
 
     final cs = context.theme.colorScheme;
@@ -103,6 +118,20 @@ class SignupScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}
         email: emailController.text, 
         password: passwordController.text,
       );
+      {{else if flags.isMobX}}
+      await authStore.signUp(
+        context: context, 
+        name: nameController.text, 
+        email: emailController.text.trim(), 
+        password: passwordController.text.trim(),
+      );
+      {{else if (and flags.isNoneState flags.usesFlutterHooks)}}
+      await viewModel.signUp(
+        context: context, 
+        name: nameController.text, 
+        email: emailController.text.trim(), 
+        password: passwordController.text.trim(),
+      );
       {{else}}
       {{#if flags.usesFlutterHooks}}
       isLoadingState.value = true;
@@ -131,7 +160,7 @@ class SignupScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}
           },
         );
       } catch (e) {
-        AppLogger.error(e.toString());
+       AppLogger.error(e.toString());
       } finally {
         {{#if flags.usesFlutterHooks}}
         isLoadingState.value = false;

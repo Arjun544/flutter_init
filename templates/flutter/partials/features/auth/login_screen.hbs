@@ -52,11 +52,30 @@ class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}H
     final controller = Get.find<AuthController>();
     final isLoading = controller.isLoading.value;
     final errorMessage = controller.errorMessage.value;
+    {{else if flags.isMobX}}
+    // In a real app, MobX stores might be provided via Provider/GetIt.
+    // Here we use a locally created memoized instance for the template.
+    final authStore = {{#if flags.usesFlutterHooks}}useMemoized{{else}}null; // Add your MobX store here{{/if}}(() => AuthStore(repository: AuthRepositoryImpl()), []);
+    final isLoading = authStore.isLoading;
+    final errorMessage = authStore.errorMessage;
+    {{else if flags.isNoneState}}
+    {{#if flags.usesFlutterHooks}}
+    final viewModel = useMemoized(() => AuthViewModel(repository: AuthRepositoryImpl()), []);
+    useListenable(viewModel);
+    final isLoading = viewModel.isLoading;
+    final errorMessage = viewModel.errorMessage;
+    {{else}}
+    // Vanilla state without hooks would usually use a StatefulWidget or a simple ValueNotifier.
+    // For the template, we show the loading state from a local variable.
+    final isLoading = false;
+    final errorMessage = null;
+    {{/if}}
     {{else if flags.usesFlutterHooks}}
     final isLoadingState = useState(false);
     final isLoading = isLoadingState.value;
     {{else}}
     final isLoading = false;
+    final errorMessage = null;
     {{/if}}
 
     final cs = context.theme.colorScheme;
@@ -92,6 +111,18 @@ class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}H
         context: context, 
         email: emailController.text, 
         password: passwordController.text,
+      );
+      {{else if flags.isMobX}}
+      await authStore.login(
+        context: context, 
+        email: emailController.text.trim(), 
+        password: passwordController.text.trim(),
+      );
+      {{else if (and flags.isNoneState flags.usesFlutterHooks)}}
+      await viewModel.login(
+        context: context, 
+        email: emailController.text.trim(), 
+        password: passwordController.text.trim(),
       );
       {{else}}
       {{#if flags.usesFlutterHooks}}
