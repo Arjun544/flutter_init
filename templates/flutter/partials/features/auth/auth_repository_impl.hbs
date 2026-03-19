@@ -1,6 +1,6 @@
 import 'package:{{flags.appSnake}}/src/imports/imports.dart';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/auth/models/{{else if (eq architecture "mvc")}}models/auth/{{else if (eq architecture "mvvm")}}models/auth/{{else}}features/auth/domain/models/{{/if}}user_model.dart';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/auth/repositories/{{else if (eq architecture "mvc")}}models/auth/{{else if (eq architecture "mvvm")}}models/auth/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthService _authService = AuthService.instance;

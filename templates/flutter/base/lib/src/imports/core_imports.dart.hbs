@@ -14,3 +14,29 @@ export '../config/app_config.dart';
 export '../routing/app_router.dart';
 export '../services/services.dart';
 export '../shared/shared.dart';
+
+{{#if (eq architecture "layer-first")}}
+export '../presentation/screens/auth/login_screen.dart';
+export '../presentation/screens/auth/signup_screen.dart';
+export '../presentation/screens/auth/forgot_password_screen.dart';
+export '../presentation/screens/home/home_page.dart';
+export '../presentation/screens/onboarding/onboarding_page.dart';
+{{else if (eq architecture "mvc")}}
+export '../views/auth/login_screen.dart';
+export '../views/auth/signup_screen.dart';
+export '../views/auth/forgot_password_screen.dart';
+export '../views/home/home_page.dart';
+export '../views/onboarding/onboarding_page.dart';
+{{else if (eq architecture "mvvm")}}
+export '../ui/auth/login_screen.dart';
+export '../ui/auth/signup_screen.dart';
+export '../ui/auth/forgot_password_screen.dart';
+export '../ui/home/home_page.dart';
+export '../ui/onboarding/onboarding_page.dart';
+{{else}}
+export '../features/auth/presentation/screens/login_screen.dart';
+export '../features/auth/presentation/screens/signup_screen.dart';
+export '../features/auth/presentation/screens/forgot_password_screen.dart';
+export '../features/home/presentation/screens/home_page.dart';
+export '../features/onboarding/presentation/screens/onboarding_page.dart';
+{{/if}}

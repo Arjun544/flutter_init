@@ -1,5 +1,5 @@
 import 'package:{{flags.appSnake}}/src/utils/utils.dart';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/auth/models/{{else if (eq architecture "mvc")}}models/auth/{{else if (eq architecture "mvvm")}}models/auth/{{else}}features/auth/domain/models/{{/if}}user_model.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
 
 abstract class AuthRepository {
   /// Sign in with email and password
