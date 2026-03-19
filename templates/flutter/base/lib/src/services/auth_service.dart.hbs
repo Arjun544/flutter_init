@@ -1,0 +1,60 @@
+import '../utils/utils.dart';
+
+class AuthService {
+  AuthService._();
+  static final AuthService instance = AuthService._();
+
+  FutureEither<Map<String, dynamic>?> login({
+    required String email,
+    required String password,
+  }) async {
+    return runTask(() async {
+      await Future.delayed(const Duration(seconds: 2));
+      
+      // Mock validation
+      if (email.contains('error')) {
+        throw Exception('Mock authentication error');
+      }
+
+      return {
+        'id': 'mock-id-123',
+        'email': email,
+        'name': 'Mock User',
+      };
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<Map<String, dynamic>?> signUp({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    return runTask(() async {
+      await Future.delayed(const Duration(seconds: 2));
+      return {
+        'id': 'mock-id-${DateTime.now().millisecondsSinceEpoch}',
+        'email': email,
+        'name': name,
+      };
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<void> forgotPassword({required String email}) async {
+    return runTask(() async {
+      await Future.delayed(const Duration(seconds: 1));
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<void> logout() async {
+    return runTask(() async {
+      await Future.delayed(const Duration(milliseconds: 500));
+    });
+  }
+
+  FutureEither<Map<String, dynamic>?> getCurrentUser() async {
+    return runTask(() async {
+      // Return null by default for mock
+      return null;
+    });
+  }
+}

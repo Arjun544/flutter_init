@@ -1,0 +1,133 @@
+import '../utils/utils.dart';
+import '../config/app_config.dart';
+{{#if flags.usesDio}}
+import 'package:dio/dio.dart';
+{{else if flags.usesHttp}}
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+{{/if}}
+
+class AuthService {
+  AuthService._();
+  static final AuthService instance = AuthService._();
+
+  {{#if flags.usesDio}}
+  Dio get _dio => AppConfig.dio;
+  {{else if flags.usesHttp}}
+  http.Client get _http => AppConfig.httpClient;
+  {{/if}}
+
+  FutureEither<Map<String, dynamic>?> login({
+    required String email,
+    required String password,
+  }) async {
+    return runTask(() async {
+      {{#if flags.usesDio}}
+      final response = await _dio.post('/auth/login', data: {
+        'email': email,
+        'password': password,
+      });
+      return response.data as Map<String, dynamic>;
+      {{else if flags.usesHttp}}
+      final response = await _http.post(
+        Uri.parse('${AppConfig.baseUrl}/auth/login'),
+        body: jsonEncode({'email': email, 'password': password}),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode != 200) throw Exception('Login failed');
+      return jsonDecode(response.body) as Map<String, dynamic>;
+      {{else}}
+      // Mock implementation if no networking flag is set
+      await Future.delayed(const Duration(seconds: 1));
+      if (email == 'admin@example.com' && password == 'admin123') {
+        return {
+          'id': '1',
+          'email': email,
+          'name': 'Admin User',
+        };
+      }
+      throw Exception('Invalid credentials');
+      {{/if}}
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<Map<String, dynamic>?> signUp({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    return runTask(() async {
+      {{#if flags.usesDio}}
+      final response = await _dio.post('/auth/signup', data: {
+        'name': name,
+        'email': email,
+        'password': password,
+      });
+      return response.data as Map<String, dynamic>;
+      {{else if flags.usesHttp}}
+      final response = await _http.post(
+        Uri.parse('${AppConfig.baseUrl}/auth/signup'),
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'password': password,
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode != 201) throw Exception('Signup failed');
+      return jsonDecode(response.body) as Map<String, dynamic>;
+      {{else}}
+      // Mock implementation if no networking flag is set
+      await Future.delayed(const Duration(seconds: 1));
+      return {
+        'id': '100',
+        'email': email,
+        'name': name,
+      };
+      {{/if}}
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<void> forgotPassword({required String email}) async {
+    return runTask(() async {
+      {{#if flags.usesDio}}
+      await _dio.post('/auth/forgot-password', data: {'email': email});
+      {{else if flags.usesHttp}}
+      await _http.post(
+        Uri.parse('${AppConfig.baseUrl}/auth/forgot-password'),
+        body: jsonEncode({'email': email}),
+        headers: {'Content-Type': 'application/json'},
+      );
+      {{else}}
+      await Future.delayed(const Duration(seconds: 1));
+      {{/if}}
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<void> logout() async {
+    return runTask(() async {
+      {{#if flags.usesDio}}
+      await _dio.post('/auth/logout');
+      {{else if flags.usesHttp}}
+      await _http.post(Uri.parse('${AppConfig.baseUrl}/auth/logout'));
+      {{else}}
+      await Future.delayed(const Duration(seconds: 1));
+      {{/if}}
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<Map<String, dynamic>?> getCurrentUser() async {
+    return runTask(() async {
+      {{#if flags.usesDio}}
+      final response = await _dio.get('/auth/me');
+      return response.data as Map<String, dynamic>;
+      {{else if flags.usesHttp}}
+      final response = await _http.get(Uri.parse('${AppConfig.baseUrl}/auth/me'));
+      if (response.statusCode != 200) return null;
+      return jsonDecode(response.body) as Map<String, dynamic>;
+      {{else}}
+      return null;
+      {{/if}}
+    });
+  }
+}
