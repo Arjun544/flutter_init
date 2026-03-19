@@ -40,7 +40,13 @@ async function rebuild() {
         const zipBuffer = await generateFlutterScaffold(currentConfig)
         const zip = await JSZip.loadAsync(zipBuffer)
         
-        // Use a set to track files currently in zip to potentially clean up old files later
+        // Clean output directory before extraction to remove old files
+        // We keep .dart_tool and pubspec.lock to speed up flutter pub get
+        const itemsToClean = ["lib", "assets", "test"]
+        for (const item of itemsToClean) {
+            await fs.rm(path.join(OUTPUT_DIR, item), { recursive: true, force: true }).catch(() => {})
+        }
+
         // For now, we just overwrite
         for (const [filename, file] of Object.entries(zip.files)) {
             if (file.dir) continue
@@ -80,11 +86,14 @@ async function rebuild() {
                 .map(l => l.trim())
             
             if (errorLines.length > 0) {
-                console.log(`❌ Found ${errorLines.length} issues in generated code.`)
-            } else if (output.includes('issues found')) {
-                console.log(`❌ Analysis failed with errors (view manual output if needed)`)
+                console.log(`❌ Found ${errorLines.length} issues in generated code:`)
+                errorLines.slice(0, 10).forEach(l => console.log(`   - ${l}`))
+                if (errorLines.length > 10) {
+                    console.log(`   ... and ${errorLines.length - 10} more.`)
+                }
             } else {
-                console.log("✅ Analysis clean (info-level only)")
+                console.log("❌ Analysis failed. Full output:")
+                console.log(output)
             }
         }
     } catch (e: any) {

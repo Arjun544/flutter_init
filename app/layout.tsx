@@ -1,9 +1,9 @@
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Sora } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next"
-import "./globals.css";
 import JsonLd from "./components/JsonLd";
+import "./globals.css";
 
 const sora = Sora({
   subsets: ["latin"],
@@ -23,7 +23,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://flutterinit.com"),
   title: "FlutterInit",
-  description: "Scaffolds your entire Flutter app with your preferred state management, routing, and utilities.",
+  description: "Scaffold your entire Flutter app with your preferred state management, routing, and utilities.",
   alternates: {
     canonical: "https://flutterinit.com",
   },
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Arjun Mahar", url: "https://github.com/Arjun544" }],
   openGraph: {
     title: "FlutterInit",
-    description: "Scaffolds your entire Flutter app with your preferred state management, routing, and utilities.",
+    description: "Scaffold your entire Flutter app with your preferred state management, routing, and utilities.",
     url: "https://flutterinit.com",
     siteName: "FlutterInit",
     images: [
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "FlutterInit",
-    description: "Scaffolds your entire Flutter app with your preferred state management, routing, and utilities.",
+    description: "Scaffold your entire Flutter app with your preferred state management, routing, and utilities.",
     images: ["/og-image.png"],
     creator: "@Arjun544",
   },

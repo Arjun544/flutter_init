@@ -19,6 +19,7 @@ type TemplateContext = ScaffoldConfig & {
         isBloc: boolean
         isGetX: boolean
         isMobX: boolean
+        isNoneState: boolean
         usesFirebase: boolean
         usesSupabase: boolean
         usesAppwrite: boolean
@@ -104,8 +105,8 @@ export async function generateFlutterScaffold(input: unknown) {
 }
 
 function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
-    const appSlug = config.appName.trim().replace(/\\s+/g, "-").toLowerCase()
-    const appSnake = config.appName.trim().replace(/\\s+/g, "_").toLowerCase()
+    const appSlug = config.appName.trim().replace(/\s+/g, "-").toLowerCase()
+    const appSnake = config.appName.trim().replace(/\s+/g, "_").toLowerCase()
     const routerPackage =
         config.navigation === "go_router"
             ? "go_router"
@@ -125,6 +126,7 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             isBloc: config.stateManagement === "bloc",
             isGetX: config.stateManagement === "getx",
             isMobX: config.stateManagement === "mobx",
+            isNoneState: config.stateManagement === "none",
             usesFirebase: config.backend.provider === "firebase",
             usesSupabase: config.backend.provider === "supabase",
             usesAppwrite: config.backend.provider === "appwrite",
@@ -257,10 +259,26 @@ async function copyAndRenderDirectory(
 
     const entries = await fs.readdir(sourceDir, { withFileTypes: true })
     for (const entry of entries) {
+        let fileName = entry.name
+        const condMatch = fileName.match(/^\(([^)]+)\)@(.*)$/)
+
+        if (condMatch) {
+            const flagsString = condMatch[1]
+            const actualFileName = condMatch[2]
+
+            const flags = flagsString.split(",")
+            const shouldInclude = flags.some(flag => !!(context.flags as any)[flag.trim()])
+
+            if (!shouldInclude) {
+                continue
+            }
+            fileName = actualFileName
+        }
+
         const sourcePath = path.join(sourceDir, entry.name)
         const targetPath = path.join(
             targetDir,
-            entry.name.replace(/\.hbs$/, "")
+            fileName.replace(/\.hbs$/, "")
         )
 
         if (entry.isDirectory()) {

@@ -2,10 +2,10 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight01Icon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import Link from 'next/link';
-import { NodePattern } from './NodePattern';
-import { MobileNodePattern } from './MobileNodePattern';
-import { GitHubStars, GitHubStarsSkeleton } from './GitHubStars';
 import { Suspense } from 'react';
+import { GitHubStars, GitHubStarsSkeleton } from './GitHubStars';
+import { MobileNodePattern } from './MobileNodePattern';
+import { NodePattern } from './NodePattern';
 
 export function HeroSection() {
   return (
@@ -24,7 +24,7 @@ export function HeroSection() {
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col items-center text-center pt-8">
         {/* Clean Pill Badge */}
-        <Link 
+        <Link
           href="https://github.com/Arjun544/flutter_init"
           target="_blank"
           rel="noopener noreferrer"
@@ -43,7 +43,7 @@ export function HeroSection() {
         </h1>
 
         <p className="max-w-xl text-[1.1rem] sm:text-[1.25rem] text-zinc-500 mb-12 font-medium leading-relaxed tracking-tight">
-          Scaffolds your entire Flutter app with your preferred state management, routing, and utilities.
+          Scaffold your entire Flutter app with your preferred state management, routing, and utilities.
         </p>
 
         {/* Sleek Action Buttons */}
@@ -52,10 +52,10 @@ export function HeroSection() {
             <Link href="/create">
               Start Generating
               <div className="ml-3 flex items-center justify-center w-6 h-6 rounded-full bg-zinc-800 group-hover:bg-zinc-700 transition-colors">
-                <HugeiconsIcon 
-                  icon={ArrowRight01Icon} 
-                  size={14} 
-                  className="group-hover:translate-x-0.5 transition-transform" 
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  size={14}
+                  className="group-hover:translate-x-0.5 transition-transform"
                 />
               </div>
             </Link>

@@ -12,7 +12,7 @@ export default function JsonLd() {
             name: "FlutterInit",
             url: "https://flutterinit.com",
             description:
-                "FlutterInit scaffolds your entire Flutter app with your preferred state management, routing, and utilities — production-ready in under 60 seconds.",
+                "FlutterInit Scaffold your entire Flutter app with your preferred state management, routing, and utilities — production-ready in under 60 seconds.",
             applicationCategory: "DeveloperApplication",
             operatingSystem: "Web",
             isAccessibleForFree: true,
@@ -20,6 +20,11 @@ export default function JsonLd() {
                 "@type": "Person",
                 name: "Arjun Mahar",
                 url: "https://github.com/Arjun544",
+            },
+            offers: {
+                "@type": "Offer",
+                price: 0,
+                priceCurrency: "USD",
             },
         },
     ];

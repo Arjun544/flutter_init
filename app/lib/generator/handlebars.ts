@@ -23,8 +23,8 @@ function snakeCase(value: string) {
 
 function pascalCase(value: string) {
     return value
-        .replace(/(^\\w|[-_\\s]+\\w)/g, (match) =>
-            match.replace(/[-_\\s]/g, "").toUpperCase()
+        .replace(/(^\w|[-_\s]+\w)/g, (match) =>
+            match.replace(/[-_\s]/g, "").toUpperCase()
         )
         .replace(/[^a-zA-Z0-9]/g, "")
 }

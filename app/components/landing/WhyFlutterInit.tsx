@@ -1,11 +1,11 @@
 import { cn } from '@/lib/utils';
-import { 
-  Clock01Icon, 
-  CpuIcon, 
-  DashboardSquare01Icon, 
-  FlashIcon, 
-  Layers01Icon, 
-  Shield01Icon 
+import {
+  Clock01Icon,
+  CpuIcon,
+  DashboardSquare01Icon,
+  FlashIcon,
+  Layers01Icon,
+  Shield01Icon
 } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 
@@ -42,7 +42,7 @@ export function WhyFlutterInit() {
     },
     {
       title: "Optimized Performance",
-      description: "Lightweight scaffolds following best practices for 60fps animations.",
+      description: "Lightweight Scaffold following best practices for 60fps animations.",
       icon: <HugeiconsIcon icon={CpuIcon} size={24} className="text-indigo-500" />,
       className: "md:col-span-1 md:row-span-1",
       gradient: "from-indigo-500/10 to-transparent",

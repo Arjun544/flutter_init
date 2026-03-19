@@ -1,0 +1,73 @@
+{{#if flags.supportsLocalization}}
+import 'package:easy_localization/easy_localization.dart';
+{{/if}}
+import 'package:{{flags.appSnake}}/src/imports/imports.dart';
+
+{{#if (eq flags.routerPackage "auto_route")}}
+import 'package:auto_route/auto_route.dart';
+@RoutePage()
+{{/if}}
+{{#if flags.usesFlutterHooks}}
+class HomePage extends HookWidget {
+{{else}}
+class HomePage extends StatelessWidget {
+{{/if}}
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.theme;
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    return Scaffold(
+      backgroundColor: colorScheme.surface,
+      appBar: AppTopBar(
+        title: {{#if flags.supportsLocalization}}'home.home_title'.tr(){{else}}'Home'{{/if}},
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all({{res 'AppSpacing.xl' 'w' flags.usesScreenutil}}),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Icon(
+                {{#if flags.usesIconsaxPlus}}
+                IconsaxPlusLinear.home,
+                {{else if flags.usesFlutterRemix}}
+                FlutterRemix.home_line,
+                {{else if flags.usesHugeicons}}
+                HugeIcons.strokeRoundedHome01,
+                {{else}}
+                Icons.home_rounded,
+                {{/if}}
+                size: {{res 60 'sp' flags.usesScreenutil}},
+                color: colorScheme.primary,
+              ),
+              SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
+              Text(
+                {{#if flags.supportsLocalization}}'home.welcome_home'.tr(){{else}}'Welcome Home!'{{/if}},
+                textAlign: TextAlign.center,
+                style: textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: colorScheme.onSurface,
+                  fontSize: {{res 28 'sp' flags.usesScreenutil}},
+                ),
+              ),
+              SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
+              Text(
+                {{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}},
+                textAlign: TextAlign.center,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontSize: {{res 14 'sp' flags.usesScreenutil}},
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

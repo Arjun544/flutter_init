@@ -14,7 +14,7 @@ export 'package:hooks_riverpod/hooks_riverpod.dart' hide describeIdentity, short
 {{/if}}
 {{/if}}
 {{#if flags.isProvider}}
-export 'package:provider/provider.dart';
+export 'package:provider/provider.dart' hide Dispose;
 {{/if}}
 {{#if flags.isBloc}}
 export 'package:flutter_bloc/flutter_bloc.dart';
