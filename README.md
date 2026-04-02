@@ -65,14 +65,27 @@
 
 ---
 
+## 📚 Documentation
+
+Explore our technical guides to understand the architecture and flags:
+
+*   **[Getting Started Guide](docs/getting-started.md)**: From download to first successful run.
+*   **[Configuration Reference](docs/configuration.md)**: Every project option explained in detail.
+*   **[Generated Output Reference](docs/generated-output.md)**: Understanding the "src-first" structure.
+*   **[Architecture Overview](docs/architecture.md)**: Under the hood of the Next.js/Handlebars engine.
+*   **[Handlebars Language Guide](docs/handlebars.md)**: Logic patterns for template contributors.
+*   **[Contribution Guide](CONTRIBUTING.md)**: How to add your own patterns.
+
+---
+
 ## 🤝 Contribution-Based Growth
 
 This repository is built on the principle of **Contribution Based Evolution**. We don't just want users; we want architects.
 
-- **Submit Patterns**: Add your favorite architectural patterns to our `templates/` directory.
-- **Refine the Core**: Improve the Web Dashboard UI.
-- **Developing Templates**: Learn how to test and debug templates in real-time. [Read the Dev Guide](docs/template-development.md).
-- **Documentation**: Help us make the onboarding experience even smoother.
+- **Submit Patterns**: Add architectural overlays (Layer-First, MVC, MVVM) to the `templates/` directory.
+- **Refine the Core**: Improve the Next.js visual wizard or generator logic in `app/lib/`.
+- **Bug Hunter**: Help us identify and fix synchronization issues in the template dev loop.
+- **Template Dev**: Learn our real-time [Template Dev workflow](docs/template-development.md).
 
 > [!TIP]
 > Every contributor who gets a PR merged receives a special place in our contributors' hall of fame.
