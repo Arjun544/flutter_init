@@ -49,6 +49,7 @@ class App extends StatelessWidget {
         {{#if flags.usesSkeletonizer}}
         current = SkeletonWrapper(child: current);
         {{/if}}
+        current = SessionListenerWrapper(child: current);
         
         // Ensure Material themes (tokens, widget styles like dialogs/buttons/inputs) 
         // are available even in Cupertino mode, as many apps use a mix of both.
@@ -100,6 +101,7 @@ class App extends StatelessWidget {
         {{#if flags.usesSkeletonizer}}
         current = SkeletonWrapper(child: current);
         {{/if}}
+        current = SessionListenerWrapper(child: current);
         return current;
       },
     );

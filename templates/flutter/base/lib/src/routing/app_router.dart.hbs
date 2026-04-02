@@ -24,15 +24,19 @@ import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/forgot
 {{#if (eq architecture "layer-first")}}
 import 'package:{{flags.appSnake}}/src/presentation/screens/home/home_page.dart';
 import 'package:{{flags.appSnake}}/src/presentation/screens/onboarding/onboarding_page.dart';
+
 {{else if (eq architecture "mvc")}}
 import 'package:{{flags.appSnake}}/src/views/home/home_page.dart';
 import 'package:{{flags.appSnake}}/src/views/onboarding/onboarding_page.dart';
+
 {{else if (eq architecture "mvvm")}}
 import 'package:{{flags.appSnake}}/src/ui/home/home_page.dart';
 import 'package:{{flags.appSnake}}/src/ui/onboarding/onboarding_page.dart';
+
 {{else}}
 import 'package:{{flags.appSnake}}/src/features/home/presentation/screens/home_page.dart';
 import 'package:{{flags.appSnake}}/src/features/onboarding/presentation/screens/onboarding_page.dart';
+
 {{/if}}
 
 final GoRouter appRouter = GoRouter(
@@ -92,15 +96,19 @@ import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/forgot
 {{#if (eq architecture "layer-first")}}
 import 'package:{{flags.appSnake}}/src/presentation/screens/home/home_page.dart';
 import 'package:{{flags.appSnake}}/src/presentation/screens/onboarding/onboarding_page.dart';
+
 {{else if (eq architecture "mvc")}}
 import 'package:{{flags.appSnake}}/src/views/home/home_page.dart';
 import 'package:{{flags.appSnake}}/src/views/onboarding/onboarding_page.dart';
+
 {{else if (eq architecture "mvvm")}}
 import 'package:{{flags.appSnake}}/src/ui/home/home_page.dart';
 import 'package:{{flags.appSnake}}/src/ui/onboarding/onboarding_page.dart';
+
 {{else}}
 import 'package:{{flags.appSnake}}/src/features/home/presentation/screens/home_page.dart';
 import 'package:{{flags.appSnake}}/src/features/onboarding/presentation/screens/onboarding_page.dart';
+
 {{/if}}
 
 class AppRouter extends RootStackRouter {
@@ -209,15 +217,19 @@ import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/forgot
 {{#if (eq architecture "layer-first")}}
 import 'package:{{flags.appSnake}}/src/presentation/screens/home/home_page.dart';
 import 'package:{{flags.appSnake}}/src/presentation/screens/onboarding/onboarding_page.dart';
+
 {{else if (eq architecture "mvc")}}
 import 'package:{{flags.appSnake}}/src/views/home/home_page.dart';
 import 'package:{{flags.appSnake}}/src/views/onboarding/onboarding_page.dart';
+
 {{else if (eq architecture "mvvm")}}
 import 'package:{{flags.appSnake}}/src/ui/home/home_page.dart';
 import 'package:{{flags.appSnake}}/src/ui/onboarding/onboarding_page.dart';
+
 {{else}}
 import 'package:{{flags.appSnake}}/src/features/home/presentation/screens/home_page.dart';
 import 'package:{{flags.appSnake}}/src/features/onboarding/presentation/screens/onboarding_page.dart';
+
 {{/if}}
 
 class AppRouter {
@@ -272,15 +284,19 @@ import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/forgot
 {{#if (eq architecture "layer-first")}}
 import 'package:{{flags.appSnake}}/src/presentation/screens/home/home_page.dart';
 import 'package:{{flags.appSnake}}/src/presentation/screens/onboarding/onboarding_page.dart';
+
 {{else if (eq architecture "mvc")}}
 import 'package:{{flags.appSnake}}/src/views/home/home_page.dart';
 import 'package:{{flags.appSnake}}/src/views/onboarding/onboarding_page.dart';
+
 {{else if (eq architecture "mvvm")}}
 import 'package:{{flags.appSnake}}/src/ui/home/home_page.dart';
 import 'package:{{flags.appSnake}}/src/ui/onboarding/onboarding_page.dart';
+
 {{else}}
 import 'package:{{flags.appSnake}}/src/features/home/presentation/screens/home_page.dart';
 import 'package:{{flags.appSnake}}/src/features/onboarding/presentation/screens/onboarding_page.dart';
+
 {{/if}}
 
 class AppRouter {

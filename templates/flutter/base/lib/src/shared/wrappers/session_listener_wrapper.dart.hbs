@@ -1,0 +1,268 @@
+{{#if flags.supportsLocalization}}
+import 'package:easy_localization/easy_localization.dart';
+{{/if}}
+import '../../imports/imports.dart';
+import '../../routing/app_routes.dart';
+{{#if (eq flags.routerPackage "go_router")}}
+import 'package:go_router/go_router.dart';
+{{/if}}
+{{#if (eq flags.routerPackage "auto_route")}}
+import 'package:auto_route/auto_route.dart';
+import '../../routing/app_router.dart';
+{{/if}}
+{{#if flags.usesFlutterNativeSplash}}
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+{{/if}}
+
+{{#if flags.isRiverpod}}
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_provider.dart{{else if (eq architecture "mvc")}}controllers/auth/session_provider.dart{{else if (eq architecture "mvvm")}}ui/auth/providers/session_provider.dart{{else}}features/auth/presentation/providers/session_provider.dart{{/if}}';
+{{else if flags.isBloc}}
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_bloc.dart{{else if (eq architecture "mvc")}}controllers/auth/session_bloc.dart{{else if (eq architecture "mvvm")}}ui/auth/bloc/session_bloc.dart{{else}}features/auth/presentation/providers/session_bloc.dart{{/if}}';
+{{else if flags.isGetX}}
+import 'package:get/get.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_controller.dart{{else if (eq architecture "mvc")}}controllers/auth/session_controller.dart{{else if (eq architecture "mvvm")}}ui/auth/controllers/session_controller.dart{{else}}features/auth/presentation/providers/session_controller.dart{{/if}}';
+{{else if flags.isMobX}}
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_store.dart{{else if (eq architecture "mvc")}}controllers/auth/session_store.dart{{else if (eq architecture "mvvm")}}ui/auth/stores/session_store.dart{{else}}features/auth/presentation/providers/session_store.dart{{/if}}';
+{{else if flags.isProvider}}
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_provider.dart{{else if (eq architecture "mvc")}}controllers/auth/session_provider.dart{{else if (eq architecture "mvvm")}}ui/auth/providers/session_provider.dart{{else}}features/auth/presentation/providers/session_provider.dart{{/if}}';
+{{else}}
+// session_manager not easily retrieved via context globally if not using Provider, assuming single instance
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_manager.dart{{else if (eq architecture "mvc")}}controllers/auth/session_manager.dart{{else if (eq architecture "mvvm")}}ui/auth/view_models/session_manager.dart{{else}}features/auth/presentation/providers/session_manager.dart{{/if}}';
+{{/if}}
+
+{{#if flags.isRiverpod}}
+class SessionListenerWrapper extends ConsumerWidget {
+  final Widget child;
+  const SessionListenerWrapper({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<SessionState>(sessionProvider, (prev, next) {
+      if (next.status != SessionStatus.unknown) {
+        {{#if flags.usesFlutterNativeSplash}}
+        FlutterNativeSplash.remove();
+        {{/if}}
+        if (next.status == SessionStatus.authenticated) {
+          {{#if (eq flags.routerPackage "go_router")}}
+          context.go(AppRoutes.home);
+          {{else if (eq flags.routerPackage "auto_route")}}
+          context.replaceRoute(const HomeRoute());
+          {{else}}
+          Navigator.pushReplacementNamed(context, AppRoutes.home);
+          {{/if}}
+        } else if (next.status == SessionStatus.unauthenticated) {
+          {{#if (eq flags.routerPackage "go_router")}}
+          context.go(AppRoutes.onboarding);
+          {{else if (eq flags.routerPackage "auto_route")}}
+          context.replaceRoute(const OnboardingRoute());
+          {{else}}
+          Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+          {{/if}}
+        }
+      }
+    });
+
+    return child;
+  }
+}
+{{else if flags.isBloc}}
+class SessionListenerWrapper extends StatelessWidget {
+  final Widget child;
+  const SessionListenerWrapper({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<SessionBloc, SessionState>(
+      listenWhen: (prev, next) => prev.status != next.status,
+      listener: (context, state) {
+        if (state.status != SessionStatus.unknown) {
+          {{#if flags.usesFlutterNativeSplash}}
+          FlutterNativeSplash.remove();
+          {{/if}}
+          if (state.status == SessionStatus.authenticated) {
+            {{#if (eq flags.routerPackage "go_router")}}
+            context.go(AppRoutes.home);
+            {{else if (eq flags.routerPackage "auto_route")}}
+            context.replaceRoute(const HomeRoute());
+            {{else}}
+            Navigator.pushReplacementNamed(context, AppRoutes.home);
+            {{/if}}
+          } else if (state.status == SessionStatus.unauthenticated) {
+            {{#if (eq flags.routerPackage "go_router")}}
+            context.go(AppRoutes.onboarding);
+            {{else if (eq flags.routerPackage "auto_route")}}
+            context.replaceRoute(const OnboardingRoute());
+            {{else}}
+            Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+            {{/if}}
+          }
+        }
+      },
+      child: child,
+    );
+  }
+}
+{{else if flags.isGetX}}
+class SessionListenerWrapper extends StatefulWidget {
+  final Widget child;
+  const SessionListenerWrapper({super.key, required this.child});
+
+  @override
+  State<SessionListenerWrapper> createState() => _SessionListenerWrapperState();
+}
+
+class _SessionListenerWrapperState extends State<SessionListenerWrapper> {
+  Worker? _worker;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final session = Get.find<SessionController>();
+      _worker = ever(session.status, (status) {
+        if (status != SessionStatus.unknown) {
+          {{#if flags.usesFlutterNativeSplash}}
+          FlutterNativeSplash.remove();
+          {{/if}}
+          if (status == SessionStatus.authenticated) {
+            Get.offAllNamed(AppRoutes.home);
+          } else if (status == SessionStatus.unauthenticated) {
+            Get.offAllNamed(AppRoutes.onboarding);
+          }
+        }
+      }, condition: () => session.status.value != SessionStatus.unknown);
+    });
+  }
+
+  @override
+  void dispose() {
+    _worker?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+{{else if flags.isMobX}}
+class SessionListenerWrapper extends StatefulWidget {
+  final Widget child;
+  const SessionListenerWrapper({super.key, required this.child});
+
+  @override
+  State<SessionListenerWrapper> createState() => _SessionListenerWrapperState();
+}
+
+class _SessionListenerWrapperState extends State<SessionListenerWrapper> {
+  late final ReactionDisposer _disposer;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final sessionStore = Provider.of<SessionStore>(context, listen: false);
+    _disposer = reaction(
+      (_) => sessionStore.status,
+      (SessionStatus status) {
+        if (status != SessionStatus.unknown) {
+          {{#if flags.usesFlutterNativeSplash}}
+          FlutterNativeSplash.remove();
+          {{/if}}
+          if (status == SessionStatus.authenticated) {
+            {{#if (eq flags.routerPackage "go_router")}}
+            context.go(AppRoutes.home);
+            {{else if (eq flags.routerPackage "auto_route")}}
+            context.replaceRoute(const HomeRoute());
+            {{else}}
+            Navigator.pushReplacementNamed(context, AppRoutes.home);
+            {{/if}}
+          } else if (status == SessionStatus.unauthenticated) {
+            {{#if (eq flags.routerPackage "go_router")}}
+            context.go(AppRoutes.onboarding);
+            {{else if (eq flags.routerPackage "auto_route")}}
+            context.replaceRoute(const OnboardingRoute());
+            {{else}}
+            Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+            {{/if}}
+          }
+        }
+      },
+      fireImmediately: true,
+    );
+  }
+
+  @override
+  void dispose() {
+    _disposer();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+{{else if flags.isProvider}}
+class SessionListenerWrapper extends StatefulWidget {
+  final Widget child;
+  const SessionListenerWrapper({super.key, required this.child});
+
+  @override
+  State<SessionListenerWrapper> createState() => _SessionListenerWrapperState();
+}
+
+class _SessionListenerWrapperState extends State<SessionListenerWrapper> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final session = Provider.of<SessionProvider>(context);
+    if (session.status != SessionStatus.unknown) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        {{#if flags.usesFlutterNativeSplash}}
+        FlutterNativeSplash.remove();
+        {{/if}}
+        if (session.status == SessionStatus.authenticated) {
+          {{#if (eq flags.routerPackage "go_router")}}
+          context.go(AppRoutes.home);
+          {{else if (eq flags.routerPackage "auto_route")}}
+          context.replaceRoute(const HomeRoute());
+          {{else}}
+          Navigator.pushReplacementNamed(context, AppRoutes.home);
+          {{/if}}
+        } else if (session.status == SessionStatus.unauthenticated) {
+          {{#if (eq flags.routerPackage "go_router")}}
+          context.go(AppRoutes.onboarding);
+          {{else if (eq flags.routerPackage "auto_route")}}
+          context.replaceRoute(const OnboardingRoute());
+          {{else}}
+          Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+          {{/if}}
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+{{else}}
+class SessionListenerWrapper extends StatefulWidget {
+  final Widget child;
+  const SessionListenerWrapper({super.key, required this.child});
+
+  @override
+  State<SessionListenerWrapper> createState() => _SessionListenerWrapperState();
+}
+
+class _SessionListenerWrapperState extends State<SessionListenerWrapper> {
+  // Logic left to implement for vanilla flutter. Ideally pass SessionManager logic.
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+{{/if}}

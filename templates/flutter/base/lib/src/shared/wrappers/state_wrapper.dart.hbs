@@ -1,4 +1,15 @@
 import '../../imports/imports.dart';
+{{#if flags.isBloc}}
+import '../../{{#if (eq architecture "layer-first")}}data/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/data/repositories/{{/if}}auth_repository_impl.dart';
+import '../../{{#if (eq architecture "layer-first")}}presentation/providers/session_bloc.dart{{else if (eq architecture "mvc")}}controllers/auth/session_bloc.dart{{else if (eq architecture "mvvm")}}ui/auth/bloc/session_bloc.dart{{else}}features/auth/presentation/providers/session_bloc.dart{{/if}}';
+{{else if flags.isProvider}}
+import '../../{{#if (eq architecture "layer-first")}}data/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/data/repositories/{{/if}}auth_repository_impl.dart';
+import '../../{{#if (eq architecture "layer-first")}}presentation/providers/session_provider.dart{{else if (eq architecture "mvc")}}controllers/auth/session_provider.dart{{else if (eq architecture "mvvm")}}ui/auth/providers/session_provider.dart{{else}}features/auth/presentation/providers/session_provider.dart{{/if}}';
+{{else if flags.isMobX}}
+import 'package:provider/provider.dart';
+import '../../{{#if (eq architecture "layer-first")}}data/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/data/repositories/{{/if}}auth_repository_impl.dart';
+import '../../{{#if (eq architecture "layer-first")}}presentation/providers/session_store.dart{{else if (eq architecture "mvc")}}controllers/auth/session_store.dart{{else if (eq architecture "mvvm")}}ui/auth/stores/session_store.dart{{else}}features/auth/presentation/providers/session_store.dart{{/if}}';
+{{/if}}
 
 /// A wrapper to initialize the chosen State Management library.
 class StateWrapper extends StatelessWidget {
@@ -15,12 +26,23 @@ class StateWrapper extends StatelessWidget {
     return ProviderScope(child: child);
     {{else if flags.isProvider}}
     return MultiProvider(
-      providers: const [], // Add global providers here
+      providers: [
+        ChangeNotifierProvider(create: (_) => SessionProvider(repository: AuthRepositoryImpl())),
+      ],
       child: child,
     );
     {{else if flags.isBloc}}
     return MultiBlocProvider(
-      providers: const [], // Add global blocs here
+      providers: [
+        BlocProvider(create: (_) => SessionBloc(repository: AuthRepositoryImpl())),
+      ],
+      child: child,
+    );
+    {{else if flags.isMobX}}
+    return MultiProvider(
+      providers: [
+        Provider(create: (_) => SessionStore(repository: AuthRepositoryImpl())),
+      ],
       child: child,
     );
     {{else}}

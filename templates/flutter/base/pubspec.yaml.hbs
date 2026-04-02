@@ -178,6 +178,10 @@ dependencies:
   easy_localization: ^3.0.8
   {{/if}}
 
+  {{#if flags.usesFlutterNativeSplash}}
+  flutter_native_splash: ^2.4.7
+  {{/if}}
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -199,6 +203,7 @@ flutter:
 
   assets:
     - assets/
+    - assets/images/
     - assets/icons/
     {{#if flags.supportsLocalization}}
     - assets/translations/
@@ -206,3 +211,4 @@ flutter:
     {{#if flags.usesDotenv}}
     - .env
     {{/if}}
+

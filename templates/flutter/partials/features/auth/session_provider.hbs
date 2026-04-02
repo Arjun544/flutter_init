@@ -1,0 +1,460 @@
+{{#if flags.isRiverpod}}
+import 'dart:async';
+import 'package:{{flags.appSnake}}/src/imports/imports.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}data/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/data/repositories/{{/if}}auth_repository_impl.dart';
+
+/// Provides the AuthRepository instance
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return AuthRepositoryImpl();
+});
+
+/// Provides a stream of auth state changes
+final authStateStreamProvider = StreamProvider<AppUser?>((ref) {
+  final repo = ref.watch(authRepositoryProvider);
+  return repo.onAuthStateChanged;
+});
+
+/// Provides the current session state
+final sessionProvider = StateNotifierProvider<SessionNotifier, SessionState>((ref) {
+  final repo = ref.read(authRepositoryProvider);
+  return SessionNotifier(repository: repo);
+});
+
+/// Session states
+enum SessionStatus { unknown, authenticated, unauthenticated }
+
+class SessionState {
+  final SessionStatus status;
+  final AppUser? user;
+
+  const SessionState({this.status = SessionStatus.unknown, this.user});
+
+  SessionState copyWith({SessionStatus? status, AppUser? user}) {
+    return SessionState(
+      status: status ?? this.status,
+      user: user ?? this.user,
+    );
+  }
+}
+
+class SessionNotifier extends StateNotifier<SessionState> {
+  final AuthRepository _repository;
+  StreamSubscription<AppUser?>? _authSub;
+
+  SessionNotifier({required AuthRepository repository})
+      : _repository = repository,
+        super(const SessionState()) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    // Check persisted session first
+    final result = await _repository.checkAuthState();
+    result.fold(
+      (_) => state = const SessionState(status: SessionStatus.unauthenticated),
+      (user) {
+        if (user != null) {
+          state = SessionState(status: SessionStatus.authenticated, user: user);
+        } else {
+          state = const SessionState(status: SessionStatus.unauthenticated);
+        }
+      },
+    );
+
+    // Listen for future changes
+    _authSub = _repository.onAuthStateChanged.listen((user) {
+      if (user != null) {
+        state = SessionState(status: SessionStatus.authenticated, user: user);
+      } else {
+        state = const SessionState(status: SessionStatus.unauthenticated);
+      }
+    });
+  }
+
+  Future<void> logout() async {
+    await _repository.logout();
+    state = const SessionState(status: SessionStatus.unauthenticated);
+  }
+
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    super.dispose();
+  }
+}
+{{else if flags.isBloc}}
+import 'dart:async';
+import 'package:{{flags.appSnake}}/src/imports/imports.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
+
+/// Session events
+abstract class SessionEvent extends Equatable {
+  const SessionEvent();
+  @override
+  List<Object?> get props => [];
+}
+
+class SessionCheckRequested extends SessionEvent {
+  const SessionCheckRequested();
+}
+
+class SessionUserChanged extends SessionEvent {
+  final AppUser? user;
+  const SessionUserChanged(this.user);
+  @override
+  List<Object?> get props => [user];
+}
+
+class SessionLogoutRequested extends SessionEvent {
+  const SessionLogoutRequested();
+}
+
+/// Session states
+enum SessionStatus { unknown, authenticated, unauthenticated }
+
+class SessionState extends Equatable {
+  final SessionStatus status;
+  final AppUser? user;
+
+  const SessionState({
+    this.status = SessionStatus.unknown,
+    this.user,
+  });
+
+  const SessionState.unknown() : this();
+  const SessionState.authenticated(AppUser user) : this(status: SessionStatus.authenticated, user: user);
+  const SessionState.unauthenticated() : this(status: SessionStatus.unauthenticated);
+
+  @override
+  List<Object?> get props => [status, user];
+}
+
+class SessionBloc extends Bloc<SessionEvent, SessionState> {
+  final AuthRepository _repository;
+  StreamSubscription<AppUser?>? _authSub;
+
+  SessionBloc({required AuthRepository repository})
+      : _repository = repository,
+        super(const SessionState.unknown()) {
+    on<SessionCheckRequested>(_onCheckRequested);
+    on<SessionUserChanged>(_onUserChanged);
+    on<SessionLogoutRequested>(_onLogoutRequested);
+
+    // Start checking
+    add(const SessionCheckRequested());
+  }
+
+  Future<void> _onCheckRequested(
+    SessionCheckRequested event,
+    Emitter<SessionState> emit,
+  ) async {
+    final result = await _repository.checkAuthState();
+    result.fold(
+      (_) => emit(const SessionState.unauthenticated()),
+      (user) {
+        if (user != null) {
+          emit(SessionState.authenticated(user));
+        } else {
+          emit(const SessionState.unauthenticated());
+        }
+      },
+    );
+
+    // Listen for future changes
+    await _authSub?.cancel();
+    _authSub = _repository.onAuthStateChanged.listen((user) {
+      add(SessionUserChanged(user));
+    });
+  }
+
+  void _onUserChanged(
+    SessionUserChanged event,
+    Emitter<SessionState> emit,
+  ) {
+    if (event.user != null) {
+      emit(SessionState.authenticated(event.user!));
+    } else {
+      emit(const SessionState.unauthenticated());
+    }
+  }
+
+  Future<void> _onLogoutRequested(
+    SessionLogoutRequested event,
+    Emitter<SessionState> emit,
+  ) async {
+    await _repository.logout();
+    emit(const SessionState.unauthenticated());
+  }
+
+  @override
+  Future<void> close() {
+    _authSub?.cancel();
+    return super.close();
+  }
+}
+{{else if flags.isProvider}}
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
+
+enum SessionStatus { unknown, authenticated, unauthenticated }
+
+class SessionProvider extends ChangeNotifier {
+  final AuthRepository _repository;
+  StreamSubscription<AppUser?>? _authSub;
+
+  SessionStatus _status = SessionStatus.unknown;
+  AppUser? _user;
+
+  SessionStatus get status => _status;
+  AppUser? get user => _user;
+  bool get isAuthenticated => _status == SessionStatus.authenticated;
+
+  SessionProvider({required AuthRepository repository}) : _repository = repository {
+    _init();
+  }
+
+  Future<void> _init() async {
+    final result = await _repository.checkAuthState();
+    result.fold(
+      (_) {
+        _status = SessionStatus.unauthenticated;
+        notifyListeners();
+      },
+      (user) {
+        if (user != null) {
+          _user = user;
+          _status = SessionStatus.authenticated;
+        } else {
+          _status = SessionStatus.unauthenticated;
+        }
+        notifyListeners();
+      },
+    );
+
+    _authSub = _repository.onAuthStateChanged.listen((user) {
+      if (user != null) {
+        _user = user;
+        _status = SessionStatus.authenticated;
+      } else {
+        _user = null;
+        _status = SessionStatus.unauthenticated;
+      }
+      notifyListeners();
+    });
+  }
+
+  Future<void> logout() async {
+    await _repository.logout();
+    _user = null;
+    _status = SessionStatus.unauthenticated;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    super.dispose();
+  }
+}
+{{else if flags.isGetX}}
+import 'dart:async';
+import 'package:get/get.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
+
+enum SessionStatus { unknown, authenticated, unauthenticated }
+
+class SessionController extends GetxController {
+  final AuthRepository _repository;
+  StreamSubscription<AppUser?>? _authSub;
+
+  final Rx<SessionStatus> status = SessionStatus.unknown.obs;
+  final Rx<AppUser?> user = Rx<AppUser?>(null);
+
+  bool get isAuthenticated => status.value == SessionStatus.authenticated;
+
+  SessionController({required AuthRepository repository}) : _repository = repository;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _init();
+  }
+
+  Future<void> _init() async {
+    final result = await _repository.checkAuthState();
+    result.fold(
+      (_) => status.value = SessionStatus.unauthenticated,
+      (u) {
+        if (u != null) {
+          user.value = u;
+          status.value = SessionStatus.authenticated;
+        } else {
+          status.value = SessionStatus.unauthenticated;
+        }
+      },
+    );
+
+    _authSub = _repository.onAuthStateChanged.listen((u) {
+      if (u != null) {
+        user.value = u;
+        status.value = SessionStatus.authenticated;
+      } else {
+        user.value = null;
+        status.value = SessionStatus.unauthenticated;
+      }
+    });
+  }
+
+  Future<void> logout() async {
+    await _repository.logout();
+    user.value = null;
+    status.value = SessionStatus.unauthenticated;
+  }
+
+  @override
+  void onClose() {
+    _authSub?.cancel();
+    super.onClose();
+  }
+}
+{{else if flags.isMobX}}
+import 'dart:async';
+import 'package:mobx/mobx.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
+
+part 'session_store.g.dart';
+
+enum SessionStatus { unknown, authenticated, unauthenticated }
+
+class SessionStore = _SessionStore with _$SessionStore;
+
+abstract class _SessionStore with Store {
+  final AuthRepository _repository;
+  StreamSubscription<AppUser?>? _authSub;
+
+  _SessionStore({required AuthRepository repository}) : _repository = repository {
+    _init();
+  }
+
+  @observable
+  SessionStatus status = SessionStatus.unknown;
+
+  @observable
+  AppUser? user;
+
+  @computed
+  bool get isAuthenticated => status == SessionStatus.authenticated;
+
+  @action
+  Future<void> _init() async {
+    final result = await _repository.checkAuthState();
+    result.fold(
+      (_) => status = SessionStatus.unauthenticated,
+      (u) {
+        if (u != null) {
+          user = u;
+          status = SessionStatus.authenticated;
+        } else {
+          status = SessionStatus.unauthenticated;
+        }
+      },
+    );
+
+    _authSub = _repository.onAuthStateChanged.listen((u) {
+      runInAction(() {
+        if (u != null) {
+          user = u;
+          status = SessionStatus.authenticated;
+        } else {
+          user = null;
+          status = SessionStatus.unauthenticated;
+        }
+      });
+    });
+  }
+
+  @action
+  Future<void> logout() async {
+    await _repository.logout();
+    user = null;
+    status = SessionStatus.unauthenticated;
+  }
+
+  void dispose() {
+    _authSub?.cancel();
+  }
+}
+{{else}}
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
+
+enum SessionStatus { unknown, authenticated, unauthenticated }
+
+class SessionManager extends ChangeNotifier {
+  final AuthRepository _repository;
+  StreamSubscription<AppUser?>? _authSub;
+
+  SessionStatus _status = SessionStatus.unknown;
+  AppUser? _user;
+
+  SessionStatus get status => _status;
+  AppUser? get user => _user;
+  bool get isAuthenticated => _status == SessionStatus.authenticated;
+
+  SessionManager({required AuthRepository repository}) : _repository = repository {
+    _init();
+  }
+
+  Future<void> _init() async {
+    final result = await _repository.checkAuthState();
+    result.fold(
+      (_) {
+        _status = SessionStatus.unauthenticated;
+        notifyListeners();
+      },
+      (user) {
+        if (user != null) {
+          _user = user;
+          _status = SessionStatus.authenticated;
+        } else {
+          _status = SessionStatus.unauthenticated;
+        }
+        notifyListeners();
+      },
+    );
+
+    _authSub = _repository.onAuthStateChanged.listen((user) {
+      if (user != null) {
+        _user = user;
+        _status = SessionStatus.authenticated;
+      } else {
+        _user = null;
+        _status = SessionStatus.unauthenticated;
+      }
+      notifyListeners();
+    });
+  }
+
+  Future<void> logout() async {
+    await _repository.logout();
+    _user = null;
+    _status = SessionStatus.unauthenticated;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    super.dispose();
+  }
+}
+{{/if}}

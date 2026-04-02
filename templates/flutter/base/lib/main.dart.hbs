@@ -3,9 +3,16 @@ import 'src/imports/imports.dart';
 import 'src/flavors.dart';
 {{/if}}
 import 'src/app.dart';
+{{#if flags.usesFlutterNativeSplash}}
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+{{/if}}
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  {{#if flags.usesFlutterNativeSplash}}
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  {{/if}}
+  
   {{#if flags.supportsLocalization}}
   await EasyLocalization.ensureInitialized();
   {{/if}}

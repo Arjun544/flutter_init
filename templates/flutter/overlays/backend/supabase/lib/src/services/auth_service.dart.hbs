@@ -8,6 +8,21 @@ class AuthService {
 
   SupabaseClient get _supabaseClient => AppConfig.supabase;
 
+  /// Stream of auth state changes. Emits the current user map or null.
+  Stream<Map<String, dynamic>?> get authStateChanges {
+    return _supabaseClient.auth.onAuthStateChange.map((data) {
+      final session = data.session;
+      if (session == null) return null;
+      final user = session.user;
+      return {
+        'id': user.id,
+        'email': user.email,
+        'name': user.userMetadata?['name'] ?? '',
+        'photoUrl': user.userMetadata?['avatar_url'],
+      };
+    });
+  }
+
   FutureEither<Map<String, dynamic>?> login({
     required String email,
     required String password,
@@ -23,6 +38,7 @@ class AuthService {
         'id': user.id,
         'email': user.email,
         'name': user.userMetadata?['name'] ?? '',
+        'photoUrl': user.userMetadata?['avatar_url'],
       };
     }, requiresNetwork: true);
   }
@@ -44,6 +60,7 @@ class AuthService {
         'id': user.id,
         'email': user.email,
         'name': name,
+        'photoUrl': user.userMetadata?['avatar_url'],
       };
     }, requiresNetwork: true);
   }
@@ -69,7 +86,12 @@ class AuthService {
         'id': user.id,
         'email': user.email,
         'name': user.userMetadata?['name'] ?? '',
+        'photoUrl': user.userMetadata?['avatar_url'],
       };
     });
+  }
+
+  void dispose() {
+    // Supabase manages its own streams
   }
 }

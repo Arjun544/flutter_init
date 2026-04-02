@@ -33,6 +33,7 @@ type TemplateContext = ScaffoldConfig & {
         usesFlutterSvg: boolean
         usesSkeletonizer: boolean
         usesScreenutil: boolean
+        usesFlutterNativeSplash: boolean
         usesDotenv: boolean
         usesLogger: boolean
         usesIconsaxPlus: boolean
@@ -146,6 +147,7 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             usesFlutterSvg: config.misc.usesFlutterSvg,
             usesSkeletonizer: config.misc.usesSkeletonizer,
             usesScreenutil: config.misc.usesScreenutil,
+            usesFlutterNativeSplash: config.misc.usesFlutterNativeSplash,
             usesDotenv: config.misc.usesDotenv,
             usesLogger: config.misc.usesLogger,
             supportsLocalization: config.localization.enabled,

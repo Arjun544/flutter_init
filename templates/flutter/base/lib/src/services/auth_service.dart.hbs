@@ -1,8 +1,17 @@
+import 'dart:async';
 import '../utils/utils.dart';
 
 class AuthService {
   AuthService._();
   static final AuthService instance = AuthService._();
+
+  // In-memory session for mock backend
+  Map<String, dynamic>? _currentUser;
+  final StreamController<Map<String, dynamic>?> _authStateController =
+      StreamController<Map<String, dynamic>?>.broadcast();
+
+  /// Stream of auth state changes. Emits the current user map or null.
+  Stream<Map<String, dynamic>?> get authStateChanges => _authStateController.stream;
 
   FutureEither<Map<String, dynamic>?> login({
     required String email,
@@ -16,11 +25,13 @@ class AuthService {
         throw Exception('Mock authentication error');
       }
 
-      return {
+      _currentUser = {
         'id': 'mock-id-123',
         'email': email,
         'name': 'Mock User',
       };
+      _authStateController.add(_currentUser);
+      return _currentUser;
     }, requiresNetwork: true);
   }
 
@@ -31,11 +42,13 @@ class AuthService {
   }) async {
     return runTask(() async {
       await Future.delayed(const Duration(seconds: 2));
-      return {
+      _currentUser = {
         'id': 'mock-id-${DateTime.now().millisecondsSinceEpoch}',
         'email': email,
         'name': name,
       };
+      _authStateController.add(_currentUser);
+      return _currentUser;
     }, requiresNetwork: true);
   }
 
@@ -48,13 +61,18 @@ class AuthService {
   FutureEither<void> logout() async {
     return runTask(() async {
       await Future.delayed(const Duration(milliseconds: 500));
+      _currentUser = null;
+      _authStateController.add(null);
     });
   }
 
   FutureEither<Map<String, dynamic>?> getCurrentUser() async {
     return runTask(() async {
-      // Return null by default for mock
-      return null;
+      return _currentUser;
     });
+  }
+
+  void dispose() {
+    _authStateController.close();
   }
 }

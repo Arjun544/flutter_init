@@ -8,6 +8,19 @@ class AuthService {
 
   FirebaseAuth get _firebaseAuth => AppConfig.firebaseAuth;
 
+  /// Stream of auth state changes. Emits the current user map or null.
+  Stream<Map<String, dynamic>?> get authStateChanges {
+    return _firebaseAuth.authStateChanges().map((User? user) {
+      if (user == null) return null;
+      return {
+        'id': user.uid,
+        'email': user.email ?? '',
+        'name': user.displayName ?? '',
+        'photoUrl': user.photoURL,
+      };
+    });
+  }
+
   FutureEither<Map<String, dynamic>?> login({
     required String email,
     required String password,
@@ -23,6 +36,7 @@ class AuthService {
         'id': user.uid,
         'email': user.email ?? '',
         'name': user.displayName ?? '',
+        'photoUrl': user.photoURL,
       };
     }, requiresNetwork: true);
   }
@@ -44,6 +58,7 @@ class AuthService {
         'id': user.uid,
         'email': user.email ?? '',
         'name': name,
+        'photoUrl': user.photoURL,
       };
     }, requiresNetwork: true);
   }
@@ -68,7 +83,12 @@ class AuthService {
         'id': user.uid,
         'email': user.email ?? '',
         'name': user.displayName ?? '',
+        'photoUrl': user.photoURL,
       };
     });
+  }
+
+  void dispose() {
+    // Firebase manages its own streams
   }
 }

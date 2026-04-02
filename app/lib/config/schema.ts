@@ -123,6 +123,7 @@ export type BackendConfig = z.infer<typeof backendSchema>
 
 const miscSchema = z.object({
     usesScreenutil: z.boolean(),
+    usesFlutterNativeSplash: z.boolean().default(true),
     usesDio: z.boolean(),
     usesHttp: z.boolean(),
     usesHive: z.boolean(),
@@ -174,6 +175,7 @@ export const scaffoldConfigSchema = z.object({
     }),
     misc: miscSchema.default({
         usesScreenutil: true,
+        usesFlutterNativeSplash: true,
         usesDio: false,
         usesHttp: false,
         usesHive: false,
@@ -243,6 +245,7 @@ export const defaultConfig: ScaffoldConfig = {
     architecture: "feature-first",
     misc: {
         usesScreenutil: true,
+        usesFlutterNativeSplash: true,
         usesDio: false,
         usesHttp: false,
         usesHive: false,

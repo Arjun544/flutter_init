@@ -2,23 +2,72 @@
 import 'package:easy_localization/easy_localization.dart';
 {{/if}}
 import 'package:{{flags.appSnake}}/src/imports/imports.dart';
+{{#if flags.isRiverpod}}
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_provider.dart{{else if (eq architecture "mvc")}}controllers/auth/session_provider.dart{{else if (eq architecture "mvvm")}}ui/auth/providers/session_provider.dart{{else}}features/auth/presentation/providers/session_provider.dart{{/if}}';
+{{else if flags.isBloc}}
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_bloc.dart{{else if (eq architecture "mvc")}}controllers/auth/session_bloc.dart{{else if (eq architecture "mvvm")}}ui/auth/bloc/session_bloc.dart{{else}}features/auth/presentation/providers/session_bloc.dart{{/if}}';
+{{else if flags.isGetX}}
+import 'package:get/get.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_controller.dart{{else if (eq architecture "mvc")}}controllers/auth/session_controller.dart{{else if (eq architecture "mvvm")}}ui/auth/controllers/session_controller.dart{{else}}features/auth/presentation/providers/session_controller.dart{{/if}}';
+{{else if flags.isMobX}}
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:provider/provider.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_store.dart{{else if (eq architecture "mvc")}}controllers/auth/session_store.dart{{else if (eq architecture "mvvm")}}ui/auth/stores/session_store.dart{{else}}features/auth/presentation/providers/session_store.dart{{/if}}';
+{{else if flags.isProvider}}
+import 'package:provider/provider.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_provider.dart{{else if (eq architecture "mvc")}}controllers/auth/session_provider.dart{{else if (eq architecture "mvvm")}}ui/auth/providers/session_provider.dart{{else}}features/auth/presentation/providers/session_provider.dart{{/if}}';
+{{/if}}
 
 {{#if (eq flags.routerPackage "auto_route")}}
 import 'package:auto_route/auto_route.dart';
 @RoutePage()
 {{/if}}
 {{#if flags.usesFlutterHooks}}
+{{#if flags.isRiverpod}}
+class HomePage extends HookConsumerWidget {
+{{else}}
 class HomePage extends HookWidget {
+{{/if}}
+{{else}}
+{{#if flags.isRiverpod}}
+class HomePage extends ConsumerWidget {
 {{else}}
 class HomePage extends StatelessWidget {
+{{/if}}
 {{/if}}
   const HomePage({super.key});
 
   @override
+{{#if flags.isRiverpod}}
+  Widget build(BuildContext context, WidgetRef ref) {
+{{else}}
   Widget build(BuildContext context) {
+{{/if}}
     final theme = context.theme;
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+
+    {{#if flags.isRiverpod}}
+    final session = ref.watch(sessionProvider);
+    final user = session.user;
+    {{else if flags.isBloc}}
+    final session = context.watch<SessionBloc>().state;
+    final user = session.user;
+    {{else if flags.isGetX}}
+    final session = Get.find<SessionController>();
+    final user = session.user.value;
+    {{else if flags.isProvider}}
+    final session = context.watch<SessionProvider>();
+    final user = session.user;
+    {{else if flags.isMobX}}
+    final session = context.watch<SessionStore>();
+    final user = session.user;
+    {{else}}
+    // Add custom state retrieval here or replace with actual
+    final user = null;
+    {{/if}}
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -46,8 +95,29 @@ class HomePage extends StatelessWidget {
                 color: colorScheme.primary,
               ),
               SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
+              {{#if flags.isGetX}}
+              Obx(() => Text(
+                user?.name ?? user?.email ?? ({{#if flags.supportsLocalization}}'home.welcome_home'.tr(){{else}}'Welcome Home!'{{/if}}),
+                textAlign: TextAlign.center,
+                style: textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: colorScheme.onSurface,
+                  fontSize: {{res 28 'sp' flags.usesScreenutil}},
+                ),
+              )),
+              {{else if flags.isMobX}}
+              Observer(builder: (_) => Text(
+                session.user?.name ?? session.user?.email ?? ({{#if flags.supportsLocalization}}'home.welcome_home'.tr(){{else}}'Welcome Home!'{{/if}}),
+                textAlign: TextAlign.center,
+                style: textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: colorScheme.onSurface,
+                  fontSize: {{res 28 'sp' flags.usesScreenutil}},
+                ),
+              )),
+              {{else}}
               Text(
-                {{#if flags.supportsLocalization}}'home.welcome_home'.tr(){{else}}'Welcome Home!'{{/if}},
+                user?.name ?? user?.email ?? ({{#if flags.supportsLocalization}}'home.welcome_home'.tr(){{else}}'Welcome Home!'{{/if}}),
                 textAlign: TextAlign.center,
                 style: textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w900,
@@ -55,15 +125,36 @@ class HomePage extends StatelessWidget {
                   fontSize: {{res 28 'sp' flags.usesScreenutil}},
                 ),
               ),
+              {{/if}}
               SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
+              {{#if flags.isGetX}}
+              Obx(() => Text(
+                user?.email != null && user?.name != null ? user!.email! : ({{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}}),
+                textAlign: TextAlign.center,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontSize: {{res 14 'sp' flags.usesScreenutil}},
+                ),
+              )),
+              {{else if flags.isMobX}}
+              Observer(builder: (_) => Text(
+                session.user?.email != null && session.user?.name != null ? session.user!.email! : ({{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}}),
+                textAlign: TextAlign.center,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontSize: {{res 14 'sp' flags.usesScreenutil}},
+                ),
+              )),
+              {{else}}
               Text(
-                {{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}},
+                user?.email != null && user?.name != null ? user!.email! : ({{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}}),
                 textAlign: TextAlign.center,
                 style: textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                   fontSize: {{res 14 'sp' flags.usesScreenutil}},
                 ),
               ),
+              {{/if}}
             ],
           ),
         ),

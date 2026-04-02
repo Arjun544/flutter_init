@@ -1,3 +1,4 @@
+import 'dart:async';
 import '../utils/utils.dart';
 import '../config/app_config.dart';
 {{#if flags.usesDio}}
@@ -17,6 +18,13 @@ class AuthService {
   http.Client get _http => AppConfig.httpClient;
   {{/if}}
 
+  // Custom REST doesn't have a built-in auth state stream, so we manage our own
+  final StreamController<Map<String, dynamic>?> _authStateController =
+      StreamController<Map<String, dynamic>?>.broadcast();
+
+  /// Stream of auth state changes. Emits the current user map or null.
+  Stream<Map<String, dynamic>?> get authStateChanges => _authStateController.stream;
+
   FutureEither<Map<String, dynamic>?> login({
     required String email,
     required String password,
@@ -27,7 +35,9 @@ class AuthService {
         'email': email,
         'password': password,
       });
-      return response.data as Map<String, dynamic>;
+      final data = response.data as Map<String, dynamic>;
+      _authStateController.add(data);
+      return data;
       {{else if flags.usesHttp}}
       final response = await _http.post(
         Uri.parse('${AppConfig.baseUrl}/auth/login'),
@@ -35,16 +45,20 @@ class AuthService {
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode != 200) throw Exception('Login failed');
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      _authStateController.add(data);
+      return data;
       {{else}}
       // Mock implementation if no networking flag is set
       await Future.delayed(const Duration(seconds: 1));
       if (email == 'admin@example.com' && password == 'admin123') {
-        return {
+        final data = {
           'id': '1',
           'email': email,
           'name': 'Admin User',
         };
+        _authStateController.add(data);
+        return data;
       }
       throw Exception('Invalid credentials');
       {{/if}}
@@ -63,7 +77,9 @@ class AuthService {
         'email': email,
         'password': password,
       });
-      return response.data as Map<String, dynamic>;
+      final data = response.data as Map<String, dynamic>;
+      _authStateController.add(data);
+      return data;
       {{else if flags.usesHttp}}
       final response = await _http.post(
         Uri.parse('${AppConfig.baseUrl}/auth/signup'),
@@ -75,15 +91,19 @@ class AuthService {
         headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode != 201) throw Exception('Signup failed');
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      _authStateController.add(data);
+      return data;
       {{else}}
       // Mock implementation if no networking flag is set
       await Future.delayed(const Duration(seconds: 1));
-      return {
+      final data = {
         'id': '100',
         'email': email,
         'name': name,
       };
+      _authStateController.add(data);
+      return data;
       {{/if}}
     }, requiresNetwork: true);
   }
@@ -113,6 +133,7 @@ class AuthService {
       {{else}}
       await Future.delayed(const Duration(seconds: 1));
       {{/if}}
+      _authStateController.add(null);
     }, requiresNetwork: true);
   }
 
@@ -129,5 +150,9 @@ class AuthService {
       return null;
       {{/if}}
     });
+  }
+
+  void dispose() {
+    _authStateController.close();
   }
 }
