@@ -1,8 +1,10 @@
-{{#if flags.isRiverpod}}
 import 'dart:async';
-import 'package:{{flags.appSnake}}/src/imports/imports.dart';
+import 'package:{{flags.appSnake}}/src/imports/core_imports.dart';
+import 'package:{{flags.appSnake}}/src/imports/packages_imports.dart';
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
+
+{{#if flags.isRiverpod}}
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}data/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/data/repositories/{{/if}}auth_repository_impl.dart';
 
 /// Provides the AuthRepository instance
@@ -85,11 +87,6 @@ class SessionNotifier extends StateNotifier<SessionState> {
   }
 }
 {{else if flags.isBloc}}
-import 'dart:async';
-import 'package:{{flags.appSnake}}/src/imports/imports.dart';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
-
 /// Session events
 abstract class SessionEvent extends Equatable {
   const SessionEvent();
@@ -196,11 +193,6 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
   }
 }
 {{else if flags.isProvider}}
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
-
 enum SessionStatus { unknown, authenticated, unauthenticated }
 
 class SessionProvider extends ChangeNotifier {
@@ -262,11 +254,6 @@ class SessionProvider extends ChangeNotifier {
   }
 }
 {{else if flags.isGetX}}
-import 'dart:async';
-import 'package:get/get.dart';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
-
 enum SessionStatus { unknown, authenticated, unauthenticated }
 
 class SessionController extends GetxController {
@@ -324,13 +311,6 @@ class SessionController extends GetxController {
   }
 }
 {{else if flags.isMobX}}
-import 'dart:async';
-import 'package:mobx/mobx.dart';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
-
-part 'session_store.g.dart';
-
 enum SessionStatus { unknown, authenticated, unauthenticated }
 
 class SessionStore = _SessionStore with _$SessionStore;
@@ -392,11 +372,6 @@ abstract class _SessionStore with Store {
   }
 }
 {{else}}
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
-
 enum SessionStatus { unknown, authenticated, unauthenticated }
 
 class SessionManager extends ChangeNotifier {
@@ -458,3 +433,4 @@ class SessionManager extends ChangeNotifier {
   }
 }
 {{/if}}
+

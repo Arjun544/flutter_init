@@ -12,6 +12,11 @@ export 'package:easy_localization/easy_localization.dart' hide TextDirection, Ma
 // utils, widgets, enums) plus routing and services.
 export '../config/app_config.dart';
 export '../routing/app_router.dart';
+export '../routing/app_routes.dart';
+export '../routing/global_navigator.dart';
+{{#if flags.isGetX}}
+export '../routing/app_bindings.dart';
+{{/if}}
 export '../services/services.dart';
 export '../shared/shared.dart';
 

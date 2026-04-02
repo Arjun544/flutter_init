@@ -1,11 +1,10 @@
-import 'src/imports/imports.dart';
+import 'src/imports/core_imports.dart';
+import 'src/imports/packages_imports.dart';
 {{#if extras.flavors}}
 import 'src/flavors.dart';
 {{/if}}
 import 'src/app.dart';
-{{#if flags.usesFlutterNativeSplash}}
-import 'package:flutter_native_splash/flutter_native_splash.dart';
-{{/if}}
+
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
