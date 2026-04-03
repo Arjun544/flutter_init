@@ -23,6 +23,9 @@ Future<void> main() async {
   {{/if}}
   
   await AppConfig.init();
+  {{#if flags.usesHive}}
+  await HiveService.instance.init();
+  {{/if}}
 
   runApp(
     {{#if flags.supportsLocalization}}

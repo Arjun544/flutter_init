@@ -6,7 +6,7 @@ async function getStars() {
   try {
     const res = await fetch('https://api.github.com/repos/Arjun544/flutter_init', {
       next: {
-        revalidate: 86400, // 24 hours
+        revalidate: 3600, // 1 hour
         tags: ['github-stars']
       }
     });

@@ -12,8 +12,8 @@ flutter pub get
 ```
 
 ### Code Generation
-{{#if (or flags.isMobX (eq flags.routerPackage "auto_route") flags.usesFirebase)}}
-Your stack relies on code generation. Run the following command right away to generate the necessary files:
+{{#if (or flags.isMobX (eq flags.routerPackage "auto_route") flags.usesFirebase flags.usesHive)}}
+Your stack relies on code generation ({{#if flags.usesHive}}Hive Adapters, {{/if}}{{#if flags.isMobX}}MobX, {{/if}}{{#if (eq flags.routerPackage "auto_route")}}Auto Route, {{/if}}{{#if flags.usesFirebase}}Firebase, {{/if}}etc.). Run the following command right away to generate the necessary files:
 ```bash
 dart run build_runner build --delete-conflicting-outputs
 ```
@@ -184,7 +184,24 @@ Your project relies on `flutter_dotenv` to load secrets.
 
 ---
 
-## 5. ☁️ Backend Connections
+## 5. 💾 Local Storage (Hive)
+
+{{#if flags.usesHive}}
+Your project uses **Hive CE** (Community Edition) for high-performance local NoSQL storage.
+
+- **Automatic Init:** Hive is automatically initialized at startup in `lib/main.dart`.
+- **Adapters:** When creating custom data models, use `@HiveType` and `@HiveField` annotations.
+- **Generation:** Whenever you add a new Hive adapter, run the [Code Generation](#code-generation) command:
+  ```bash
+  dart run build_runner build --delete-conflicting-outputs
+  ```
+{{else}}
+*(No local storage (Hive) selected for this project)*
+{{/if}}
+
+---
+
+## 6. ☁️ Backend Connections
 
 {{#if (eq backend.provider "firebase")}}
 You chose **Firebase** as your backend architecture.
@@ -221,7 +238,7 @@ Verify that your Base URL pointing to staging/production is correctly initialize
 
 ---
 
-## 6. 🚀 Running the App
+## 7. 🚀 Running the App
 
 Once everything above is verified:
 

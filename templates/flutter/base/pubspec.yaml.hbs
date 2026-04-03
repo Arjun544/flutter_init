@@ -86,8 +86,8 @@ dependencies:
 
   # Storage
   {{#if flags.usesHive}}
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
+  hive_ce: ^2.19.3
+  hive_ce_flutter: ^2.3.4
   {{/if}}
   {{#if flags.usesSharedPreferences}}
   shared_preferences: ^2.5.4
@@ -188,8 +188,11 @@ dev_dependencies:
   flutter_lints: ^6.0.0
 
   # Code Generation
-  {{#if (or flags.isMobX (eq flags.routerPackage "auto_route"))}}
+  {{#if (or flags.isMobX flags.usesHive (eq flags.routerPackage "auto_route"))}}
   build_runner: ^2.12.2
+  {{/if}}
+  {{#if flags.usesHive}}
+  hive_ce_generator: ^1.11.1
   {{/if}}
   {{#if flags.isMobX}}
   mobx_codegen: ^2.7.6

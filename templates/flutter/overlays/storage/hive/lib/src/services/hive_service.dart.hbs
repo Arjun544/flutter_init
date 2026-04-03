@@ -1,4 +1,4 @@
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import '../utils/utils.dart';
 
 /// A robust [Hive] storage service for local NoSQL persistence.
@@ -10,7 +10,7 @@ class HiveService {
   FutureEither<void> init() async {
     return runTask(() async {
       await Hive.initFlutter();
-      await Hive.openBox('app_box');
+      await Hive.openBox<dynamic>('app_box');
       AppLogger.info('Hive initialized');
     });
   }
@@ -18,7 +18,7 @@ class HiveService {
   /// Get data from the default box.
   T? get<T>(String key, {T? defaultValue}) {
     try {
-      final box = Hive.box('app_box');
+      final box = Hive.box<dynamic>('app_box');
       return box.get(key, defaultValue: defaultValue) as T?;
     } catch (e) {
       AppLogger.error('Hive get error', e);
@@ -29,7 +29,7 @@ class HiveService {
   /// Put data into the default box.
   FutureEither<void> put(String key, dynamic value) async {
     return runTask(() async {
-      final box = Hive.box('app_box');
+      final box = Hive.box<dynamic>('app_box');
       await box.put(key, value);
     });
   }
@@ -37,7 +37,7 @@ class HiveService {
   /// Delete data from the default box.
   FutureEither<void> delete(String key) async {
     return runTask(() async {
-      final box = Hive.box('app_box');
+      final box = Hive.box<dynamic>('app_box');
       await box.delete(key);
     });
   }
@@ -45,7 +45,7 @@ class HiveService {
   /// Clear all data from the default box.
   FutureEither<void> clear() async {
     return runTask(() async {
-      final box = Hive.box('app_box');
+      final box = Hive.box<dynamic>('app_box');
       await box.clear();
     });
   }
