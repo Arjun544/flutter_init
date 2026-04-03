@@ -13,6 +13,7 @@
   <p><i>The High-Performance Scaffolding Engine for Modern Flutter Apps</i></p>
 
   <p align="center">
+    <img src="https://img.shields.io/badge/Build-Passing-2ecc71?style=flat-square&logo=github-actions&logoColor=white" alt="Build Status" />
     <a href="https://github.com/Arjun544/flutter_init/stargazers"><img src="https://img.shields.io/github/stars/Arjun544/flutter_init?style=flat-square&color=2ecc71&logo=github&logoColor=white" alt="Stars" /></a>
     <a href="https://github.com/Arjun544/flutter_init/network/members"><img src="https://img.shields.io/github/forks/Arjun544/flutter_init?style=flat-square&color=3498db&logo=github&logoColor=white" alt="Forks" /></a>
     <img src="https://img.shields.io/badge/Status-Under_Development-e67e22?style=flat-square&logo=github&logoColor=white" alt="Under Development" />
@@ -55,6 +56,31 @@
 
 ---
 
+## 🛠️ Prerequisites
+
+Ensure your environment meets these requirements before starting:
+
+*   **Flutter SDK**: `^3.5.0` (Latest Stable recommended)
+*   **Runtime**: [Node.js](https://nodejs.org/) `^20.0.0` or [Bun](https://bun.sh/) `^1.1.0`
+*   **Platforms**: macOS, Windows (WSL2 recommended), or Linux
+
+## ⚡ Quick Start
+
+Get your professional Flutter scaffold running in 3 steps:
+
+1.  **Clone & Install**:
+    ```bash
+    git clone https://github.com/Arjun544/flutter_init.git
+    cd flutter_init && bun install
+    ```
+2.  **Launch Dashboard**:
+    ```bash
+    bun run dev
+    ```
+3.  **Generate**: Open `http://localhost:3000`, pick your stack, and download your `.zip`.
+
+---
+
 ## ✨ Features (Elevated)
 
 <table border="0">
@@ -79,6 +105,21 @@
     </td>
   </tr>
 </table>
+
+### 🧩 Support Matrix
+
+| Category | Supported Options |
+| :--- | :--- |
+| **Architectures** | Clean Architecture, MVVM, Feature-First |
+| **State Management** | Riverpod, Bloc / Cubit, Provider, GetX, MobX |
+| **Functional** | FPDart (Either, Option, Task), runTask Wrapper |
+| **Backend / DB** | Firebase, Supabase, Appwrite, Hive, Shared Preferences |
+| **Networking** | Dio (Interceptors), Http, Cached Network Image |
+| **Navigation** | GoRouter, AutoRoute |
+| **Design / Motion** | Flutter Animate, Skeletonizer, ScreenUtil, Native Splash |
+| **Icons** | Iconsax Plus, Remix Icons, HugeIcons (Stroke/Solid) |
+| **Infrastructure** | DotEnv, Logger, Easy Localization, App Version Update |
+| **Utilities** | Picker (Image/File), Permissions, Share Plus, Geolocator |
 
 ---
 
@@ -115,6 +156,18 @@ We use GitHub Projects to track what's in progress and what's coming next.
 👉 [View the FlutterInit Roadmap](https://github.com/users/Arjun544/projects/1)
 
 Want to contribute? Pick up any open issue labeled [`good first issue`](https://github.com/Arjun544/flutter_init/issues?q=label%3A%22good+first+issue%22).
+
+---
+
+## 💻 Tech Stack
+
+The engine powering FlutterInit:
+
+*   **Frontend**: [Next.js 14](https://nextjs.org/) (App Router) + [React 19](https://react.dev/)
+*   **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+*   **Templating**: [Handlebars.js](https://handlebarsjs.com/) for dynamic Dart generation
+*   **Icons**: [HugeIcons](https://hugeicons.com/) & [Lucide](https://lucide.dev/)
+*   **Runtime**: [Bun](https://bun.sh/) (High-speed package management)
 
 ---
 
