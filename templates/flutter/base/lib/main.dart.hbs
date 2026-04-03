@@ -7,7 +7,7 @@ import 'src/app.dart';
 
 
 Future<void> main() async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  final WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   {{#if flags.usesFlutterNativeSplash}}
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   {{/if}}

@@ -140,7 +140,7 @@ class HomePage extends StatelessWidget {
               )),
               {{else}}
               Text(
-                user?.email != null && user?.name != null ? user!.email! : ({{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}}),
+                user?.email != null && user?.name != null ? user!.email : ({{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}}),
                 textAlign: TextAlign.center,
                 style: textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
