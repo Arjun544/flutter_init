@@ -9,16 +9,33 @@
   
   <br />
 
-  
   <h1><b>FlutterInit</b></h1>
   <p><i>The High-Performance Scaffolding Engine for Modern Flutter Apps</i></p>
 
-  <p>
-    <a href="https://github.com/Arjun544/flutter_init/stargazers"><img src="https://img.shields.io/github/stars/Arjun544/flutter_init?style=for-the-badge&color=2ecc71&logo=github" alt="Stars" /></a>
-    <a href="https://github.com/Arjun544/flutter_init/network/members"><img src="https://img.shields.io/github/forks/Arjun544/flutter_init?style=for-the-badge&color=3498db&logo=github" alt="Forks" /></a>
-    <a href="https://flutterinit.com/"><img src="https://img.shields.io/badge/Generate-Now-6366f1?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Generate Now" /></a>
-    <a href="https://github.com/Arjun544/flutter_init/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-10b981?style=for-the-badge" alt="License" /></a>
+  <p align="center">
+    <a href="https://github.com/Arjun544/flutter_init/stargazers"><img src="https://img.shields.io/github/stars/Arjun544/flutter_init?style=flat-square&color=2ecc71&logo=github&logoColor=white" alt="Stars" /></a>
+    <a href="https://github.com/Arjun544/flutter_init/network/members"><img src="https://img.shields.io/github/forks/Arjun544/flutter_init?style=flat-square&color=3498db&logo=github&logoColor=white" alt="Forks" /></a>
+    <img src="https://img.shields.io/badge/Status-Under_Development-e67e22?style=flat-square&logo=github&logoColor=white" alt="Under Development" />
+    <a href="https://github.com/Arjun544/flutter_init/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-10b981?style=flat-square" alt="License" /></a>
   </p>
+
+  <br />
+
+  <table border="0">
+    <tr>
+      <td align="center">
+        <a href="https://flutterinit.com/">
+          <img src="https://img.shields.io/badge/🚀_LAUNCH-DASHBOARD-6366f1?style=for-the-badge&logoColor=white" height="40" alt="Launch Dashboard" />
+        </a>
+      </td>
+      <td width="20"></td>
+      <td align="center">
+        <a href="docs/getting-started.md">
+          <img src="https://img.shields.io/badge/📚_READ-DOCUMENTATION-34495e?style=for-the-badge&logoColor=white" height="40" alt="Read Docs" />
+        </a>
+      </td>
+    </tr>
+  </table>
 
   <br />
 
@@ -89,6 +106,15 @@ This repository is built on the principle of **Contribution Based Evolution**. W
 
 > [!TIP]
 > Every contributor who gets a PR merged receives a special place in our contributors' hall of fame.
+---
+
+## 🗺️ Roadmap
+
+We use GitHub Projects to track what's in progress and what's coming next.
+
+👉 [View the FlutterInit Roadmap](https://github.com/users/Arjun544/projects/1)
+
+Want to contribute? Pick up any open issue labeled [`good first issue`](https://github.com/Arjun544/flutter_init/issues?q=label%3A%22good+first+issue%22).
 
 ---
 
@@ -98,7 +124,7 @@ This repository is built on the principle of **Contribution Based Evolution**. W
   <a href="https://github.com/Arjun544">
     <img src="https://github.com/Arjun544.png" width="100" style="border-radius: 50%;" />
     <br />
-    <b>Arjun544</b>
+    <b>Arjun Mahar</b>
   </a>
   <p><i>Founder & Lead Architect</i></p>
 </div>
@@ -106,9 +132,9 @@ This repository is built on the principle of **Contribution Based Evolution**. W
 ---
 
 <p align="center">
-  <img src="https://forthebadge.com/images/badges/built-with-love.svg" />
-  <img src="https://forthebadge.com/images/badges/made-with-markdown.svg" />
-  <img src="https://forthebadge.com/images/badges/open-source.svg" />
+  <img src="https://img.shields.io/badge/Built_With-Love-e84393?style=for-the-badge&logo=heart" alt="Built with Love" />
+  <img src="https://img.shields.io/badge/Made_With-Markdown-000000?style=for-the-badge&logo=markdown" alt="Made with Markdown" />
+  <img src="https://img.shields.io/badge/Open-Source-2ecc71?style=for-the-badge&logo=github" alt="Open Source" />
 </p>
 
 <div align="center">
