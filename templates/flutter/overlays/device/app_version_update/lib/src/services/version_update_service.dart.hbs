@@ -1,7 +1,6 @@
 import 'package:app_version_update/data/models/app_version_result.dart';
 
 import '../imports/imports.dart';
-import '../routing/global_navigator.dart';
 
 /// A service to check for app updates and manage version information using
 /// the `app_version_update` package.
@@ -34,7 +33,7 @@ class VersionUpdateService {
         playStoreId: playStoreId,
       );
 
-      if (result.canUpdate == true) {
+      if (result.canUpdate ?? false) {
         final context = rootContext;
         if (context == null) {
           AppLogger.warning('Cannot show update dialog: rootContext is null');
