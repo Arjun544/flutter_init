@@ -1,6 +1,6 @@
 "use client"
 
-import { ThemePreset } from "@/app/lib/config/schema"
+import { ThemePreset, themePresetOptions } from "@/app/lib/config/schema"
 import { useWizard } from "@/app/lib/state/useWizardStore"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -36,27 +36,34 @@ export function ThemeStep() {
                                 <SelectValue placeholder="Select theme" />
                             </SelectTrigger>
                             <SelectContent className="bg-background/90 backdrop-blur-xl border-border/50">
-                                {["material3", "cupertino", "custom"].map((val) => (
-                                    <SelectItem key={val} value={val}>
-                                        <div className="flex items-center justify-between w-full">
-                                            <span>{val === 'material3' ? 'Material 3' : val === 'cupertino' ? 'Cupertino' : 'Custom'}</span>
-                                            <button
-                                                type="button"
-                                                onPointerDown={(e) => {
-                                                    e.preventDefault()
-                                                    e.stopPropagation()
-                                                    setSelectedItem(`theme_${val}`)
-                                                }}
-                                                onClick={(e) => {
-                                                    e.preventDefault()
-                                                    e.stopPropagation()
-                                                    setSelectedItem(`theme_${val}`)
-                                                }}
-                                                className="p-1 -mr-1 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden [&_svg]:pointer-events-auto z-10 cursor-pointer"
-                                                title="View details"
-                                            >
-                                                <HugeiconsIcon icon={InformationCircleIcon} size={16} />
-                                            </button>
+                                {themePresetOptions.map((option) => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                        <div className="flex items-center justify-between w-full pr-6">
+                                            <div className="flex flex-col py-0.5 text-left">
+                                                <span className="font-semibold">{option.label}</span>
+                                                {theme.preset !== option.value && (
+                                                    <span className="text-[10px] text-muted-foreground font-normal line-clamp-1">{option.description}</span>
+                                                )}
+                                            </div>
+                                            {theme.preset !== option.value && (
+                                                <button
+                                                    type="button"
+                                                    onPointerDown={(e) => {
+                                                        e.preventDefault()
+                                                        e.stopPropagation()
+                                                        setSelectedItem(`theme_${option.value}`)
+                                                    }}
+                                                    onClick={(e) => {
+                                                        e.preventDefault()
+                                                        e.stopPropagation()
+                                                        setSelectedItem(`theme_${option.value}`)
+                                                    }}
+                                                    className="p-1 -mr-2 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden [&_svg]:pointer-events-auto z-10 cursor-pointer"
+                                                    title="View details"
+                                                >
+                                                    <HugeiconsIcon icon={InformationCircleIcon} size={16} />
+                                                </button>
+                                            )}
                                         </div>
                                     </SelectItem>
                                 ))}

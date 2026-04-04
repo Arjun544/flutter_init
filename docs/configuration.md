@@ -42,7 +42,7 @@ You can optionally bind your app to a provider scaffold.
 | `firebase`| `authEmail`, `authGoogle`, `authPhone`, `firestore`, `realtimeDb`, `storage`, `analytics`, `crashlytics` | Configures `firebase_core` and corresponding plugins. |
 | `supabase`| `auth`, `database`, `edgeFunctions` | Configures `supabase_flutter` with client constants. |
 | `appwrite`| `auth`, `database`, `storage` | Installs `appwrite` SDK clients. |
-| `customRest`| `baseUrl` (string) | Bootstraps standard REST networking classes targeted at a given URL. |
+| `custom`| `baseUrl` (string) | Bootstraps networking classes targeted at a given URL (Local/Remote). |
 
 ## Localization
 
@@ -64,7 +64,7 @@ These boolean flags enable wrapper injections, dependencies, and functional code
 ## Dependencies & Conflicts
 
 Some inputs strictly depend on others to successfully scaffold:
-- **`customRest` Backend**: Using a Custom REST backend requires that either `usesDio` or `usesHttp` flag is activated. The generator validation process will block you if a networking package isn't enabled to send network requests.
+- **`custom` Backend**: Using a Custom Backend requires that either `usesDio` or `usesHttp` flag is activated. The generator validation process will block you if a networking package isn't enabled to send network requests.
 
 ## Re-Generation
 

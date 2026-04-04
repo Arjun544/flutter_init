@@ -129,11 +129,11 @@ class AppConfig {
 
   static String _getBaseUrl() {
     {{#if flags.usesDotenv}}
-    return dotenv.get('API_BASE_URL', fallback: '{{#if (eq backend.provider "customRest")}}{{backend.options.baseUrl}}{{else}}https://api.example.com{{/if}}');
+    return dotenv.get('API_BASE_URL', fallback: '{{#if (eq backend.provider "custom")}}{{backend.options.baseUrl}}{{else}}https://api.example.com{{/if}}');
     {{else}}
     return const String.fromEnvironment(
         'API_BASE_URL',
-        defaultValue: '{{#if (eq backend.provider "customRest")}}{{backend.options.baseUrl}}{{else}}https://api.example.com{{/if}}',
+        defaultValue: '{{#if (eq backend.provider "custom")}}{{backend.options.baseUrl}}{{else}}https://api.example.com{{/if}}',
     );
     {{/if}}
   }

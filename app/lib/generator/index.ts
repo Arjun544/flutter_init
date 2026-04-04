@@ -23,7 +23,7 @@ type TemplateContext = ScaffoldConfig & {
         usesFirebase: boolean
         usesSupabase: boolean
         usesAppwrite: boolean
-        usesCustomRest: boolean
+        usesCustomBackend: boolean
         usesDio: boolean
         usesHttp: boolean
         usesHive: boolean
@@ -137,7 +137,7 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             usesFirebase: config.backend.provider === "firebase",
             usesSupabase: config.backend.provider === "supabase",
             usesAppwrite: config.backend.provider === "appwrite",
-            usesCustomRest: config.backend.provider === "customRest",
+            usesCustomBackend: config.backend.provider === "custom",
             usesDio: config.misc.usesDio,
             usesHttp: config.misc.usesHttp,
             usesHive: config.misc.usesHive,

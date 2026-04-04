@@ -51,16 +51,19 @@ export function IconsStep() {
                     />
                     <ToggleRow
                         label="Iconsax Plus"
+                        description="Clean icons in linear/bold styles."
                         checked={icons.iconsax_plus}
                         onCheckedChange={(value) => handleToggle("iconsax_plus", value)}
                     />
                     <ToggleRow
                         label="Flutter Remix"
+                        description="2,200+ neutral system symbols."
                         checked={icons.flutter_remix}
                         onCheckedChange={(value) => handleToggle("flutter_remix", value)}
                     />
                     <ToggleRow
                         label="Hugeicons"
+                        description="3,800+ icons in 5 unique styles."
                         checked={icons.hugeicons}
                         onCheckedChange={(value) => handleToggle("hugeicons", value)}
                     />

@@ -3,6 +3,12 @@ import { z } from "zod"
 export const themePresetSchema = z.enum(["material3", "cupertino", "custom"])
 export type ThemePreset = z.infer<typeof themePresetSchema>
 
+export const themePresetOptions = [
+    { value: "material3", label: "Material 3", description: "Google's modern design system." },
+    { value: "cupertino", label: "Cupertino", description: "Native iOS-style widgets." },
+    { value: "custom", label: "Custom", description: "Generic base for unique designs." },
+] as const satisfies Array<{ value: ThemePreset; label: string; description: string }>
+
 export const stateManagementSchema = z.enum([
     "provider",
     "riverpod",
@@ -18,7 +24,7 @@ export const backendProviderSchema = z.enum([
     "firebase",
     "supabase",
     "appwrite",
-    "customRest",
+    "custom",
 ])
 export type BackendProvider = z.infer<typeof backendProviderSchema>
 
@@ -108,7 +114,7 @@ const appwriteSchema = z.object({
     storage: z.boolean(),
 })
 
-const customRestSchema = z.object({
+const customSchema = z.object({
     baseUrl: z.string().optional(),
 })
 
@@ -117,7 +123,7 @@ const backendSchema = z.discriminatedUnion("provider", [
     z.object({ provider: z.literal("firebase"), options: firebaseSchema }),
     z.object({ provider: z.literal("supabase"), options: supabaseSchema }),
     z.object({ provider: z.literal("appwrite"), options: appwriteSchema }),
-    z.object({ provider: z.literal("customRest"), options: customRestSchema }),
+    z.object({ provider: z.literal("custom"), options: customSchema }),
 ])
 export type BackendConfig = z.infer<typeof backendSchema>
 
@@ -199,12 +205,12 @@ export const scaffoldConfigSchema = z.object({
 
     }),
 }).refine((data) => {
-    if (data.backend.provider === "customRest") {
+    if (data.backend.provider === "custom") {
         return data.misc.usesDio || data.misc.usesHttp
     }
     return true
 }, {
-    message: "Either Dio or HTTP client must be enabled when using Custom REST backend",
+    message: "Either Dio or HTTP client must be enabled when using Custom Backend",
     path: ["misc"],
 })
 
@@ -298,8 +304,8 @@ export function defaultBackendConfig(
                 provider: "appwrite",
                 options: { auth: true, database: true, storage: true },
             }
-        case "customRest":
-            return { provider: "customRest", options: { baseUrl: "" } }
+        case "custom":
+            return { provider: "custom", options: { baseUrl: "" } }
         case "none":
         default:
             return { provider: "none" }
@@ -307,46 +313,46 @@ export function defaultBackendConfig(
 }
 
 export const backendOptions = [
-    { value: "none", label: "None" },
-    { value: "firebase", label: "Firebase" },
-    { value: "supabase", label: "Supabase" },
-    { value: "appwrite", label: "Appwrite" },
-    { value: "customRest", label: "Custom REST" },
-] as const satisfies Array<{ value: BackendProvider; label: string }>
+    { value: "none", label: "None", description: "Offline-only or manual setup." },
+    { value: "firebase", label: "Firebase", description: "Google's cloud backend (Auth, Firestore)." },
+    { value: "supabase", label: "Supabase", description: "Open-source Postgres alternative." },
+    { value: "appwrite", label: "Appwrite", description: "Unified platform for Auth & Database." },
+    { value: "custom", label: "Custom Backend", description: "Connect to your own API or service." },
+] as const satisfies Array<{ value: BackendProvider; label: string; description: string }>
 
 export const stateManagementOptions = [
-    { value: "provider", label: "Provider", description: "Simple and easy to use. Recommended by Google." },
-    { value: "riverpod", label: "Riverpod", description: "Compile-safe, no context dependency. A better Provider." },
-    { value: "bloc", label: "Bloc", description: "Predictable business logic separation. Widely used in enterprise." },
-    { value: "getx", label: "GetX", description: "All-in-one solution: State, Dependency Injection, and Routing." },
-    { value: "mobx", label: "MobX", description: "Reactive state management based on observables and actions." },
-    { value: "none", label: "None (setState)", description: "Vanilla Flutter state management using setState." },
+    { value: "provider", label: "Provider", description: "Simple, Google-recommended state management." },
+    { value: "riverpod", label: "Riverpod", description: "Compile-safe improvement over Provider." },
+    { value: "bloc", label: "Bloc", description: "Predictable, enterprise-ready state management." },
+    { value: "getx", label: "GetX", description: "All-in-one state, DI, and routing solution." },
+    { value: "mobx", label: "MobX", description: "Reactive state via observables and actions." },
+    { value: "none", label: "None (setState)", description: "Vanilla state management using setState." },
 ] as const satisfies Array<{ value: StateManagement; label: string; description: string }>
 
 export const architectureOptions = [
-    { value: "mvc", label: "MVC" },
-    { value: "mvvm", label: "MVVM" },
-    { value: "clean", label: "Clean Architecture" },
-    { value: "feature-first", label: "Feature-first" },
-    { value: "layer-first", label: "Layer-first" },
-] as const satisfies Array<{ value: ArchitectureStyle; label: string }>
+    { value: "mvc", label: "MVC", description: "Standard Model-View-Controller for small projects." },
+    { value: "mvvm", label: "MVVM", description: "Reactive data binding with testable logic." },
+    { value: "clean", label: "Clean Architecture", description: "Strict separation of concerns for large apps." },
+    { value: "feature-first", label: "Feature-first", description: "Groups code by feature for high scalability." },
+    { value: "layer-first", label: "Layer-first", description: "Groups code by technical layers." },
+] as const satisfies Array<{ value: ArchitectureStyle; label: string; description: string }>
 
 export const navigationOptions = [
-    { value: "imperative", label: "Imperative (Navigator 1.0)", description: "Standard Flutter navigation. Simple for small apps." },
-    { value: "go_router", label: "go_router", description: "Declarative routing. Supports deep linking and redirection. Recommended." },
-    { value: "getx", label: "GetX Routing", description: "Simple and powerful routing without context." },
-    { value: "auto_route", label: "auto_route", description: "Code generation based routing. Strong typing and guards." },
+    { value: "imperative", label: "Imperative (Navigator 1.0)", description: "Standard Navigator 1.0; simple for small apps." },
+    { value: "go_router", label: "go_router", description: "Declarative routing with deep linking support." },
+    { value: "getx", label: "GetX Routing", description: "Context-free routing and navigation." },
+    { value: "auto_route", label: "auto_route", description: "Type-safe, code-generated routing." },
 ] as const satisfies Array<{ value: NavigationStyle; label: string; description: string }>
 
 export const localizationOptions = [
-    { value: "en", label: "English" },
-    { value: "es", label: "Spanish" },
-    { value: "fr", label: "French" },
-    { value: "de", label: "German" },
-    { value: "it", label: "Italian" },
-    { value: "pt", label: "Portuguese" },
-    { value: "ru", label: "Russian" },
-    { value: "zh", label: "Chinese" },
-    { value: "ja", label: "Japanese" },
-    { value: "ar", label: "Arabic" },
-] as const satisfies Array<{ value: string; label: string }>
+    { value: "en", label: "English", description: "Standard US/UK support." },
+    { value: "es", label: "Spanish", description: "Modern Spanish (ES/LATAM) support." },
+    { value: "fr", label: "French", description: "Modern French localization." },
+    { value: "de", label: "German", description: "Standard German support." },
+    { value: "it", label: "Italian", description: "Modern Italian localization." },
+    { value: "pt", label: "Portuguese", description: "Standard EU/BR Portuguese support." },
+    { value: "ru", label: "Russian", description: "Standard Russian localization." },
+    { value: "zh", label: "Chinese", description: "Simplified/Traditional Chinese support." },
+    { value: "ja", label: "Japanese", description: "Modern Japanese localization." },
+    { value: "ar", label: "Arabic", description: "RTL Arabic support." },
+] as const satisfies Array<{ value: string; label: string; description: string }>

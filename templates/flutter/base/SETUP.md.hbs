@@ -227,8 +227,8 @@ You chose **Appwrite** as your backend architecture.
 1. Locate the `Appwrite` Initialization code inside `lib/main.dart`.
 2. Ensure you apply your Project ID and Endpoint values to the client configuration.
    {{#if flags.usesDotenv}}*(Tip: You can securely point these to `dotenv.env['APPWRITE_ENDPOINT']`!)*{{/if}}
-{{else if (eq backend.provider "customRest")}}
-You chose to structure your APIs using **Custom REST**.
+{{else if (eq backend.provider "custom")}}
+You chose to structure your APIs using **Custom Backend**.
 
 Verify that your Base URL pointing to staging/production is correctly initialized inside your globally injected network class.
    {{#if flags.usesDotenv}}*(Tip: Read this via `dotenv.env['BASE_API_URL']` inside your network initializer!)*{{/if}}

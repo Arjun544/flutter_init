@@ -82,7 +82,7 @@ export function LocalizationStep() {
                                     />
                                     <div className="flex-1 space-y-1">
                                         <p className="text-sm font-medium leading-none text-foreground/90">{locale.label}</p>
-                                        <p className="text-xs text-muted-foreground">{locale.value}</p>
+                                        <p className="text-xs text-muted-foreground">{locale.description}</p>
                                     </div>
                                     <button
                                         type="button"

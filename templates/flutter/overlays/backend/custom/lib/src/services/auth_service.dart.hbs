@@ -18,7 +18,7 @@ class AuthService {
   http.Client get _http => AppConfig.httpClient;
   {{/if}}
 
-  // Custom REST doesn't have a built-in auth state stream, so we manage our own
+  // Custom Backend doesn't have a built-in auth state stream, so we manage our own
   final StreamController<Map<String, dynamic>?> _authStateController =
       StreamController<Map<String, dynamic>?>.broadcast();
 

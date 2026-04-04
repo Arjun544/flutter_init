@@ -104,9 +104,9 @@ const PACKAGE_INFO: Record<string, {
         title: "Imperative Routing",
         description: "Uses the standard Navigator 1.0. Simple configuration with direct generic push and pop."
     },
-    "customRest": {
-        title: "Custom REST",
-        description: "Design your custom REST API client using http or dio package, ideal when you already have an existing backend."
+    "custom": {
+        title: "Custom Backend",
+        description: "Connect to your own custom API or service using http or dio package. This scaffold provides a generic starting point for any backend protocol (REST, JSON-RPC, etc.)."
     },
     none: {
         title: "None",

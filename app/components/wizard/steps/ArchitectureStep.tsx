@@ -39,9 +39,7 @@ export function ArchitectureStep() {
                                 <div className="space-y-1">
                                     <span className="font-semibold text-foreground/90">{option.label}</span>
                                     <p className="text-xs text-muted-foreground">
-                                        {option.value === 'clean' ? 'Separation of concerns with clean architecture principles.' :
-                                            option.value === 'feature-first' ? 'Group code by feature (e.g. Auth, Profile).' :
-                                                'Standard MVC structure.'}
+                                        {option.description}
                                     </p>
                                 </div>
                             </div>

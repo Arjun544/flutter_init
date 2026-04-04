@@ -18,7 +18,7 @@ export function BackendStep() {
             backend: defaultBackendConfig(provider),
         }
 
-        if (provider === "customRest") {
+        if (provider === "custom") {
             if (!config.misc.usesDio && !config.misc.usesHttp) {
                 updates.misc = {
                     ...config.misc,
@@ -62,25 +62,32 @@ export function BackendStep() {
                         <SelectContent className="bg-background/90 backdrop-blur-xl border-border/50">
                             {backendOptions.map((option) => (
                                 <SelectItem key={option.value} value={option.value}>
-                                    <div className="flex items-center justify-between w-full">
-                                        <span>{option.label}</span>
-                                        <button
-                                            type="button"
-                                            onPointerDown={(e) => {
-                                                e.preventDefault()
-                                                e.stopPropagation()
-                                                setSelectedItem(option.value)
-                                            }}
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                e.stopPropagation()
-                                                setSelectedItem(option.value)
-                                            }}
-                                            className="p-1 -mr-1 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden [&_svg]:pointer-events-auto z-10 cursor-pointer"
-                                            title="View details"
-                                        >
-                                            <HugeiconsIcon icon={InformationCircleIcon} size={16} />
-                                        </button>
+                                    <div className="flex items-center justify-between w-full pr-6">
+                                        <div className="flex flex-col py-0.5">
+                                            <span className="font-semibold">{option.label}</span>
+                                            {backend.provider !== option.value && (
+                                                <span className="text-[10px] text-muted-foreground font-normal line-clamp-1">{option.description}</span>
+                                            )}
+                                        </div>
+                                        {backend.provider !== option.value && (
+                                            <button
+                                                type="button"
+                                                onPointerDown={(e) => {
+                                                    e.preventDefault()
+                                                    e.stopPropagation()
+                                                    setSelectedItem(option.value)
+                                                }}
+                                                onClick={(e) => {
+                                                    e.preventDefault()
+                                                    e.stopPropagation()
+                                                    setSelectedItem(option.value)
+                                                }}
+                                                className="p-1 -mr-2 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden [&_svg]:pointer-events-auto z-10 cursor-pointer"
+                                                title="View details"
+                                            >
+                                                <HugeiconsIcon icon={InformationCircleIcon} size={16} />
+                                            </button>
+                                        )}
                                     </div>
                                 </SelectItem>
                             ))}
@@ -174,9 +181,9 @@ export function BackendStep() {
                         </div>
                     )}
 
-                    {backend.provider === "customRest" && (
+                    {backend.provider === "custom" && (
                         <div className="space-y-2 group">
-                            <Label htmlFor="baseUrl" className="transition-colors group-focus-within:text-primary">Base URL</Label>
+                            <Label htmlFor="baseUrl" className="transition-colors group-focus-within:text-primary">Base URL (Local/Remote)</Label>
                             <Input
                                 id="baseUrl"
                                 placeholder="https://api.example.com"
