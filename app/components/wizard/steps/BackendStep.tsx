@@ -100,41 +100,49 @@ export function BackendStep() {
                         <div className="grid gap-4 md:grid-cols-2">
                             <ToggleRow
                                 label="Email auth"
+                                infoKey="firebase_auth_email"
                                 checked={(backend as any).options.authEmail}
                                 onCheckedChange={(value) => toggleOption("authEmail", value)}
                             />
                             <ToggleRow
                                 label="Google auth"
+                                infoKey="firebase_auth_google"
                                 checked={(backend as any).options.authGoogle}
                                 onCheckedChange={(value) => toggleOption("authGoogle", value)}
                             />
                             <ToggleRow
                                 label="Phone auth"
+                                infoKey="firebase_auth_phone"
                                 checked={(backend as any).options.authPhone}
                                 onCheckedChange={(value) => toggleOption("authPhone", value)}
                             />
                             <ToggleRow
                                 label="Firestore"
+                                infoKey="firebase_firestore"
                                 checked={(backend as any).options.firestore}
                                 onCheckedChange={(value) => toggleOption("firestore", value)}
                             />
                             <ToggleRow
                                 label="Realtime DB"
+                                infoKey="firebase_realtime_db"
                                 checked={(backend as any).options.realtimeDb}
                                 onCheckedChange={(value) => toggleOption("realtimeDb", value)}
                             />
                             <ToggleRow
                                 label="Storage"
+                                infoKey="firebase_storage"
                                 checked={(backend as any).options.storage}
                                 onCheckedChange={(value) => toggleOption("storage", value)}
                             />
                             <ToggleRow
                                 label="Analytics"
+                                infoKey="firebase_analytics"
                                 checked={(backend as any).options.analytics}
                                 onCheckedChange={(value) => toggleOption("analytics", value)}
                             />
                             <ToggleRow
                                 label="Crashlytics"
+                                infoKey="firebase_crashlytics"
                                 checked={(backend as any).options.crashlytics}
                                 onCheckedChange={(value) => toggleOption("crashlytics", value)}
                             />
@@ -145,16 +153,19 @@ export function BackendStep() {
                         <div className="grid gap-4 md:grid-cols-3">
                             <ToggleRow
                                 label="Auth"
+                                infoKey="supabase_auth"
                                 checked={(backend as any).options.auth}
                                 onCheckedChange={(value) => toggleOption("auth", value)}
                             />
                             <ToggleRow
                                 label="Database"
+                                infoKey="supabase_database"
                                 checked={(backend as any).options.database}
                                 onCheckedChange={(value) => toggleOption("database", value)}
                             />
                             <ToggleRow
                                 label="Edge functions"
+                                infoKey="supabase_edge_functions"
                                 checked={(backend as any).options.edgeFunctions}
                                 onCheckedChange={(value) => toggleOption("edgeFunctions", value)}
                             />
@@ -165,16 +176,19 @@ export function BackendStep() {
                         <div className="grid gap-4 md:grid-cols-3">
                             <ToggleRow
                                 label="Auth"
+                                infoKey="appwrite_auth"
                                 checked={(backend as any).options.auth}
                                 onCheckedChange={(value) => toggleOption("auth", value)}
                             />
                             <ToggleRow
                                 label="Database"
+                                infoKey="appwrite_database"
                                 checked={(backend as any).options.database}
                                 onCheckedChange={(value) => toggleOption("database", value)}
                             />
                             <ToggleRow
                                 label="Storage"
+                                infoKey="appwrite_storage"
                                 checked={(backend as any).options.storage}
                                 onCheckedChange={(value) => toggleOption("storage", value)}
                             />

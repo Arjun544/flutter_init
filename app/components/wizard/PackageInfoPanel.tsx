@@ -163,7 +163,135 @@ const PACKAGE_INFO: Record<string, {
     localization_ar: {
         title: "Arabic Localization",
         description: "Provides built-in Arabic translations and formatting options for your app, including Right-to-Left (RTL) text support.",
-    }
+    },
+    dio: {
+        title: "Dio",
+        packageName: "dio",
+    },
+    http: {
+        title: "HTTP",
+        packageName: "http",
+    },
+    cached_network_image: {
+        title: "Cached Network Image",
+        packageName: "cached_network_image",
+    },
+    hive: {
+        title: "Hive CE",
+        packageName: "hive_ce",
+    },
+    shared_preferences: {
+        title: "Shared Preferences",
+        packageName: "shared_preferences",
+    },
+    secure_storage: {
+        title: "Secure Storage",
+        packageName: "flutter_secure_storage",
+    },
+    flutter_svg: {
+        title: "Flutter SVG",
+        packageName: "flutter_svg",
+    },
+    image_picker: {
+        title: "Image Picker",
+        packageName: "image_picker",
+    },
+    file_picker: {
+        title: "File Picker",
+        packageName: "file_picker",
+    },
+    url_launcher: {
+        title: "URL Launcher",
+        packageName: "url_launcher",
+    },
+    path_provider: {
+        title: "Path Provider",
+        packageName: "path_provider",
+    },
+    share_plus: {
+        title: "Share Plus",
+        packageName: "share_plus",
+    },
+    permission_handler: {
+        title: "Permission Handler",
+        packageName: "permission_handler",
+    },
+    device_info: {
+        title: "Device Info",
+        packageName: "device_info_plus",
+    },
+    app_version_update: {
+        title: "App Version Update",
+        packageName: "new_version_plus",
+    },
+    flutter_hooks: {
+        title: "Flutter Hooks",
+        packageName: "flutter_hooks",
+    },
+    skeletonizer: {
+        title: "Skeletonizer",
+        packageName: "skeletonizer",
+    },
+    screenutil: {
+        title: "ScreenUtil",
+        packageName: "flutter_screenutil",
+    },
+    firebase_auth_email: {
+        title: "Firebase Email Auth",
+        description: "Authenticate users using email and password or email links (passwordless) via Googl'e Firebase Authentication.",
+    },
+    firebase_auth_google: {
+        title: "Firebase Google Auth",
+        description: "Allow users to sign in with their Google accounts using Firebase.",
+    },
+    firebase_auth_phone: {
+        title: "Firebase Phone Auth",
+        description: "Authenticate users via SMS codes sent to their mobile devices.",
+    },
+    firebase_firestore: {
+        title: "Cloud Firestore",
+        description: "A flexible, scalable NoSQL cloud database from Firebase and Google Cloud.",
+    },
+    firebase_realtime_db: {
+        title: "Realtime Database",
+        description: "Store and sync data between users and devices in realtime using a NoSQL cloud database.",
+    },
+    firebase_storage: {
+        title: "Cloud Storage",
+        description: "Store and serve user-generated content, such as photos or videos, using Firebase's reliable storage service.",
+    },
+    firebase_analytics: {
+        title: "Firebase Analytics",
+        description: "Google Analytics for Firebase gives you insights into app usage and user engagement.",
+    },
+    firebase_crashlytics: {
+        title: "Firebase Crashlytics",
+        description: "A lightweight, realtime crash reporter that helps you track, prioritize, and fix stability issues.",
+    },
+    supabase_auth: {
+        title: "Supabase Auth",
+        description: "User management and authentication with Support for email, password, magic links, and external providers.",
+    },
+    supabase_database: {
+        title: "Supabase Database",
+        description: "A full Postgres database with every Supabase project. Scalable, secure, and incredibly powerful.",
+    },
+    supabase_edge_functions: {
+        title: "Supabase Edge Functions",
+        description: "Server-side TypeScript functions, distributed globally close to your users via the Deno runtime.",
+    },
+    appwrite_auth: {
+        title: "Appwrite Auth",
+        description: "User management and authentication for your apps. Supports many OAuth providers as well as email/password.",
+    },
+    appwrite_database: {
+        title: "Appwrite Database",
+        description: "A flexible database service that allows you to store and query your data with robust access control (ACL).",
+    },
+    appwrite_storage: {
+        title: "Appwrite Storage",
+        description: "Upload and manage user-generated files. Includes built-in image manipulation and secure access control.",
+    },
 }
 
 export function PackageInfoPanel() {
