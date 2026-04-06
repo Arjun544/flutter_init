@@ -18,7 +18,7 @@ class AuthService {
     required String password,
   }) async {
     return runTask(() async {
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
       
       // Mock validation
       if (email.contains('error')) {
@@ -41,7 +41,7 @@ class AuthService {
     required String password,
   }) async {
     return runTask(() async {
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
       _currentUser = {
         'id': 'mock-id-${DateTime.now().millisecondsSinceEpoch}',
         'email': email,
@@ -54,13 +54,13 @@ class AuthService {
 
   FutureEither<void> forgotPassword({required String email}) async {
     return runTask(() async {
-      await Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
     }, requiresNetwork: true);
   }
 
   FutureEither<void> logout() async {
     return runTask(() async {
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future<void>.delayed(const Duration(milliseconds: 500));
       _currentUser = null;
       _authStateController.add(null);
     });

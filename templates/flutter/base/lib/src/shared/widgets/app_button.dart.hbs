@@ -106,7 +106,7 @@ class AppButton extends StatelessWidget {
                   style: TextStyle(
                     fontSize: fontSize,
                     fontWeight: FontWeight.w600,
-                    color: isDisabled ? fg.withOpacity(0.5) : textColor ?? fg,
+                    color: isDisabled ?  fg.withValues(alpha: 0.5) : textColor ?? fg,
                   ),
                 ),
                 if (suffixIcon != null) ...[
