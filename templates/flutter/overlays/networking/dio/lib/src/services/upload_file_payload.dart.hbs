@@ -9,16 +9,32 @@ class UploadFilePayload {
   final String? fileName;
   final String? mimeType;
 
-  const UploadFilePayload({
+  const UploadFilePayload._({
     this.filePath,
     this.bytes,
-    this.fieldName = 'file',
+    required this.fieldName,
     this.fileName,
     this.mimeType,
-  }) : assert(
-          filePath != null || bytes != null,
-          'UploadFilePayload requires either filePath or bytes.',
-        );
+  });
+
+  factory UploadFilePayload({
+    String? filePath,
+    Uint8List? bytes,
+    String fieldName = 'file',
+    String? fileName,
+    String? mimeType,
+  }) {
+    if (filePath == null && bytes == null) {
+      throw ArgumentError('UploadFilePayload requires either filePath or bytes.');
+    }
+    return UploadFilePayload._(
+      filePath: filePath,
+      bytes: bytes,
+      fieldName: fieldName,
+      fileName: fileName,
+      mimeType: mimeType,
+    );
+  }
 
   String get _resolvedFileName =>
       fileName ??
