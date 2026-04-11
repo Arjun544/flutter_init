@@ -1,0 +1,18 @@
+class UploadProgress {
+  final int sent;
+  final int total;
+
+  const UploadProgress({required this.sent, required this.total});
+
+  /// 0.0–1.0. Returns 0.0 when [total] is unknown (server omits Content-Length).
+  double get percentage =>
+      total > 0 ? (sent / total).clamp(0.0, 1.0) : 0.0;
+
+  /// True when the server did not return Content-Length.
+  bool get isIndeterminate => total <= 0;
+
+  @override
+  String toString() =>
+      'UploadProgress(sent: $sent, total: $total, '
+      '${(percentage * 100).toStringAsFixed(1)}%)';
+}

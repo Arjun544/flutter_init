@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import '../config/app_config.dart';
 import '../utils/utils.dart';
+import 'upload_file_payload.dart';
+import 'upload_progress.dart';
 
 /// A robust networking service powered by Dio.
 class DioService {
@@ -27,5 +29,90 @@ class DioService {
 
   FutureEither<Response> delete(String path, {dynamic data, Map<String, dynamic>? queryParameters}) {
     return runTask(() => AppConfig.dio.delete(path, data: data, queryParameters: queryParameters), requiresNetwork: true);
+  }
+
+  // --- Upload Methods ---
+
+  FutureEither<Response> uploadFile(
+    String path,
+    UploadFilePayload payload, {
+    void Function(UploadProgress)? onProgress,
+    Map<String, dynamic>? fields,
+    Map<String, dynamic>? queryParameters,
+  }) {
+    return runTask(
+      () async {
+        final formData = await _buildFormData([payload], fields: fields);
+        return AppConfig.dio.post(
+          path,
+          data: formData,
+          queryParameters: queryParameters,
+          options: _multipartOptions(),
+          onSendProgress: (sent, total) {
+            onProgress?.call(UploadProgress(sent: sent, total: total));
+          },
+        );
+      },
+      requiresNetwork: true,
+    );
+  }
+
+  FutureEither<Response> uploadFiles(
+    String path,
+    List<UploadFilePayload> payloads, {
+    void Function(UploadProgress)? onProgress,
+    Map<String, dynamic>? fields,
+    Map<String, dynamic>? queryParameters,
+  }) {
+    return runTask(
+      () async {
+        final formData = await _buildFormData(payloads, fields: fields);
+        return AppConfig.dio.post(
+          path,
+          data: formData,
+          queryParameters: queryParameters,
+          options: _multipartOptions(),
+          onSendProgress: (sent, total) {
+            onProgress?.call(UploadProgress(sent: sent, total: total));
+          },
+        );
+      },
+      requiresNetwork: true,
+    );
+  }
+
+  // --- Private Helpers ---
+
+  /// Clears the global `application/json` Content-Type header for this request.
+  /// Dio automatically writes `multipart/form-data; boundary=...` for FormData.
+  Options _multipartOptions({Duration? sendTimeout}) => Options(
+        headers: {Headers.contentTypeHeader: null},
+        sendTimeout: sendTimeout ?? const Duration(minutes: 5),
+      );
+
+  /// Builds a [FormData] from [payloads] and optional string [fields].
+  /// Uses [formData.files.add] to correctly handle duplicate field names.
+  Future<FormData> _buildFormData(
+    List<UploadFilePayload> payloads, {
+    Map<String, dynamic>? fields,
+  }) async {
+    assert(payloads.isNotEmpty, '_buildFormData requires at least one payload');
+    final formData = FormData();
+
+    if (fields != null) {
+      for (final entry in fields.entries) {
+        formData.fields.add(MapEntry(entry.key, entry.value.toString()));
+      }
+    }
+
+    final files = await Future.wait(
+      payloads.map((p) async => MapEntry(p.fieldName, await p.toMultipartFile())),
+    );
+
+    for (final file in files) {
+      formData.files.add(file);
+    }
+
+    return formData;
   }
 }

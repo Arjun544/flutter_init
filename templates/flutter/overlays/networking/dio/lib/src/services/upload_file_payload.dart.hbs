@@ -1,0 +1,46 @@
+import 'dart:typed_data';
+import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
+
+class UploadFilePayload {
+  final String? filePath;
+  final Uint8List? bytes;
+  final String fieldName;
+  final String? fileName;
+  final String? mimeType;
+
+  const UploadFilePayload({
+    this.filePath,
+    this.bytes,
+    this.fieldName = 'file',
+    this.fileName,
+    this.mimeType,
+  }) : assert(
+          filePath != null || bytes != null,
+          'UploadFilePayload requires either filePath or bytes.',
+        );
+
+  String get _resolvedFileName =>
+      fileName ??
+      (filePath != null
+          ? filePath!.split(RegExp(r'[/\\]')).last
+          : 'upload');
+
+  MediaType? get _mediaType =>
+      mimeType != null ? MediaType.parse(mimeType!) : null;
+
+  Future<MultipartFile> toMultipartFile() async {
+    if (bytes != null) {
+      return MultipartFile.fromBytes(
+        bytes!,
+        filename: _resolvedFileName,
+        contentType: _mediaType,
+      );
+    }
+    return MultipartFile.fromFile(
+      filePath!,
+      filename: _resolvedFileName,
+      contentType: _mediaType,
+    );
+  }
+}
