@@ -40,20 +40,12 @@ class DioService {
     Map<String, dynamic>? fields,
     Map<String, dynamic>? queryParameters,
   }) {
-    return runTask(
-      () async {
-        final formData = await _buildFormData([payload], fields: fields);
-        return AppConfig.dio.post(
-          path,
-          data: formData,
-          queryParameters: queryParameters,
-          options: _multipartOptions(),
-          onSendProgress: (sent, total) {
-            onProgress?.call(UploadProgress(sent: sent, total: total));
-          },
-        );
-      },
-      requiresNetwork: true,
+    return uploadFiles(
+      path,
+      [payload],
+      onProgress: onProgress,
+      fields: fields,
+      queryParameters: queryParameters,
     );
   }
 
