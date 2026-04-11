@@ -96,7 +96,9 @@ class DioService {
     List<UploadFilePayload> payloads, {
     Map<String, dynamic>? fields,
   }) async {
-    assert(payloads.isNotEmpty, '_buildFormData requires at least one payload');
+    if (payloads.isEmpty) {
+      throw ArgumentError.value(payloads, 'payloads', 'At least one payload is required.');
+    }
     final formData = FormData();
 
     if (fields != null) {
