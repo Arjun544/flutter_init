@@ -7,13 +7,14 @@ import {
   Layers01Icon,
   Shield01Icon
 } from '@hugeicons/core-free-icons';
+import type { ReactNode } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 
 type Feature = {
   title: string;
   description: string;
   className: string;
-  icon: JSX.Element;
+  icon: ReactNode;
   accent: string;
   gradient: string;
   pattern: 'dots' | 'grid' | 'waves';
