@@ -5,7 +5,10 @@ import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}do
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthService _authService = AuthService.instance;
+  final AuthService _authService;
+
+  AuthRepositoryImpl({AuthService? authService})
+      : _authService = authService ?? AuthService.instance;
 
   @override
   Stream<AppUser?> get onAuthStateChanged {

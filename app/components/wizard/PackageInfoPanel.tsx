@@ -40,6 +40,10 @@ const PACKAGE_INFO: Record<string, {
         title: "MobX",
         packageName: "flutter_mobx",
     },
+    get_it: {
+        title: "GetIt",
+        packageName: "get_it",
+    },
     go_router: {
         title: "go_router",
         packageName: "go_router",

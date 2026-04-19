@@ -23,6 +23,7 @@ export function GenerateStep({ error, isGenerating }: { error: string | null, is
                     <SummaryItem label="Theme" value={config.theme.preset} />
                     <SummaryItem label="Architecture" value={config.architecture} />
                     <SummaryItem label="State" value={config.stateManagement} />
+                    <SummaryItem label="Dependency Injection" value={config.dependencyInjection} />
                     <SummaryItem label="Navigation" value={config.navigation} />
                     <SummaryItem label="Backend" value={config.backend.provider} />
                     <SummaryTagItem

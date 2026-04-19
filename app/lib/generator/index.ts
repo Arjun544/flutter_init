@@ -56,6 +56,7 @@ type TemplateContext = ScaffoldConfig & {
         usesDeviceInfoPlus: boolean
         usesAppVersionUpdate: boolean
         usesGeolocator: boolean
+        usesGetItDi: boolean
     }
 }
 
@@ -170,6 +171,7 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             usesDeviceInfoPlus: config.misc.usesDeviceInfoPlus,
             usesAppVersionUpdate: config.misc.usesAppVersionUpdate,
             usesGeolocator: config.misc.usesGeolocator,
+            usesGetItDi: config.dependencyInjection === "get_it",
         },
     }
 }

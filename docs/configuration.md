@@ -9,6 +9,7 @@ A complete reference of all available options, flags, and values you can configu
 | `appName` | `string` | The display name of your Flutter app. | `Flutter Starter` |
 | `packageId` | `string` | The bundled identifier (e.g. `com.example.app`). | *derived* |
 | `stateManagement` | `provider`, `riverpod`, `bloc`, `getx`, `mobx`, `none` | State management library for injected controllers. | `riverpod` |
+| `dependencyInjection` | `none`, `get_it` | Dependency wiring strategy for repositories/services. | `none` |
 | `navigation` | `imperative`, `go_router`, `getx`, `auto_route` | Strategy used for routing and navigation flow. | `go_router` |
 | `architecture` | `mvc`, `mvvm`, `clean`, `feature-first`, `layer-first` | Parent folder structure and logic segregation pattern. | `feature-first` |
 

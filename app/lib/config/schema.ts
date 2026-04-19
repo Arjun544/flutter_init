@@ -45,6 +45,12 @@ export const architectureSchema = z.enum([
 ])
 export type ArchitectureStyle = z.infer<typeof architectureSchema>
 
+export const dependencyInjectionSchema = z.enum([
+    "none",
+    "get_it",
+])
+export type DependencyInjectionStyle = z.infer<typeof dependencyInjectionSchema>
+
 const iconPackSchema = z.object({
     default: z.literal(true),
     iconsax_plus: z.boolean(),
@@ -173,6 +179,7 @@ export const scaffoldConfigSchema = z.object({
     localization: localizationSchema,
     navigation: navigationSchema,
     architecture: architectureSchema,
+    dependencyInjection: dependencyInjectionSchema.default("none"),
     icons: iconPackSchema.default({
         default: true,
         iconsax_plus: false,
@@ -249,6 +256,7 @@ export const defaultConfig: ScaffoldConfig = {
     localization: { enabled: true, supportedLocales: ["en", "es"] },
     navigation: "go_router",
     architecture: "feature-first",
+    dependencyInjection: "none",
     misc: {
         usesScreenutil: true,
         usesFlutterNativeSplash: true,
@@ -336,6 +344,11 @@ export const architectureOptions = [
     { value: "feature-first", label: "Feature-first", description: "Groups code by feature for high scalability." },
     { value: "layer-first", label: "Layer-first", description: "Groups code by technical layers." },
 ] as const satisfies Array<{ value: ArchitectureStyle; label: string; description: string }>
+
+export const dependencyInjectionOptions = [
+    { value: "none", label: "None", description: "Manual constructor wiring without a DI container." },
+    { value: "get_it", label: "GetIt", description: "Service locator with centralized dependency registration." },
+] as const satisfies Array<{ value: DependencyInjectionStyle; label: string; description: string }>
 
 export const navigationOptions = [
     { value: "imperative", label: "Imperative (Navigator 1.0)", description: "Standard Navigator 1.0; simple for small apps." },
