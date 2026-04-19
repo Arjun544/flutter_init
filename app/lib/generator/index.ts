@@ -99,7 +99,8 @@ export async function generateFlutterScaffold(input: unknown) {
             }
         }
 
-        const zipBuffer = await zipDirectory(workingDir)
+        const zipRootDir = context.flags.appSlug || "flutter-app"
+        const zipBuffer = await zipDirectory(workingDir, zipRootDir)
         return zipBuffer
     } finally {
         await fs.rm(workingDir, { recursive: true, force: true }).catch(() => { })
@@ -317,8 +318,9 @@ async function copyAndRenderDirectory(
     }
 }
 
-async function zipDirectory(dir: string) {
+async function zipDirectory(dir: string, rootFolderName: string) {
     const zip = new JSZip()
+    const zipRoot = rootFolderName.trim().replace(/[/\\]/g, "") || "flutter-app"
 
     async function walk(current: string) {
         const entries = await fs.readdir(current, { withFileTypes: true })
@@ -329,7 +331,7 @@ async function zipDirectory(dir: string) {
                 await walk(fullPath)
             } else if (entry.isFile()) {
                 const data = await fs.readFile(fullPath)
-                zip.file(relPath, data)
+                zip.file(`${zipRoot}/${relPath}`, data)
             }
         }
     }
