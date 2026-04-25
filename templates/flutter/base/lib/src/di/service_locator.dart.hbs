@@ -1,0 +1,30 @@
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}data/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/data/repositories/{{/if}}auth_repository_impl.dart';
+{{#if flags.usesGetItDi}}
+import 'package:{{flags.appSnake}}/src/services/auth_service.dart';
+import 'package:get_it/get_it.dart';
+
+final sl = GetIt.instance;
+{{/if}}
+
+Future<void> initDependencies() async {
+  {{#if flags.usesGetItDi}}
+  if (!sl.isRegistered<AuthService>()) {
+    sl.registerLazySingleton<AuthService>(() => AuthService.instance);
+  }
+
+  if (!sl.isRegistered<AuthRepository>()) {
+    sl.registerLazySingleton<AuthRepository>(
+      () => AuthRepositoryImpl(authService: sl<AuthService>()),
+    );
+  }
+  {{/if}}
+}
+
+AuthRepository createAuthRepository() {
+  {{#if flags.usesGetItDi}}
+  return sl<AuthRepository>();
+  {{else}}
+  return AuthRepositoryImpl();
+  {{/if}}
+}

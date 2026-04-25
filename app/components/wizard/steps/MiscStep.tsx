@@ -1,6 +1,6 @@
 "use client"
 
-import { MiscConfig } from "@/app/lib/config/schema"
+import { DependencyInjectionStyle, MiscConfig, dependencyInjectionOptions } from "@/app/lib/config/schema"
 import { useWizard } from "@/app/lib/state/useWizardStore"
 import {
     Accordion,
@@ -9,11 +9,13 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { cn } from "@/lib/utils"
 import {
     AiImageIcon,
     CloudIcon,
     DatabaseIcon,
+    InformationCircleIcon,
     PackageIcon,
     SmartPhone01Icon,
     SourceCodeIcon,
@@ -36,7 +38,7 @@ interface Category {
 }
 
 export function MiscStep() {
-    const { config, updateConfig, next, prev } = useWizard()
+    const { config, updateConfig, setSelectedItem } = useWizard()
     const { misc } = config
 
     const handleToggle = (key: keyof MiscConfig, value: boolean) => {
@@ -232,6 +234,51 @@ export function MiscStep() {
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
+                <div className="rounded-xl border border-border/40 bg-card/30 p-4 space-y-3">
+                    <div>
+                        <p className="text-sm font-semibold text-foreground/90">Dependency Injection</p>
+                        <p className="text-xs text-muted-foreground">Choose how dependencies are wired in generated code.</p>
+                    </div>
+                    <RadioGroup
+                        value={config.dependencyInjection}
+                        onValueChange={(value) => {
+                            updateConfig({ dependencyInjection: value as DependencyInjectionStyle })
+                        }}
+                        className="grid gap-2"
+                    >
+                        {dependencyInjectionOptions.map((option) => (
+                            <label
+                                key={option.value}
+                                className={cn(
+                                    "flex items-center justify-between rounded-xl border p-3 cursor-pointer transition-all duration-200",
+                                    config.dependencyInjection === option.value
+                                        ? "border-primary/50 bg-primary/5 shadow-md shadow-primary/5 ring-1 ring-primary/20"
+                                        : "border-border/40 bg-card/30 hover:bg-card/50 hover:border-primary/20"
+                                )}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <RadioGroupItem value={option.value} className="text-primary border-primary" />
+                                    <div className="space-y-1">
+                                        <span className="text-sm font-semibold text-foreground/90">{option.label}</span>
+                                        <p className="text-xs text-muted-foreground">{option.description}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        setSelectedItem(option.value)
+                                    }}
+                                    className="p-1.5 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden cursor-pointer"
+                                    title="View details"
+                                >
+                                    <HugeiconsIcon icon={InformationCircleIcon} size={18} />
+                                </button>
+                            </label>
+                        ))}
+                    </RadioGroup>
+                </div>
                 <Accordion type="multiple" defaultValue={["networking"]} className="space-y-3">
                     {categories.map((category) => (
                         <AccordionItem

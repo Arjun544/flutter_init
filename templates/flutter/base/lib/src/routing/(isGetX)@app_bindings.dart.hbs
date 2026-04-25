@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}data/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/data/repositories/{{/if}}auth_repository_impl.dart';
+import 'package:{{flags.appSnake}}/src/di/service_locator.dart';
 
 {{#if (eq architecture "layer-first")}}
 import 'package:{{flags.appSnake}}/src/presentation/controllers/auth/auth_controller.dart';
@@ -16,7 +16,7 @@ class AppBindings implements Bindings {
   void dependencies() {
     {{#if flags.isGetX}}
     Get.lazyPut<AuthController>(
-      () => AuthController(repository: AuthRepositoryImpl()),
+      () => AuthController(repository: createAuthRepository()),
     );
     {{/if}}
   }
