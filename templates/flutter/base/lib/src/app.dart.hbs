@@ -5,13 +5,12 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget current = {{#if flags.isCupertino}}_buildCupertinoApp(context){{else}}_buildMaterialApp(context){{/if}};
-
+    final current = {{#if flags.isCupertino}}_buildCupertinoApp(context){{else}}_buildMaterialApp(context){{/if}};
     {{#if flags.usesScreenutil}}
-    current = ScreenUtilWrapper(child: current);
-    {{/if}}
-
+    return ScreenUtilWrapper(child: current);
+    {{else}}
     return current;
+    {{/if}}
   }
 
   {{#if flags.isCupertino}}

@@ -79,11 +79,11 @@ export function registerHelpers(hbs: Hbs) {
     hbs.registerHelper("indent", (text: string, spaces = 2) =>
         indentLines(text, Number(spaces))
     )
-    hbs.registerHelper("res", (value: number, unit: string, usesScreenutil: boolean) => {
-        if (usesScreenutil) {
-            return `${value}.${unit}`
-        }
-        return `${value}.0`
+    hbs.registerHelper("res", (value: unknown, unit: string, usesScreenutil: boolean) => {
+        // `value` can be a number (e.g. 16) or a Dart expression string (e.g. "AppSpacing.lg").
+        // When ScreenUtil is disabled we must NOT append ".0" to expressions.
+        if (usesScreenutil) return `${value}.${unit}`
+        return typeof value === "number" ? `${value}.0` : String(value)
     })
     hbs.registerHelper("when", function (this: unknown, condition, options) {
         return condition ? options.fn(this) : options.inverse(this)

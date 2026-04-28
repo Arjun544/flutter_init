@@ -19,20 +19,24 @@ export 'package:provider/provider.dart' hide Dispose;
 {{#if flags.isBloc}}
 export 'package:flutter_bloc/flutter_bloc.dart';
 {{/if}}
-{{#if flags.isGetX}}
+{{#if (or flags.isGetX (eq flags.routerPackage "getx"))}}
 // For Navigation
 export 'package:get/get_navigation/get_navigation.dart' hide GetContextExtensions;
 // For State Management (.obs, GetxController, Obx)
+{{#if flags.isGetX}}
 export 'package:get/get_state_manager/get_state_manager.dart';
 // For Dependency Management (Get.put, Get.find)
 export 'package:get/get_instance/get_instance.dart';
+{{/if}}
 {{/if}}
 {{#if flags.isMobX}}
 export 'package:mobx/mobx.dart';
 export 'package:flutter_mobx/flutter_mobx.dart';
 {{/if}}
-{{#if flags.routerPackage}}
+{{#if (eq flags.routerPackage "go_router")}}
 export 'package:{{flags.routerPackage}}/{{flags.routerPackage}}.dart';
+{{else if (eq flags.routerPackage "auto_route")}}
+export 'package:auto_route/auto_route.dart';
 {{/if}}
 {{#if flags.usesDio}}
 export 'package:dio/dio.dart';
@@ -60,9 +64,7 @@ export 'package:skeletonizer/skeletonizer.dart';
 {{/if}}
 export 'package:flutter_animate/flutter_animate.dart' hide ShimmerEffect;
 export 'package:smooth_page_indicator/smooth_page_indicator.dart' hide ScaleEffect, SlideEffect, SwapEffect;
-{{#if flags.usesDotenv}}
 export 'package:flutter_dotenv/flutter_dotenv.dart';
-{{/if}}
 {{#if flags.usesHive}}
 export 'package:hive_ce_flutter/hive_ce_flutter.dart';
 {{/if}}

@@ -18,9 +18,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 {{#if (eq backend.provider "appwrite")}}
 import 'package:appwrite/appwrite.dart';
 {{/if}}
-{{#if flags.usesDotenv}}
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-{{/if}}
 
 class AppConfig {
   AppConfig._();
@@ -58,37 +56,15 @@ class AppConfig {
     {{/if}}
     {{#if (eq backend.provider "supabase")}}
     await Supabase.initialize(
-      {{#if flags.usesDotenv}}
       url: dotenv.get('SUPABASE_URL', fallback: 'https://YOUR-PROJECT.supabase.co'),
       anonKey: dotenv.get('SUPABASE_ANON_KEY', fallback: 'YOUR-ANON-KEY'),
-      {{else}}
-      url: const String.fromEnvironment(
-        'SUPABASE_URL',
-        defaultValue: 'https://YOUR-PROJECT.supabase.co',
-      ),
-      anonKey: const String.fromEnvironment(
-        'SUPABASE_ANON_KEY',
-        defaultValue: 'YOUR-ANON-KEY',
-      ),
-      {{/if}}
     );
     supabase = Supabase.instance.client;
     {{/if}}
     {{#if (eq backend.provider "appwrite")}}
     appwriteClient = Client()
-      {{#if flags.usesDotenv}}
       ..setEndpoint(dotenv.get('APPWRITE_ENDPOINT', fallback: 'https://cloud.appwrite.io/v1'))
       ..setProject(dotenv.get('APPWRITE_PROJECT_ID', fallback: 'your-project-id'))
-      {{else}}
-      ..setEndpoint(const String.fromEnvironment(
-        'APPWRITE_ENDPOINT',
-        defaultValue: 'https://cloud.appwrite.io/v1',
-      ))
-      ..setProject(const String.fromEnvironment(
-        'APPWRITE_PROJECT_ID',
-        defaultValue: 'your-project-id',
-      ))
-      {{/if}}
       ..setSelfSigned(status: true);
     appwriteAccount = Account(appwriteClient);
     {{/if}}
@@ -129,13 +105,6 @@ class AppConfig {
   }
 
   static String _getBaseUrl() {
-    {{#if flags.usesDotenv}}
     return dotenv.get('API_BASE_URL', fallback: '{{#if (eq backend.provider "custom")}}{{backend.options.baseUrl}}{{else}}https://api.example.com{{/if}}');
-    {{else}}
-    return const String.fromEnvironment(
-        'API_BASE_URL',
-        defaultValue: '{{#if (eq backend.provider "custom")}}{{backend.options.baseUrl}}{{else}}https://api.example.com{{/if}}',
-    );
-    {{/if}}
   }
 }

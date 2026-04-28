@@ -12,8 +12,12 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   # Navigation
-  {{#if flags.routerPackage}}
-  {{flags.routerPackage}}: {{#if (eq flags.routerPackage "go_router")}}^17.1.0{{else}}^11.1.0{{/if}}
+  {{#if (eq flags.routerPackage "go_router")}}
+  go_router: ^17.1.0
+  {{else if (eq flags.routerPackage "auto_route")}}
+  auto_route: ^10.1.2
+  {{else if (eq flags.routerPackage "getx")}}
+  get: ^4.7.3
   {{/if}}
 
   # Networking
@@ -130,9 +134,7 @@ dependencies:
   smooth_page_indicator: ^2.0.1
 
   # Environment
-  {{#if flags.usesDotenv}}
   flutter_dotenv: ^6.0.0
-  {{/if}}
 
   # Logging
   {{#if flags.usesLogger}}
@@ -211,7 +213,5 @@ flutter:
     {{#if flags.supportsLocalization}}
     - assets/translations/
     {{/if}}
-    {{#if flags.usesDotenv}}
     - .env
-    {{/if}}
 

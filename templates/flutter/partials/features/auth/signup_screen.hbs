@@ -268,7 +268,7 @@ class SignupScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}
                   ),
                 ),
                 SizedBox(height: {{res 'AppSpacing.xxxl' 'h' flags.usesScreenutil}}),
-                {{#if (and flags.usesFlutterSvg flags.usesDotenv)}}
+                {{#if flags.usesFlutterSvg}}
                 Column(
                   children: [
                     Row(
@@ -518,7 +518,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 SizedBox(height: {{res 'AppSpacing.xxxl' 'h' flags.usesScreenutil}}),
-                {{#if (and flags.usesFlutterSvg flags.usesDotenv)}}
+                {{#if flags.usesFlutterSvg}}
                 Column(
                   children: [
                     Row(

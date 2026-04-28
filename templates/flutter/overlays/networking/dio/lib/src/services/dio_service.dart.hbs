@@ -9,23 +9,42 @@ class DioService {
 
   // --- HTTP Methods ---
 
-  FutureEither<Response> get(String path, {Map<String, dynamic>? queryParameters}) {
+  FutureEither<Response<dynamic>> get(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+  }) {
     return runTask(() => AppConfig.dio.get(path, queryParameters: queryParameters), requiresNetwork: true);
   }
 
-  FutureEither<Response> post(String path, {dynamic data, Map<String, dynamic>? queryParameters}) {
+  FutureEither<Response<dynamic>> post(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) {
     return runTask(() => AppConfig.dio.post(path, data: data, queryParameters: queryParameters), requiresNetwork: true);
   }
 
-  FutureEither<Response> put(String path, {dynamic data, Map<String, dynamic>? queryParameters}) {
+  FutureEither<Response<dynamic>> put(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) {
     return runTask(() => AppConfig.dio.put(path, data: data, queryParameters: queryParameters), requiresNetwork: true);
   }
 
-  FutureEither<Response> patch(String path, {dynamic data, Map<String, dynamic>? queryParameters}) {
+  FutureEither<Response<dynamic>> patch(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) {
     return runTask(() => AppConfig.dio.patch(path, data: data, queryParameters: queryParameters), requiresNetwork: true);
   }
 
-  FutureEither<Response> delete(String path, {dynamic data, Map<String, dynamic>? queryParameters}) {
+  FutureEither<Response<dynamic>> delete(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+  }) {
     return runTask(() => AppConfig.dio.delete(path, data: data, queryParameters: queryParameters), requiresNetwork: true);
   }
 }

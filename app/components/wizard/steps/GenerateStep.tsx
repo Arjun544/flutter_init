@@ -53,7 +53,7 @@ export function GenerateStep({ error, isGenerating }: { error: string | null, is
                             config.misc.usesPermissionHandler && "Permissions",
                             config.misc.usesDeviceInfoPlus && "Device Info",
                             config.misc.usesAppVersionUpdate && "App Version",
-                            config.misc.usesDotenv && "Dotenv",
+                            "Dotenv",
 
                         ].filter(Boolean) as string[]}
                     />

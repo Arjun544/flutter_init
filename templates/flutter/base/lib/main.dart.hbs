@@ -15,9 +15,7 @@ Future<void> main() async {
   {{#if flags.supportsLocalization}}
   await EasyLocalization.ensureInitialized();
   {{/if}}
-  {{#if flags.usesDotenv}}
   await dotenv.load(fileName: '.env');
-  {{/if}}
   {{#if extras.flavors}}
   FlavorConfig.load(Flavor.dev);
   {{/if}}

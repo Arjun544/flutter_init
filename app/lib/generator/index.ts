@@ -12,7 +12,7 @@ type TemplateContext = ScaffoldConfig & {
     flags: {
         appSlug: string
         appSnake: string
-        routerPackage?: "go_router" | "auto_route" | "getx" | "navigator"
+        routerPackage?: "go_router" | "auto_route" | "getx"
         usesRouting: boolean
         isRiverpod: boolean
         isProvider: boolean
@@ -34,7 +34,6 @@ type TemplateContext = ScaffoldConfig & {
         usesSkeletonizer: boolean
         usesScreenutil: boolean
         usesFlutterNativeSplash: boolean
-        usesDotenv: boolean
         usesLogger: boolean
         usesIconsaxPlus: boolean
         usesFlutterRemix: boolean
@@ -108,7 +107,7 @@ export async function generateFlutterScaffold(input: unknown) {
 function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
     const appSlug = config.appName.trim().replace(/\s+/g, "-").toLowerCase()
     const appSnake = config.appName.trim().replace(/\s+/g, "_").toLowerCase()
-    let routerPackage: "go_router" | "auto_route" | "getx" | "navigator" = "go_router"
+    let routerPackage: "go_router" | "auto_route" | "getx" | undefined
     if (config.stateManagement === "getx") {
         routerPackage = "getx"
     } else if (config.navigation === "go_router") {
@@ -118,7 +117,7 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
     } else if (config.navigation === "getx") {
         routerPackage = "getx"
     } else {
-        routerPackage = "navigator"
+        routerPackage = undefined
     }
 
     return {
@@ -148,7 +147,6 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             usesSkeletonizer: config.misc.usesSkeletonizer,
             usesScreenutil: config.misc.usesScreenutil,
             usesFlutterNativeSplash: config.misc.usesFlutterNativeSplash,
-            usesDotenv: config.misc.usesDotenv,
             usesLogger: config.misc.usesLogger,
             supportsLocalization: config.localization.enabled,
             supportedLocales: config.localization.supportedLocales.length > 0 ? config.localization.supportedLocales : ["en"],
@@ -222,7 +220,7 @@ async function resolveOverlayDirs(
             config.misc.usesAppVersionUpdate,
         ],
         [path.join(root, "overlays", "extras", "flavors"), true],
-        [path.join(root, "overlays", "extras", "dotenv"), config.misc.usesDotenv],
+        [path.join(root, "overlays", "extras", "dotenv"), true],
     ]
 
     for (const [candidate, enabled] of candidates) {

@@ -172,15 +172,11 @@ end
 
 ## 4. 🌍 Environment Variables
 
-{{#if flags.usesDotenv}}
 Your project relies on `flutter_dotenv` to load secrets. 
 
 1. Create a [`.env`](.env) file in the project root folder.
 2. Insert your required variables (e.g. `API_URL=https://api.example.com`).
 3. These keys are now accessible in Dart via `dotenv.env['API_URL']`.
-{{else}}
-*(Environment variables are not explicitly managed by `flutter_dotenv` in this project)*
-{{/if}}
 
 ---
 
@@ -220,18 +216,18 @@ You chose **Supabase** as your backend architecture.
 1. Create an empty project at [supabase.com](https://supabase.com/).
 2. Grab your `SUPABASE_URL` and `SUPABASE_ANON_KEY` from your Project API Settings.
 3. Locate the Supabase initialization inside `lib/main.dart` and bind these keys.
-   {{#if flags.usesDotenv}}*(Tip: You can securely point these to `dotenv.env['SUPABASE_URL']` from your newly created `.env` file!)*{{/if}}
+   *(Tip: You can securely point these to `dotenv.env['SUPABASE_URL']` from your newly created `.env` file!)*
 {{else if (eq backend.provider "appwrite")}}
 You chose **Appwrite** as your backend architecture.
 
 1. Locate the `Appwrite` Initialization code inside `lib/main.dart`.
 2. Ensure you apply your Project ID and Endpoint values to the client configuration.
-   {{#if flags.usesDotenv}}*(Tip: You can securely point these to `dotenv.env['APPWRITE_ENDPOINT']`!)*{{/if}}
+   *(Tip: You can securely point these to `dotenv.env['APPWRITE_ENDPOINT']`!)*
 {{else if (eq backend.provider "custom")}}
 You chose to structure your APIs using **Custom Backend**.
 
 Verify that your Base URL pointing to staging/production is correctly initialized inside your globally injected network class.
-   {{#if flags.usesDotenv}}*(Tip: Read this via `dotenv.env['BASE_API_URL']` inside your network initializer!)*{{/if}}
+   *(Tip: Read this via `dotenv.env['BASE_API_URL']` inside your network initializer!)*
 {{else}}
 *(No remote backend provider selected. The application defaults to managing state via Mock services locally).*
 {{/if}}

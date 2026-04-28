@@ -27,8 +27,35 @@ describe("generator", () => {
         expect(files.some((file) => file.endsWith("lib/main.dart"))).toBe(true)
         expect(
             files.some((file) =>
-                file.includes("lib/src/features/counter/presentation/counter_page.dart")
+                file.includes("lib/src/theme/app_spacing.dart")
             )
         ).toBe(true)
+    })
+
+    it("does not emit ScreenUtil num extensions when disabled", async () => {
+        const buffer = await generateFlutterScaffold({
+            ...defaultConfig,
+            misc: {
+                ...defaultConfig.misc,
+                usesScreenutil: false,
+            },
+        })
+        const zip = await JSZip.loadAsync(buffer)
+
+        const dartFiles = Object.keys(zip.files).filter((f) => f.endsWith(".dart"))
+        const contents = await Promise.all(
+            dartFiles.map(async (f) => ({
+                file: f,
+                text: await zip.file(f)!.async("string"),
+            }))
+        )
+
+        // When ScreenUtil is disabled we should NOT generate `AppSpacing.xxx.0`
+        // (or `AppSpacing.xxx.w/h/...`). `AppSpacing.xxx` should remain a plain double.
+        const offenders = contents
+            .filter(({ text }) => /AppSpacing\.\w+\.\s*(0|w|h|sp|r)\b/.test(text))
+            .map(({ file }) => file)
+
+        expect(offenders, `Found ScreenUtil extensions in: ${offenders.join(", ")}`).toEqual([])
     })
 })

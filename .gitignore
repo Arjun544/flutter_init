@@ -43,6 +43,7 @@ next-env.d.ts
 # Agents
 .agents/
 .agent/
+.cursorrules
 
 # Generator Output
 /dev_out/

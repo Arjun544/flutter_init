@@ -57,7 +57,7 @@ These boolean flags enable wrapper injections, dependencies, and functional code
 
 - **Networking:** `usesDio`, `usesHttp`, `usesCachedNetworkImage`
 - **Storage:** `usesHive`, `usesSharedPreferences`, `usesSecureStorage`
-- **Utilities:** `usesScreenutil`, `usesFlutterNativeSplash`, `usesFlutterSvg`, `usesSkeletonizer`, `usesDotenv`, `usesLogger`, `usesUrlLauncher`, `usesPathProvider`, `usesSharePlus`, `usesPermissionHandler`
+- **Utilities:** `usesScreenutil`, `usesFlutterNativeSplash`, `usesFlutterSvg`, `usesSkeletonizer`, `usesLogger`, `usesUrlLauncher`, `usesPathProvider`, `usesSharePlus`, `usesPermissionHandler` (`flutter_dotenv` is always enabled by default)
 - **Hooks & Media:** `usesFlutterHooks`, `usesImagePicker`, `usesFilePicker`
 - **Device Features:** `usesDeviceInfoPlus`, `usesAppVersionUpdate`, `usesGeolocator`
 
