@@ -1,15 +1,12 @@
 "use client"
 
+import { trackGeneration } from "@/app/lib/analytics/trackGeneration"
 import { StepId, stepOrder } from "@/app/lib/config/schema"
 import { useWizard } from "@/app/lib/state/useWizardStore"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import * as React from "react"
-import { StepContent } from "./StepContent"
-import { PackageInfoPanel } from "./PackageInfoPanel"
 import { Separator } from "@/components/ui/separator"
 import {
     Sidebar,
@@ -25,9 +22,13 @@ import {
     SidebarTrigger,
     useSidebar,
 } from "@/components/ui/sidebar"
-import Image from "next/image"
-import { HugeiconsIcon } from "@hugeicons/react"
+import { cn } from "@/lib/utils"
 import { ArrowLeft02Icon, ArrowRight02Icon, Tick01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import Image from "next/image"
+import * as React from "react"
+import { PackageInfoPanel } from "./PackageInfoPanel"
+import { StepContent } from "./StepContent"
 
 const steps: Record<
     StepId,
@@ -85,6 +86,8 @@ export function WizardShell() {
         setIsGenerating(true)
         setError(null)
         try {
+            void trackGeneration(config)
+
             const response = await fetch("/api/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

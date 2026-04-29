@@ -1,16 +1,17 @@
 "use client";
 
 import { Switch } from '@/components/ui/switch';
-import { 
-  Database01Icon, 
-  DashboardSquare01Icon, 
-  FireIcon, 
-  Folder01Icon, 
-  Unlink01Icon, 
-  Package01Icon, 
-  Route01Icon 
+import {
+  DashboardSquare01Icon,
+  Database01Icon,
+  FireIcon,
+  Folder01Icon,
+  Package01Icon,
+  Route01Icon,
+  Unlink01Icon
 } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
+import Image from "next/image";
 import { useState } from 'react';
 
 export function NodePattern() {
@@ -50,12 +51,23 @@ export function NodePattern() {
             : 'bg-white/70 hover:bg-white/95 border-white/40 shadow-zinc-200/20'}
         `}>
           <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-[0.85rem] sm:rounded-xl flex items-center justify-center transition-all duration-300 border ${active ? bgClass + ' border-white/20 shadow-sm' : 'bg-zinc-100 border-zinc-200'}`}>
-            <HugeiconsIcon 
-              icon={Icon} 
-              size={20} 
+
+            {label === 'Supabase' ? <Image
+              src="/icons/supabase.svg"
+              alt="Supabase"
+              width={24}
+              height={24}
+            /> : label === 'Firebase' ? <Image
+              src="/icons/firebase.svg"
+              alt="Firebase"
+              width={24}
+              height={24}
+            /> : <HugeiconsIcon
+              icon={Icon}
+              size={20}
               aria-hidden="true"
-              className={`transition-colors duration-300 ${active ? 'text-white' : 'text-zinc-400'}`} 
-            />
+              className={`transition-colors duration-300 ${active ? 'text-white' : 'text-zinc-400'}`}
+            />}
           </div>
 
           <span className={`text-[13px] sm:text-[15px] font-bold ml-3 mr-8 transition-colors duration-300 ${active ? 'text-zinc-800' : 'text-zinc-500'}`}>
@@ -237,14 +249,14 @@ export function NodePattern() {
       <NodeSwitch
         stateKey="supabase"
         top="70%" left="22.5%"
-        bgClass="bg-linear-to-tr from-emerald-500 to-green-400 shadow-emerald-500/25"
+        bgClass="bg-linear-to-tr from-emerald-200 to-green-100 shadow-emerald-400/25"
         Icon={Database01Icon}
         label="Supabase"
       />
       <NodeSwitch
         stateKey="firebase"
         top="30%" left="77.5%"
-        bgClass="bg-linear-to-tr from-orange-500 to-amber-400 shadow-orange-500/25"
+        bgClass="bg-linear-to-tr from-orange-200 to-amber-100 shadow-orange-400/25"
         Icon={FireIcon}
         label="Firebase"
       />

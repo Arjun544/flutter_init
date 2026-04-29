@@ -1,133 +1,216 @@
+"use client"
+
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
 import { cn } from '@/lib/utils';
 import {
   Clock01Icon,
   CpuIcon,
   DashboardSquare01Icon,
   FlashIcon,
+  Globe02Icon,
   Layers01Icon,
   Shield01Icon
 } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 
+const bentoClasses = [
+  "md:col-span-3 md:row-span-1", // Row 1: Item 1
+  "md:col-span-3 md:row-span-1", // Row 1: Item 2
+  "md:col-span-2 md:row-span-1", // Row 2: Item 3
+  "md:col-span-2 md:row-span-1", // Row 2: Item 4
+  "md:col-span-2 md:row-span-1", // Row 2: Item 5
+  "md:col-span-3 md:row-span-1", // Row 3: Item 6
+  "md:col-span-3 md:row-span-1", // Row 3: Item 7
+]
+
 export function WhyFlutterInit() {
+  const accents = {
+    primary: {
+      iconColor: "text-primary",
+      glow: "from-primary/10 to-transparent",
+      chip: "bg-primary/8 border-primary/15",
+    },
+    amber: {
+      iconColor: "text-amber-500",
+      glow: "from-amber-500/10 to-transparent",
+      chip: "bg-amber-500/8 border-amber-500/15",
+    },
+    emerald: {
+      iconColor: "text-emerald-500",
+      glow: "from-emerald-500/10 to-transparent",
+      chip: "bg-emerald-500/8 border-emerald-500/15",
+    },
+    indigo: {
+      iconColor: "text-indigo-500",
+      glow: "from-indigo-500/10 to-transparent",
+      chip: "bg-indigo-500/8 border-indigo-500/15",
+    },
+    blue: {
+      iconColor: "text-blue-500",
+      glow: "from-blue-500/10 to-transparent",
+      chip: "bg-blue-500/8 border-blue-500/15",
+    },
+    rose: {
+      iconColor: "text-rose-500",
+      glow: "from-rose-500/10 to-transparent",
+      chip: "bg-rose-500/8 border-rose-500/15",
+    },
+    cyan: {
+      iconColor: "text-cyan-500",
+      glow: "from-cyan-500/10 to-transparent",
+      chip: "bg-cyan-500/8 border-cyan-500/15",
+    },
+  } as const;
+
   const features = [
     {
       title: "Architecture Agnostic",
       description: "Clean Architecture, MVVM, or MVC. FlutterInit adapts to your team's workflow, providing the perfect structure every time.",
-      icon: <HugeiconsIcon icon={Layers01Icon} size={24} className="text-primary" />,
-      className: "md:col-span-2 md:row-span-1",
-      gradient: "from-primary/10 via-primary/5 to-transparent",
-      pattern: true,
-      hoverBg: "group-hover:bg-primary/10",
-      hoverBorder: "group-hover:border-primary/25"
+      icon: Layers01Icon,
+      accent: accents.primary,
+      label: "Workflow"
     },
     {
       title: "Zero Boilerplate",
-      description: "Skip the 4-hour setup. Focus on features.",
-      icon: <HugeiconsIcon icon={FlashIcon} size={24} className="text-amber-500" />,
-      className: "md:col-span-1 md:row-span-1",
-      gradient: "from-amber-500/10 to-transparent",
-      hoverBg: "group-hover:bg-amber-500/10",
-      hoverBorder: "group-hover:border-amber-500/25"
+      description: "Skip the 4-hour setup. Focus on building features instead of repetitive configuration.",
+      icon: FlashIcon,
+      accent: accents.amber,
+      label: "Speed"
     },
     {
       title: "Production Ready",
-      description: "Enterprise-grade logging, error handling, and monitoring built into the core. Scale with confidence.",
-      icon: <HugeiconsIcon icon={Shield01Icon} size={24} className="text-emerald-500" />,
-      className: "md:col-span-1 md:row-span-2",
-      gradient: "from-emerald-500/10 to-transparent",
-      vertical: true,
-      hoverBg: "group-hover:bg-emerald-500/10",
-      hoverBorder: "group-hover:border-emerald-500/25"
+      description: "Enterprise-grade logging and monitoring built into the core.",
+      icon: Shield01Icon,
+      accent: accents.emerald,
+      label: "Reliability"
     },
     {
       title: "Optimized Performance",
-      description: "Lightweight Scaffold following best practices for 60fps animations.",
-      icon: <HugeiconsIcon icon={CpuIcon} size={24} className="text-indigo-500" />,
-      className: "md:col-span-1 md:row-span-1",
-      gradient: "from-indigo-500/10 to-transparent",
-      hoverBg: "group-hover:bg-indigo-500/10",
-      hoverBorder: "group-hover:border-indigo-500/25"
+      description: "Lightweight Scaffold following best practices for 60fps apps.",
+      icon: CpuIcon,
+      accent: accents.indigo,
+      label: "Performance"
     },
     {
       title: "Modern Tech Stack",
-      description: "Riverpod, Bloc, GoRouter, and Material 3 design tokens pre-integrated.",
-      icon: <HugeiconsIcon icon={DashboardSquare01Icon} size={24} className="text-blue-500" />,
-      className: "md:col-span-1 md:row-span-1",
-      gradient: "from-blue-500/10 to-transparent",
-      hoverBg: "group-hover:bg-blue-500/10",
-      hoverBorder: "group-hover:border-blue-500/25"
+      description: "Riverpod, Bloc, and Material 3 design tokens pre-integrated.",
+      icon: DashboardSquare01Icon,
+      accent: accents.blue,
+      label: "Ecosystem"
     },
     {
       title: "Rapid Prototyping",
-      description: "From idea to running app in under 60 seconds. The faster way to ship Flutter applications to production.",
-      icon: <HugeiconsIcon icon={Clock01Icon} size={24} className="text-rose-500" />,
-      className: "md:col-span-2 md:row-span-1",
-      gradient: "from-rose-500/10 to-transparent",
-      pattern: true,
-      hoverBg: "group-hover:bg-rose-500/10",
-      hoverBorder: "group-hover:border-rose-500/25"
+      description: "From idea to running app in under 60 seconds.",
+      icon: Clock01Icon,
+      accent: accents.rose,
+      label: "Productivity"
+    },
+    {
+      title: "Global Reach",
+      description: "Built-in i18n and localization support to reach users in every language.",
+      icon: Globe02Icon,
+      accent: accents.cyan,
+      label: "Localization"
     }
   ];
 
   return (
-    <section className="w-full py-24 bg-zinc-50/50 relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,var(--color-primary)_0.03,transparent_50%)] opacity-5 pointer-events-none" />
+    <section className="relative w-full overflow-hidden bg-zinc-50/50 py-24">
+      <div className="pointer-events-none absolute top-0 left-1/2 h-full w-full -translate-x-1/2 bg-[radial-gradient(circle_at_50%_0%,var(--color-primary)_0.03,transparent_50%)] opacity-5" />
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-        <div className="flex flex-col items-center text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Core Philosophy</span>
-          </div>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-zinc-400 mb-6 tracking-tight leading-[1.1]">
-            Why <span className="text-primary tracking-wider font-extrabold">FlutterInit</span> exists?
+      <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-12 px-6 md:px-12">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <Badge
+            variant="outline"
+            className="rounded-full border-primary/10 bg-primary/5 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary"
+          >
+            <span
+              aria-hidden="true"
+              className="mr-2 inline-flex size-1.5 rounded-full bg-primary animate-pulse"
+            />
+            Core Philosophy
+          </Badge>
+          <h2 className="text-4xl leading-[1.1] font-bold tracking-tight text-zinc-400 md:text-5xl lg:text-6xl">
+            Why{" "}
+            <span className="font-extrabold tracking-wider text-primary">
+              FlutterInit
+            </span>{" "}
+            exists?
           </h2>
-          <p className="text-lg text-zinc-500 max-w-2xl font-medium leading-relaxed">
+          <p className="max-w-2xl text-lg leading-relaxed font-medium text-zinc-500">
             We believe Flutter development should be about innovation, not repetitive configuration.
             Stop wasting days on project setup and start building.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:auto-rows-[200px]">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className={`group relative overflow-hidden rounded-[2.5rem] border border-zinc-200 bg-white p-6 transition-all duration-500 hover:border-zinc-300 hover:shadow-2xl hover:shadow-zinc-200/50 hover:-translate-y-1.5 flex flex-col ${feature.className}`}
-            >
-              {/* Pattern Overlay */}
-              {feature.pattern && (
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] bg-size-[20px_20px]" />
-              )}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-6 md:auto-rows-[220px]">
+          {features.map((feature, index) => {
+            const isWideTile = index === 0 || index === 1 || index === 5 || index === 6;
+            const isCompactTile = index === 2 || index === 3 || index === 4;
+            return (
+              <Card
+                key={feature.title}
+                className={cn(
+                  "group relative overflow-hidden rounded-[2.5rem] border border-zinc-100 bg-white transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-zinc-300 hover:shadow-2xl hover:shadow-zinc-200/50 flex flex-col py-5 gap-4",
+                  bentoClasses[index] ?? "md:col-span-1 md:row-span-1"
+                )}
+              >
+                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,oklch(0.74_0_0/0.09)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.74_0_0/0.09)_1px,transparent_1px)] bg-size-[28px_28px] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                <div
+                  className={cn(
+                    "absolute inset-x-0 top-0 h-32 bg-linear-to-b opacity-85 transition-opacity duration-300 group-hover:opacity-100",
+                    feature.accent.glow
+                  )}
+                />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_18%,oklch(1_0_0/0.55)_0%,transparent_45%)]" />
 
-              {/* Radial Highlight */}
-              <div className={`absolute -inset-px bg-linear-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
-
-              <div className="relative z-10 flex flex-col h-full">
-                <div className={cn(
-                  "mb-6 inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-zinc-50 border border-zinc-100 group-hover:scale-110 transition-all duration-500 shadow-sm shrink-0",
-                  feature.hoverBg,
-                  feature.hoverBorder
-                )}>
-                  {feature.icon}
-                </div>
-
-                <h3 className="text-xl md:text-2xl font-bold text-zinc-900 mb-3 group-hover:text-primary transition-colors tracking-tight">
-                  {feature.title}
-                </h3>
-
-                <p className={`text-zinc-400 text-[15px] leading-relaxed font-medium ${feature.vertical ? 'max-w-[200px]' : ''}`}>
-                  {feature.description}
-                </p>
-              </div>
-
-              {/* Decorative Corner Element */}
-              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors duration-500" />
-            </div>
-          ))}
+                <CardHeader className="relative z-10 gap-2 pb-0">
+                  <div className="flex items-center justify-between gap-3">
+                    <div
+                      className={cn(
+                        "inline-flex size-12 shrink-0 items-center justify-center rounded-2xl border bg-white/95 shadow-xs transition-transform duration-300 group-hover:scale-105",
+                        feature.accent.chip
+                      )}
+                    >
+                      <HugeiconsIcon
+                        icon={feature.icon}
+                        size={22}
+                        className={feature.accent.iconColor}
+                      />
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className="rounded-full border-zinc-200 bg-white px-2.5 font-bold uppercase tracking-wider text-zinc-500 text-[9px]"
+                    >
+                      {feature.label}
+                    </Badge>
+                  </div>
+                  <CardTitle
+                    className={cn(
+                      "leading-tight font-bold tracking-tight text-zinc-900 transition-colors group-hover:text-primary",
+                      isWideTile ? "text-2xl md:text-3xl" : "text-xl"
+                    )}
+                  >
+                    {feature.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="relative z-10 pt-3">
+                  <p className="text-sm font-medium leading-relaxed text-zinc-500">
+                    {feature.description}
+                  </p>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
       </div>
     </section>
   );
 }
+
