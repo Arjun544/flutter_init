@@ -14,15 +14,10 @@ type StatsResponse = {
   dark_mode_enabled?: number
 }
 
-function resolveBaseUrl() {
-  if (process.env.NEXT_PUBLIC_URL) return process.env.NEXT_PUBLIC_URL
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
-  return "http://localhost:3000"
-}
 
 async function getStats(): Promise<StatsResponse | null> {
   try {
-    const res = await fetch(`${resolveBaseUrl()}/api/stats`, {
+    const res = await fetch(`${process.env.VERCEL_URL}/api/stats`, {
       next: {
         revalidate: 300,
         tags: ["generator-stats"],
