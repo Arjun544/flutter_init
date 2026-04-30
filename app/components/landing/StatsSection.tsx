@@ -19,7 +19,7 @@ async function getStats(): Promise<StatsResponse | null> {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/stats`, {
       next: {
-        revalidate: 300,
+        revalidate: 60,
         tags: ["generator-stats"],
       },
     })
