@@ -1,17 +1,18 @@
 "use client";
 
 import { Switch } from '@/components/ui/switch';
-import { 
-  Database01Icon, 
-  FireIcon, 
-  Folder01Icon, 
-  Unlink01Icon, 
-  Package01Icon, 
-  Route01Icon, 
-  WaveIcon 
+import {
+  Database01Icon,
+  FireIcon,
+  Folder01Icon,
+  Unlink01Icon,
+  Package01Icon,
+  Route01Icon,
+  WaveIcon
 } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { useState } from 'react';
+import Image from "next/image";
 
 export function MobileNodePattern() {
   const [nodes, setNodes] = useState({
@@ -49,7 +50,17 @@ export function MobileNodePattern() {
             : 'bg-white/70 hover:bg-white/95 border-white/40 shadow-zinc-200/20'}
         `}>
           <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 border ${active ? bgClass + ' border-white/20 shadow-sm' : 'bg-zinc-100 border-zinc-200'}`}>
-            <HugeiconsIcon icon={Icon} size={20} className={`transition-colors duration-300 ${active ? 'text-white' : 'text-zinc-400'}`} />
+            {label === 'Supabase' ? <Image
+              src="/icons/supabase.svg"
+              alt="Supabase"
+              width={24}
+              height={24}
+            /> : label === 'Firebase' ? <Image
+              src="/icons/firebase.svg"
+              alt="Firebase"
+              width={24}
+              height={24}
+            /> : <HugeiconsIcon icon={Icon} size={20} className={`transition-colors duration-300 ${active ? 'text-white' : 'text-zinc-400'}`} />}
           </div>
 
           <span className={`text-[13px] font-bold ml-3 mr-4 transition-colors duration-300 ${active ? 'text-zinc-800' : 'text-zinc-500'}`}>
@@ -98,12 +109,12 @@ export function MobileNodePattern() {
         </style>
 
         {/* Vertical Backbone */}
-        <path 
-          d="M 200 200 L 200 450" 
+        <path
+          d="M 200 200 L 200 450"
           className="stroke-zinc-200 stroke-2"
         />
-        <path 
-          d="M 200 200 L 200 450" 
+        <path
+          d="M 200 200 L 200 450"
           className="stroke-zinc-200/50 stroke-2 flow-line-mob"
           filter="url(#glow-mob)"
         />
@@ -133,11 +144,11 @@ export function MobileNodePattern() {
           { cx: 300, cy: 550 }, // Dio
           { cx: 200, cy: 450 }  // Bloc
         ].map((dot, i) => (
-          <circle 
+          <circle
             key={i}
-            cx={dot.cx} 
-            cy={dot.cy} 
-            r="4" 
+            cx={dot.cx}
+            cy={dot.cy}
+            r="4"
             className="fill-primary"
             filter="url(#glow-mob)"
           />
@@ -151,7 +162,7 @@ export function MobileNodePattern() {
           <div className="relative w-20 h-20 bg-linear-to-tr from-primary via-primary/90 to-primary/80 rounded-[1.75rem] shadow-[0_20px_40px_-10px_hsl(var(--primary)/0.5)] flex items-center justify-center transform hover:scale-105 transition-all duration-500 border border-white/30 overflow-hidden">
             <div className="absolute inset-0 bg-linear-to-br from-white/20 to-transparent pointer-events-none" />
             <div className="relative animate-float">
-               <HugeiconsIcon icon={Folder01Icon} size={40} color='#ffffff' className="drop-shadow-lg" />
+              <HugeiconsIcon icon={Folder01Icon} size={40} color='#ffffff' className="drop-shadow-lg" />
             </div>
           </div>
         </div>
