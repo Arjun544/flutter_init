@@ -9,7 +9,7 @@ export default defineConfig({
         exclude: ["tests/e2e/**"],
         testTimeout: 30_000,
         hookTimeout: 30_000,
-        reporters: ["./tests/utils/custom-reporter.ts"],
+        reporters: ["default"],
         // Vitest 4: pool options are top-level
         isolate: false,
         fileParallelism: false,
