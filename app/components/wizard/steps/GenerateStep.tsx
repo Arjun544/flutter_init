@@ -18,8 +18,16 @@ export function GenerateStep({ error, isGenerating }: { error: string | null, is
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="space-y-3">
-                    <SummaryItem label="App name" value={config.appName} />
-                    <SummaryItem label="Package ID" value={config.packageId} />
+                    <SummaryItem
+                        label="App name"
+                        value={config.appName}
+                        error={config.appName !== "" && !/^[a-z][a-z0-9_]*$/.test(config.appName)}
+                    />
+                    <SummaryItem
+                        label="Package ID"
+                        value={config.packageId}
+                        error={config.packageId !== "" && !/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(config.packageId)}
+                    />
                     <SummaryItem label="Theme" value={config.theme.preset} />
                     <SummaryItem label="Architecture" value={config.architecture} />
                     <SummaryItem label="State" value={config.stateManagement} />

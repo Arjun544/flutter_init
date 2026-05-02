@@ -1,9 +1,16 @@
+import { cn } from "@/lib/utils"
 
-export function SummaryItem({ label, value }: { label: string; value: string }) {
+export function SummaryItem({ label, value, error }: { label: string; value: string; error?: boolean }) {
     return (
-        <div className="flex items-center justify-between rounded-lg border border-border/40 bg-card/40 p-3 backdrop-blur-sm hover:bg-card/60 hover:border-border/60 transition-colors">
+        <div className={cn(
+            "flex items-center justify-between rounded-lg border border-border/40 bg-card/40 p-3 backdrop-blur-sm transition-colors",
+            error ? "border-destructive/50 bg-destructive/5" : "hover:bg-card/60 hover:border-border/60"
+        )}>
             <span className="text-sm text-muted-foreground shrink-0">{label}</span>
-            <span className="text-sm font-medium text-foreground tracking-tight text-right">{value}</span>
+            <span className={cn(
+                "text-sm font-medium tracking-tight text-right",
+                error ? "text-destructive" : "text-foreground"
+            )}>{value}</span>
         </div>
     )
 }

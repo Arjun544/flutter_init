@@ -1,7 +1,7 @@
 "use client"
 
 import { trackGeneration } from "@/app/lib/analytics/trackGeneration"
-import { StepId, stepOrder } from "@/app/lib/config/schema"
+import { scaffoldConfigSchema, StepId, stepOrder } from "@/app/lib/config/schema"
 import { useWizard } from "@/app/lib/state/useWizardStore"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -82,7 +82,15 @@ export function WizardShell() {
     const [isGenerating, setIsGenerating] = React.useState(false)
     const [error, setError] = React.useState<string | null>(null)
 
+    const isValid = React.useMemo(() => {
+        return scaffoldConfigSchema.safeParse(config).success
+    }, [config])
+
     const handleGenerate = async () => {
+        if (!isValid) {
+            setError("Please fix the errors in your configuration before generating.")
+            return
+        }
         setIsGenerating(true)
         setError(null)
         try {
@@ -186,7 +194,7 @@ export function WizardShell() {
                         </Button>
                         <Button
                             onClick={handleNext}
-                            disabled={isGenerating}
+                            disabled={isGenerating || (step === "generate" && !isValid)}
                             className={cn(
                                 "h-10 px-5 shadow-sm cursor-pointer min-w-[100px]",
                                 stepIndex === stepOrder.length - 1 && "bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 font-semibold text-primary-foreground"
