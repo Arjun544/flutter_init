@@ -7,7 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest"
+    "test": "vitest",
+    "test:unit": "vitest run --config vitest.config.ts",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "test:matrix": "bun tests/e2e/run-matrix.ts",
+    "test:matrix:critical": "bun tests/e2e/run-matrix.ts --critical",
+    "test:gate": "npm run test:unit && npm run test:matrix:critical",
+    "test:gate:full": "npm run test:unit && npm run test:matrix"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
@@ -43,10 +49,12 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/ui": "^4.1.5",
     "eslint": "^9",
     "eslint-config-next": "16.1.4",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^4.0.17"
+    "vitest": "^4.1.5",
+    "yaml": "^2.8.4"
   }
 }

@@ -1,16 +1,16 @@
 import path from "node:path"
 import { defineConfig } from "vitest/config"
 
+/**
+ * Separate vitest config for e2e tests that require Dart SDK.
+ * Used via: vitest run --config vitest.e2e.config.ts
+ */
 export default defineConfig({
     test: {
         environment: "node",
-        include: ["tests/**/*.spec.ts"],
-        // Exclude e2e tests from default `vitest run` — they need Dart SDK
-        exclude: ["tests/e2e/**"],
-        testTimeout: 30_000,
+        include: ["tests/e2e/**/*.spec.ts"],
+        testTimeout: 120_000,
         hookTimeout: 30_000,
-        reporters: ["./tests/utils/custom-reporter.ts"],
-        // Vitest 4: pool options are top-level
         isolate: false,
         fileParallelism: false,
     },

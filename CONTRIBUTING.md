@@ -65,6 +65,7 @@ See the detailed [Template Development Guide](docs/template-development.md) and 
 Before submitting your PR, ensure you can check off the following:
 
 - [ ] **Valid Dart**: Run the `template-dev.ts` script and verify that `dart analyze` shows zero errors in `dev_out/`.
+- [ ] **Automated Tests**: Run `npm run test:gate` and ensure all Layer 1 and critical Layer 2 tests pass.
 - [ ] **Flag Paths**: Check both `true` and `false` paths for any new Handlebars conditionals.
 - [ ] **Barrel Exports**: New services/widgets are correctly exported in `services.dart.hbs` or `widgets.dart.hbs`.
 - [ ] **Linting**: Ensure any core change to the generator passes `bun run lint`.

@@ -132,6 +132,7 @@ Explore our technical guides to understand the architecture and flags:
 *   **[Generated Output Reference](docs/generated-output.md)**: Understanding the "src-first" structure.
 *   **[Architecture Overview](docs/architecture.md)**: Under the hood of the Next.js/Handlebars engine.
 *   **[Handlebars Language Guide](docs/handlebars.md)**: Logic patterns for template contributors.
+*   **[Testing Guide](docs/testing.md)**: How our 2-layer automated testing suite works.
 *   **[Contribution Guide](CONTRIBUTING.md)**: How to add your own patterns.
 
 ---
