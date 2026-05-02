@@ -55,6 +55,13 @@ type TemplateContext = ScaffoldConfig & {
         usesDeviceInfoPlus: boolean
         usesAppVersionUpdate: boolean
         usesGeolocator: boolean
+        usesFirebaseAuth: boolean
+        usesFirebaseFirestore: boolean
+        usesFirebaseStorage: boolean
+        usesSupabaseAuth: boolean
+        usesSupabaseDb: boolean
+        usesAppwriteAuth: boolean
+        usesAppwriteDb: boolean
     }
 }
 
@@ -168,6 +175,13 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             usesDeviceInfoPlus: config.misc.usesDeviceInfoPlus,
             usesAppVersionUpdate: config.misc.usesAppVersionUpdate,
             usesGeolocator: config.misc.usesGeolocator,
+            usesFirebaseAuth: config.backend.provider === "firebase" ? (config.backend.options.authEmail || config.backend.options.authGoogle || config.backend.options.authPhone) : false,
+            usesFirebaseFirestore: config.backend.provider === "firebase" ? config.backend.options.firestore : false,
+            usesFirebaseStorage: config.backend.provider === "firebase" ? config.backend.options.storage : false,
+            usesSupabaseAuth: config.backend.provider === "supabase" ? config.backend.options.auth : false,
+            usesSupabaseDb: config.backend.provider === "supabase" ? config.backend.options.database : false,
+            usesAppwriteAuth: config.backend.provider === "appwrite" ? config.backend.options.auth : false,
+            usesAppwriteDb: config.backend.provider === "appwrite" ? config.backend.options.database : false,
         },
     }
 }

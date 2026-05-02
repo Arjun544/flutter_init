@@ -4,7 +4,7 @@ void showToast(
   BuildContext context, {
   required String message,
   String? status = 'success',
-  IconData? icon,
+  dynamic icon,
   Duration? duration,
   bool? autoDismiss,
 }) {
@@ -49,8 +49,8 @@ void showToast(
     builder: (context) => ToastCard(
       color: backgroundColor,
       shadowColor: colorScheme.shadow.withValues(alpha: 0.05),
-      leading: Icon(
-        icon ??
+      leading: AppIcon(
+        icon: icon ??
             (toastStatus == 'success'
                 ? {{#if flags.usesIconsaxPlus}}IconsaxPlusBold.tick_circle{{else if flags.usesFlutterRemix}}FlutterRemix.checkbox_circle_fill{{else if flags.usesHugeicons}}HugeIcons.strokeRoundedTickCircle{{else}}Icons.check_circle_outline{{/if}}
                 : toastStatus == 'error'
@@ -74,7 +74,7 @@ void showToast(
 void showGlobalToast({
   required String message,
   String? status = 'success',
-  IconData? icon,
+  dynamic icon,
   Duration? duration,
   bool? autoDismiss,
 }) {

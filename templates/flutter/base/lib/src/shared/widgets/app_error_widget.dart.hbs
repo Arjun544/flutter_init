@@ -22,7 +22,7 @@ class AppErrorWidget extends StatelessWidget {
   final String title;
   final String? message;
   final VoidCallback? onRetry;
-  final IconData icon;
+  final dynamic icon;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class AppErrorWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 56, color: cs.error),
+            AppIcon(icon: icon, size: 56, color: cs.error),
             const SizedBox(height: 16),
             Text(
               title,

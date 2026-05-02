@@ -1,7 +1,6 @@
 import 'package:{{flags.appSnake}}/src/imports/core_imports.dart';
 import 'package:{{flags.appSnake}}/src/imports/packages_imports.dart';
 
-
 {{#if flags.isRiverpod}}
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/{{else if (eq architecture "mvc")}}controllers/auth/{{else if (eq architecture "mvvm")}}ui/auth/providers/{{else}}features/auth/presentation/providers/{{/if}}auth_provider.dart';
 {{else if flags.isBloc}}
@@ -19,24 +18,16 @@ import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}pr
 {{#if (eq flags.routerPackage "auto_route")}}
 @RoutePage()
 {{/if}}
-{{#if (or flags.isRiverpod flags.isBloc flags.isProvider flags.isGetX flags.isMobX flags.usesFlutterHooks)}}
-class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}HookConsumerWidget{{else if flags.isRiverpod}}ConsumerWidget{{else if flags.isGetX}}GetView<AuthController>{{else if flags.usesFlutterHooks}}HookWidget{{else}}StatelessWidget{{/if}} {
+{{#if flags.usesFlutterHooks}}
+class LoginScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}HookWidget{{/if}} {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context{{#if flags.isRiverpod}}, WidgetRef ref{{/if}}) {
-    {{#if flags.usesFlutterHooks}}
-    final GlobalKey<FormState> formKey =
-        useMemoized(() => GlobalKey<FormState>());
+  Widget build(BuildContext context, {{#if flags.isRiverpod}}WidgetRef ref{{/if}}) {
+    final formKey = useMemoized(() => GlobalKey<FormState>());
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
     final obscurePassword = useState(true);
-    {{else}}
-    final formKey = GlobalKey<FormState>();
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-    const obscurePassword = true;
-    {{/if}}
 
     {{#if flags.isRiverpod}}
     final isLoading = ref.watch(authControllerProvider);
@@ -45,35 +36,25 @@ class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}H
     {{else if flags.isProvider}}
     final isLoading = context.select((AuthProvider p) => p.isLoading);
     {{else if flags.isGetX}}
+    final controller = Get.find<AuthController>();
+    final isLoading = controller.isLoading.value;
     {{else if flags.isMobX}}
-    // In a real app, MobX stores might be provided via Provider/GetIt.
-    // Here we use a locally created memoized instance for the template.
-    final authStore = {{#if flags.usesFlutterHooks}}useMemoized{{else}}null; // Add your MobX store here{{/if}}(() => AuthStore(repository: AuthRepositoryImpl()), []);
+    final authStore = useMemoized(() => AuthStore(repository: AuthRepositoryImpl()), []);
     final isLoading = authStore.isLoading;
     {{else if flags.isNoneState}}
-    {{#if flags.usesFlutterHooks}}
     final viewModel = useMemoized(() => AuthViewModel(repository: AuthRepositoryImpl()), []);
     useListenable(viewModel);
     final isLoading = viewModel.isLoading;
     {{else}}
-    // Vanilla state without hooks would usually use a StatefulWidget or a simple ValueNotifier.
-    // For the template, we show the loading state from a local variable.
-    final isLoading = false;
-    {{/if}}
-    {{else if flags.usesFlutterHooks}}
     final isLoadingState = useState(false);
     final isLoading = isLoadingState.value;
-    {{else}}
-    final isLoading = false;
     {{/if}}
 
     final cs = context.theme.colorScheme;
     final tt = context.theme.textTheme;
 
     Future<void> handleLogin() async {
-      if (!(formKey.currentState?.validate() ?? false)) {
-        return;
-      }
+      if (!(formKey.currentState?.validate() ?? false)) return;
 
       {{#if flags.isRiverpod}}
       ref.read(authControllerProvider.notifier).login(
@@ -90,13 +71,13 @@ class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}H
         ),
       );
       {{else if flags.isProvider}}
-       context.read<AuthProvider>().login(
+      context.read<AuthProvider>().login(
         context: context, 
         email: emailController.text, 
         password: passwordController.text,
       );
       {{else if flags.isGetX}}
-       controller.login(
+      controller.login(
         context: context, 
         email: emailController.text, 
         password: passwordController.text,
@@ -107,16 +88,14 @@ class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}H
         email: emailController.text.trim(), 
         password: passwordController.text.trim(),
       );
-      {{else if (and flags.isNoneState flags.usesFlutterHooks)}}
+      {{else if flags.isNoneState}}
       viewModel.login(
         context: context, 
         email: emailController.text.trim(), 
         password: passwordController.text.trim(),
       );
       {{else}}
-      {{#if flags.usesFlutterHooks}}
       isLoadingState.value = true;
-      {{/if}}
       try {
         final result = await AuthService.instance.login(
           email: emailController.text.trim(), 
@@ -124,9 +103,7 @@ class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}H
         );
 
         result.fold(
-          (failure) {
-            showToast(context, message: failure.message, status: 'error');
-          },
+          (failure) => showToast(context, message: failure.message, status: 'error'),
           (user) {
             if (context.mounted) {
               {{#if (eq flags.routerPackage "go_router")}}
@@ -140,11 +117,138 @@ class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}H
           },
         );
       } catch (e) {
-       AppLogger.error(e.toString());
+        showToast(context, message: e.toString(), status: 'error');
       } finally {
-        {{#if flags.usesFlutterHooks}}
         isLoadingState.value = false;
-        {{/if}}
+      }
+      {{/if}}
+    }
+
+    {{#if flags.isGetX}}
+    return Obx(() => _LoginView(
+    {{else}}
+    return _LoginView(
+    {{/if}}
+      formKey: formKey,
+      emailController: emailController,
+      passwordController: passwordController,
+      obscurePassword: obscurePassword.value,
+      isLoading: isLoading,
+      onToggleObscure: () => obscurePassword.value = !obscurePassword.value,
+      onLogin: handleLogin,
+      cs: cs,
+      tt: tt,
+    ));
+    {{#if flags.isGetX}}
+    );
+    {{/if}}
+  }
+}
+{{else}}
+class LoginScreen extends {{#if flags.isRiverpod}}ConsumerStatefulWidget{{else}}StatefulWidget{{/if}} {
+  const LoginScreen({super.key});
+
+  @override
+  {{#if flags.isRiverpod}}
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  {{else}}
+  State<LoginScreen> createState() => _LoginScreenState();
+  {{/if}}
+}
+
+class _LoginScreenState extends {{#if flags.isRiverpod}}ConsumerState<LoginScreen>{{else}}State<LoginScreen>{{/if}} {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+  {{#if (or flags.isNoneState flags.isMobX)}}
+  bool _isLoading = false;
+  {{/if}}
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    {{#if flags.isRiverpod}}
+    final isLoading = ref.watch(authControllerProvider);
+    {{else if flags.isBloc}}
+    final isLoading = context.select((AuthBloc bloc) => bloc.state.isLoading);
+    {{else if flags.isProvider}}
+    final isLoading = context.select((AuthProvider p) => p.isLoading);
+    {{else if flags.isGetX}}
+    final controller = Get.find<AuthController>();
+    {{else if flags.isMobX}}
+    final isLoading = _isLoading;
+    {{else}}
+    final isLoading = _isLoading;
+    {{/if}}
+
+    final cs = context.theme.colorScheme;
+    final tt = context.theme.textTheme;
+
+    Future<void> handleLogin() async {
+      if (!(_formKey.currentState?.validate() ?? false)) return;
+      
+      {{#if (or flags.isNoneState flags.isMobX)}}
+      setState(() => _isLoading = true);
+      {{/if}}
+
+      {{#if flags.isRiverpod}}
+      ref.read(authControllerProvider.notifier).login(
+        context: context, 
+        email: _emailController.text, 
+        password: _passwordController.text,
+      );
+      {{else if flags.isBloc}}
+      context.read<AuthBloc>().add(
+        LoginRequested(
+          context: context, 
+          email: _emailController.text, 
+          password: _passwordController.text,
+        ),
+      );
+      {{else if flags.isProvider}}
+      context.read<AuthProvider>().login(
+        context: context, 
+        email: _emailController.text, 
+        password: _passwordController.text,
+      );
+      {{else if flags.isGetX}}
+      controller.login(
+        context: context, 
+        email: _emailController.text, 
+        password: _passwordController.text,
+      );
+      {{else}}
+      try {
+        final result = await AuthService.instance.login(
+          email: _emailController.text.trim(), 
+          password: _passwordController.text.trim(),
+        );
+
+        result.fold(
+          (failure) => showToast(context, message: failure.message, status: 'error'),
+          (user) {
+            if (mounted) {
+              {{#if (eq flags.routerPackage "go_router")}}
+              context.go(AppRoutes.home);
+              {{else if (eq flags.routerPackage "auto_route")}}
+              context.replaceRoute(const HomeRoute());
+              {{else}}
+              Navigator.pushReplacementNamed(context, AppRoutes.home);
+              {{/if}}
+            }
+          },
+        );
+      } catch (e) {
+        showToast(context, message: e.toString(), status: 'error');
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
       }
       {{/if}}
     }
@@ -152,10 +256,61 @@ class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}H
     {{#if flags.isGetX}}
     return Obx(() {
       final isLoading = controller.isLoading.value;
-      return Scaffold(
+      return _LoginView(
+        formKey: _formKey,
+        emailController: _emailController,
+        passwordController: _passwordController,
+        obscurePassword: _obscurePassword,
+        isLoading: isLoading,
+        onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
+        onLogin: handleLogin,
+        cs: cs,
+        tt: tt,
+      );
+    });
     {{else}}
-    return Scaffold(
+    return _LoginView(
+      formKey: _formKey,
+      emailController: _emailController,
+      passwordController: _passwordController,
+      obscurePassword: _obscurePassword,
+      isLoading: isLoading,
+      onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
+      onLogin: handleLogin,
+      cs: cs,
+      tt: tt,
+    );
     {{/if}}
+  }
+}
+{{/if}}
+
+class _LoginView extends StatelessWidget {
+  const _LoginView({
+    required this.formKey,
+    required this.emailController,
+    required this.passwordController,
+    required this.obscurePassword,
+    required this.isLoading,
+    required this.onToggleObscure,
+    required this.onLogin,
+    required this.cs,
+    required this.tt,
+  });
+
+  final GlobalKey<FormState> formKey;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final bool obscurePassword;
+  final bool isLoading;
+  final VoidCallback onToggleObscure;
+  final VoidCallback onLogin;
+  final ColorScheme cs;
+  final TextTheme tt;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -200,11 +355,11 @@ class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}H
                         controller: passwordController,
                         enabled: !isLoading,
                         label: {{#if flags.supportsLocalization}}'auth.password'.tr(){{else}}'Password'{{/if}},
-                        obscureText: {{#if flags.usesFlutterHooks}}obscurePassword.value{{else}}obscurePassword{{/if}},
+                        obscureText: obscurePassword,
                         prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.lock{{else}}Icons.lock_outline{{/if}}),
                         suffixIcon: IconButton(
-                          icon: Icon({{#if flags.usesFlutterHooks}}obscurePassword.value ? Icons.visibility_off : Icons.visibility{{else}}Icons.visibility{{/if}}),
-                          onPressed: () => {{#if flags.usesFlutterHooks}}obscurePassword.value = !obscurePassword.value{{else}}null{{/if}},
+                          icon: Icon(obscurePassword ? Icons.visibility_off : Icons.visibility),
+                          onPressed: onToggleObscure,
                         ),
                          validator: (v) {
                           if (AppUtils.isBlank(v)) {
@@ -265,7 +420,7 @@ class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}H
                       AppButton(
                         label: 'Sign In',
                         isLoading: isLoading,
-                        onPressed: isLoading ? null : handleLogin,
+                        onPressed: isLoading ? null : onLogin,
                         width: ButtonSize.large,
                         isFullWidth: false,
                       ),
@@ -364,276 +519,6 @@ class LoginScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}H
           ),
         ),
       ),
-    {{#if flags.isGetX}}
     );
-    });
-    {{else}}
-    );
-    {{/if}}
   }
 }
-{{else}}
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _isLoading = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = context.theme.colorScheme;
-    final tt = context.theme.textTheme;
-
-    Future<void> handleLogin() async {
-      if (!(_formKey.currentState?.validate() ?? false)) {
-        return;
-      }
-      setState(() { _isLoading = true; });
-      try {
-        final result = await AuthService.instance.login(
-          email: _emailController.text.trim(), 
-          password: _passwordController.text.trim(),
-        );
-
-        result.fold(
-          (failure) => showToast(context, message: failure.message, status: 'error'),
-          (user) {
-            if (mounted) {
-              {{#if (eq flags.routerPackage "go_router")}}
-              context.go(AppRoutes.home);
-              {{else if (eq flags.routerPackage "auto_route")}}
-              context.replaceRoute(const HomeRoute());
-              {{else}}
-              Navigator.pushReplacementNamed(context, AppRoutes.home);
-              {{/if}}
-            }
-          },
-        );
-      } catch (e) {
-        showToast(context, message: e.toString(), status: 'error');
-      } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
-      }
-    }
-
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: {{res 'AppSpacing.lg' 'w' flags.usesScreenutil}}),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
-                Text(
-                  {{#if flags.supportsLocalization}}'auth.log_in'.tr(){{else}}'Welcome Back'{{/if}},
-                  style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: {{res 'AppSpacing.sm' 'h' flags.usesScreenutil}}),
-                Text(
-                  {{#if flags.supportsLocalization}}'auth.log_in_subtitle'.tr(){{else}}'Log in to continue your journey'{{/if}},
-                  textAlign: TextAlign.center,
-                  style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                ),
-                SizedBox(height: {{res 'AppSpacing.xxxl' 'h' flags.usesScreenutil}}),
-                // Form Card
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      AppTextField(
-                        controller: _emailController,
-                        enabled: !_isLoading,
-                        label: {{#if flags.supportsLocalization}}'auth.email'.tr(){{else}}'Email'{{/if}},
-                        prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.sms{{else}}Icons.email_outlined{{/if}}),
-                        validator: (v) {
-                          if (AppUtils.isBlank(v)) {
-                            return {{#if flags.supportsLocalization}}'auth.email_required'.tr(){{else}}'Email is required'{{/if}};
-                          }
-                          if (!AppUtils.isValidEmail(v!)) {
-                            return {{#if flags.supportsLocalization}}'auth.email_invalid'.tr(){{else}}'Enter a valid email'{{/if}};
-                          }
-                          return;
-                        },
-                      ),
-                      SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
-                      AppTextField(
-                        controller: _passwordController,
-                        enabled: !_isLoading,
-                        label: {{#if flags.supportsLocalization}}'auth.password'.tr(){{else}}'Password'{{/if}},
-                        obscureText: _obscurePassword,
-                        prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.lock{{else}}Icons.lock_outline{{/if}}),
-                        suffixIcon: IconButton(
-                          icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                        ),
-                         validator: (v) {
-                          if (AppUtils.isBlank(v)) {
-                            return {{#if flags.supportsLocalization}}'auth.password_required'.tr(){{else}}'Password is required'{{/if}};
-                          }
-                          if (v!.length < 6) {
-                            return {{#if flags.supportsLocalization}}'auth.password_too_short'.tr(){{else}}'Password must be at least 6 characters'{{/if}};
-                          }
-                          return;
-                        },
-                      ),
-                      SizedBox(height: {{res 'AppSpacing.sm' 'h' flags.usesScreenutil}}),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            spacing: {{res 5 'w' flags.usesScreenutil}},
-                            children: [
-                              SizedBox(
-                                width: {{res 20 'w' flags.usesScreenutil}},
-                                height: {{res 20 'h' flags.usesScreenutil}},
-                                child: Checkbox(
-                                  value: true,
-                                  onChanged: (value) {},
-                                ),
-                              ),
-                              Text(
-                                {{#if flags.supportsLocalization}}'auth.remember_me'.tr(){{else}}'Remember Me'{{/if}},
-                                style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
-                              ),
-                            ],
-                          ),
-                          TextButton(
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                            ),
-                            onPressed: () {
-                              {{#if (eq flags.routerPackage "go_router")}}
-                              context.push(AppRoutes.forgotPassword);
-                              {{else if (eq flags.routerPackage "auto_route")}}
-                              context.pushRoute(const ForgotPasswordRoute());
-                              {{else if flags.isGetX}}
-                              Get.toNamed(AppRoutes.forgotPassword);
-                              {{else}}
-                              Navigator.pushNamed(context, AppRoutes.forgotPassword);
-                              {{/if}}
-                            },
-                            child: Text(
-                              {{#if flags.supportsLocalization}}'auth.forgot_password'.tr(){{else}}'Forgot Password?'{{/if}},
-                              style: tt.bodySmall?.copyWith(
-                                color: cs.onSurfaceVariant,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
-                      AppButton(
-                        label: 'Sign In',
-                        isLoading: _isLoading,
-                        onPressed: _isLoading ? null : handleLogin,
-                        width: ButtonSize.large,
-                        isFullWidth: false,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: {{res 'AppSpacing.xxxl' 'h' flags.usesScreenutil}}),
-                {{#if flags.usesFlutterSvg}}
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: {{res 20 'w' flags.usesScreenutil}},
-                      children: [
-                        SizedBox(
-                          width: {{res 50 'w' flags.usesScreenutil}},
-                          height: {{res 50 'w' flags.usesScreenutil}},
-                          child: TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFFEA4335).withValues(alpha: 0.8),
-                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: AppBorders.button,
-                              ),
-                            ),
-                            child: SvgPicture.asset(AppAssets.googleIcon),
-                          ),
-                        ),
-                        SizedBox(
-                          width: {{res 50 'w' flags.usesScreenutil}},
-                          height: {{res 50 'w' flags.usesScreenutil}},
-                          child: TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFF4285F4),
-                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: AppBorders.button,
-                              ),
-                            ),
-                            child: SvgPicture.asset(AppAssets.facebookIcon),
-                          ),
-                        ),
-                        SizedBox(
-                          width: {{res 50 'w' flags.usesScreenutil}},
-                          height: {{res 50 'w' flags.usesScreenutil}},
-                          child: TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFF000000),
-                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: AppBorders.button,
-                              ),
-                            ),
-                            child: SvgPicture.asset(AppAssets.appleIcon),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
-                  ],
-                ),
-                {{/if}}
-                InkWell(
-                  onTap: () {
-                    {{#if (eq flags.routerPackage "go_router")}}
-                    context.push(AppRoutes.signup);
-                    {{else if (eq flags.routerPackage "auto_route")}}
-                    context.pushRoute(const SignupRoute());
-                    {{else if flags.isGetX}}
-                    Get.toNamed(AppRoutes.signup);
-                    {{else}}
-                    Navigator.pushNamed(context, AppRoutes.signup);
-                    {{/if}}
-                  },
-                  child: RichText(
-                    text: TextSpan(
-                      text: {{#if flags.supportsLocalization}}'auth.dont_have_account'.tr(){{else}}'Don\'t have an account? '{{/if}},
-                      style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                      children: [
-                        TextSpan(
-                          text: {{#if flags.supportsLocalization}}'auth.sign_up'.tr(){{else}}'Sign Up'{{/if}},
-                          style: TextStyle(
-                            color: cs.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-}
-{{/if}}

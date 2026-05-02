@@ -74,16 +74,8 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(
-                {{#if flags.usesIconsaxPlus}}
-                IconsaxPlusLinear.home,
-                {{else if flags.usesFlutterRemix}}
-                FlutterRemix.home_line,
-                {{else if flags.usesHugeicons}}
-                HugeIcons.strokeRoundedHome01,
-                {{else}}
-                Icons.home_rounded,
-                {{/if}}
+              AppIcon(
+                icon: {{#if flags.usesIconsaxPlus}}IconsaxPlusLinear.home{{else if flags.usesFlutterRemix}}FlutterRemix.home_line{{else if flags.usesHugeicons}}HugeIcons.strokeRoundedHome01{{else}}Icons.home_rounded{{/if}},
                 size: {{res 60 'sp' flags.usesScreenutil}},
                 color: colorScheme.primary,
               ),

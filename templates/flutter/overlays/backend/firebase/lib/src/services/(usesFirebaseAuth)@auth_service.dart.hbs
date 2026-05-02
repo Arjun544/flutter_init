@@ -21,6 +21,7 @@ class AuthService {
     });
   }
 
+  {{#if backend.options.authEmail}}
   FutureEither<Map<String, dynamic>?> login({
     required String email,
     required String password,
@@ -68,6 +69,7 @@ class AuthService {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
     }, requiresNetwork: true);
   }
+  {{/if}}
 
   FutureEither<void> logout() async {
     return runTask(() async {

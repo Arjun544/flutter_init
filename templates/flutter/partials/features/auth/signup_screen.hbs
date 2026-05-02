@@ -1,7 +1,6 @@
 import 'package:{{flags.appSnake}}/src/imports/core_imports.dart';
 import 'package:{{flags.appSnake}}/src/imports/packages_imports.dart';
 
-
 {{#if flags.isRiverpod}}
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/{{else if (eq architecture "mvc")}}controllers/auth/{{else if (eq architecture "mvvm")}}ui/auth/providers/{{else}}features/auth/presentation/providers/{{/if}}auth_provider.dart';
 {{else if flags.isBloc}}
@@ -19,30 +18,19 @@ import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}pr
 {{#if (eq flags.routerPackage "auto_route")}}
 @RoutePage()
 {{/if}}
-{{#if (or flags.isRiverpod flags.isBloc flags.isProvider flags.isGetX flags.isMobX flags.usesFlutterHooks)}}
-class SignupScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}HookConsumerWidget{{else if flags.isRiverpod}}ConsumerWidget{{else if flags.isGetX}}GetView<AuthController>{{else if flags.usesFlutterHooks}}HookWidget{{else}}StatelessWidget{{/if}} {
+{{#if flags.usesFlutterHooks}}
+class SignupScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}HookWidget{{/if}} {
   const SignupScreen({super.key});
 
   @override
-  Widget build(BuildContext context{{#if flags.isRiverpod}}, WidgetRef ref{{/if}}) {
-    {{#if flags.usesFlutterHooks}}
-    final GlobalKey<FormState> formKey =
-        useMemoized(() => GlobalKey<FormState>());
+  Widget build(BuildContext context, {{#if flags.isRiverpod}}WidgetRef ref{{/if}}) {
+    final formKey = useMemoized(() => GlobalKey<FormState>());
     final nameController = useTextEditingController();
     final emailController = useTextEditingController();
     final passwordController = useTextEditingController();
     final confirmPasswordController = useTextEditingController();
     final obscurePassword = useState(true);
     final obscureConfirmPassword = useState(true);
-    {{else}}
-    final formKey = GlobalKey<FormState>();
-    final nameController = TextEditingController();
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-    final confirmPasswordController = TextEditingController();
-    const obscurePassword = true;
-    const obscureConfirmPassword = true;
-    {{/if}}
 
     {{#if flags.isRiverpod}}
     final isLoading = ref.watch(authControllerProvider);
@@ -51,37 +39,30 @@ class SignupScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}
     {{else if flags.isProvider}}
     final isLoading = context.select((AuthProvider p) => p.isLoading);
     {{else if flags.isGetX}}
+    final controller = Get.find<AuthController>();
     final isLoading = controller.isLoading.value;
     {{else if flags.isMobX}}
-    final authStore = {{#if flags.usesFlutterHooks}}useMemoized{{else}}null; // Add your MobX store here{{/if}}(() => AuthStore(repository: AuthRepositoryImpl()), []);
+    final authStore = useMemoized(() => AuthStore(repository: AuthRepositoryImpl()), []);
     final isLoading = authStore.isLoading;
     {{else if flags.isNoneState}}
-    {{#if flags.usesFlutterHooks}}
     final viewModel = useMemoized(() => AuthViewModel(repository: AuthRepositoryImpl()), []);
     useListenable(viewModel);
     final isLoading = viewModel.isLoading;
     {{else}}
-    final isLoading = false;
-    {{/if}}
-    {{else if flags.usesFlutterHooks}}
     final isLoadingState = useState(false);
     final isLoading = isLoadingState.value;
-    {{else}}
-    final isLoading = false;
     {{/if}}
 
     final cs = context.theme.colorScheme;
     final tt = context.theme.textTheme;
 
     Future<void> handleSignup() async {
-      if (!(formKey.currentState?.validate() ?? false)) {
-        return;
-      }
+      if (!(formKey.currentState?.validate() ?? false)) return;
 
       {{#if flags.isRiverpod}}
       ref.read(authControllerProvider.notifier).signUp(
-        context: context,
-        name: nameController.text, 
+        context: context, 
+        name: nameController.text,
         email: emailController.text, 
         password: passwordController.text,
       );
@@ -102,7 +83,7 @@ class SignupScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}
         password: passwordController.text,
       );
       {{else if flags.isGetX}}
-       controller.signUp(
+      controller.signUp(
         context: context, 
         name: nameController.text,
         email: emailController.text, 
@@ -111,21 +92,19 @@ class SignupScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}
       {{else if flags.isMobX}}
       authStore.signUp(
         context: context, 
-        name: nameController.text, 
+        name: nameController.text.trim(),
         email: emailController.text.trim(), 
         password: passwordController.text.trim(),
       );
-      {{else if (and flags.isNoneState flags.usesFlutterHooks)}}
+      {{else if flags.isNoneState}}
       viewModel.signUp(
         context: context, 
-        name: nameController.text, 
+        name: nameController.text.trim(),
         email: emailController.text.trim(), 
         password: passwordController.text.trim(),
       );
       {{else}}
-      {{#if flags.usesFlutterHooks}}
       isLoadingState.value = true;
-      {{/if}}
       try {
         final result = await AuthService.instance.signUp(
           name: nameController.text.trim(),
@@ -134,9 +113,7 @@ class SignupScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}
         );
 
         result.fold(
-          (failure) {
-            showToast(context, message: failure.message, status: 'error');
-          },
+          (failure) => showToast(context, message: failure.message, status: 'error'),
           (user) {
             if (context.mounted) {
               {{#if (eq flags.routerPackage "go_router")}}
@@ -150,222 +127,50 @@ class SignupScreen extends {{#if (and flags.isRiverpod flags.usesFlutterHooks)}}
           },
         );
       } catch (e) {
-       AppLogger.error(e.toString());
+        showToast(context, message: e.toString(), status: 'error');
       } finally {
-        {{#if flags.usesFlutterHooks}}
         isLoadingState.value = false;
-        {{/if}}
       }
       {{/if}}
     }
 
     {{#if flags.isGetX}}
-    return Obx(() {
-      final isLoading = controller.isLoading.value;
-      return Scaffold(
+    return Obx(() => _SignupView(
     {{else}}
-    return Scaffold(
+    return _SignupView(
     {{/if}}
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: {{res 'AppSpacing.lg' 'w' flags.usesScreenutil}}),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
-                Text(
-                  {{#if flags.supportsLocalization}}'auth.create_account'.tr(){{else}}'Create Account'{{/if}},
-                  style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-                ).animate().fadeIn().slideY(begin: 0.2),
-                SizedBox(height: {{res 'AppSpacing.sm' 'h' flags.usesScreenutil}}),
-                Text(
-                  {{#if flags.supportsLocalization}}'auth.create_account_subtitle'.tr(){{else}}'Join us today and get started'{{/if}},
-                  textAlign: TextAlign.center,
-                  style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                ).animate().fadeIn().slideY(begin: 0.2),
-                SizedBox(height: {{res 'AppSpacing.xxxl' 'h' flags.usesScreenutil}}),
-                // Form Card
-                Form(
-                  key: formKey,
-                  child: Column(
-                    children: [
-                      AppTextField(
-                        controller: nameController,
-                        enabled: !isLoading,
-                        label: {{#if flags.supportsLocalization}}'auth.name'.tr(){{else}}'Full Name'{{/if}},
-                        prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.user{{else}}Icons.person_outline{{/if}}),
-                        validator: (v) => AppUtils.isBlank(v) ? {{#if flags.supportsLocalization}}'auth.name_required'.tr(){{else}}'Name is required'{{/if}} : null,
-                      ),
-                      SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
-                      AppTextField(
-                        controller: emailController,
-                        enabled: !isLoading,
-                        keyboardType: TextInputType.emailAddress,
-                        label: {{#if flags.supportsLocalization}}'auth.email'.tr(){{else}}'Email'{{/if}},
-                        prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.sms{{else}}Icons.email_outlined{{/if}}),
-                        validator: (v) {
-                          if (AppUtils.isBlank(v)) {
-                            return {{#if flags.supportsLocalization}}'auth.email_required'.tr(){{else}}'Email is required'{{/if}};
-                          }
-                          if (!AppUtils.isValidEmail(v!)) {
-                            return {{#if flags.supportsLocalization}}'auth.email_invalid'.tr(){{else}}'Enter a valid email'{{/if}};
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
-                      AppTextField(
-                        controller: passwordController,
-                        enabled: !isLoading,
-                        label: {{#if flags.supportsLocalization}}'auth.password'.tr(){{else}}'Password'{{/if}},
-                        obscureText: {{#if flags.usesFlutterHooks}}obscurePassword.value{{else}}obscurePassword{{/if}},
-                        prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.lock{{else}}Icons.lock_outline{{/if}}),
-                        suffixIcon: IconButton(
-                          icon: Icon({{#if flags.usesFlutterHooks}}obscurePassword.value ? Icons.visibility_off : Icons.visibility{{else}}Icons.visibility{{/if}}),
-                          onPressed: () => {{#if flags.usesFlutterHooks}}obscurePassword.value = !obscurePassword.value{{else}}null{{/if}},
-                        ),
-                         validator: (v) {
-                          if (AppUtils.isBlank(v)) {
-                            return {{#if flags.supportsLocalization}}'auth.password_required'.tr(){{else}}'Password is required'{{/if}};
-                          }
-                          if (v!.length < 6) {
-                            return {{#if flags.supportsLocalization}}'auth.password_too_short'.tr(){{else}}'Password must be at least 6 characters'{{/if}};
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
-                      AppTextField(
-                        controller: confirmPasswordController,
-                        enabled: !isLoading,
-                        label: {{#if flags.supportsLocalization}}'auth.confirm_password'.tr(){{else}}'Confirm Password'{{/if}},
-                        obscureText: {{#if flags.usesFlutterHooks}}obscureConfirmPassword.value{{else}}obscureConfirmPassword{{/if}},
-                        prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.lock{{else}}Icons.lock_outline{{/if}}),
-                        suffixIcon: IconButton(
-                          icon: Icon({{#if flags.usesFlutterHooks}}obscureConfirmPassword.value ? Icons.visibility_off : Icons.visibility{{else}}Icons.visibility{{/if}}),
-                          onPressed: () => {{#if flags.usesFlutterHooks}}obscureConfirmPassword.value = !obscureConfirmPassword.value{{else}}null{{/if}},
-                        ),
-                        validator: (v) {
-                          if (AppUtils.isBlank(v)) {
-                            return {{#if flags.supportsLocalization}}'auth.confirm_password_required'.tr(){{else}}'Confirm password is required'{{/if}};
-                          }
-                          if (v != passwordController.text) {
-                            return {{#if flags.supportsLocalization}}'auth.passwords_do_not_match'.tr(){{else}}'Passwords do not match'{{/if}};
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
-                      AppButton(
-                        label: 'Create Account',
-                        isLoading: isLoading,
-                        onPressed: isLoading ? null : handleSignup,
-                        width: ButtonSize.large,
-                        isFullWidth: false,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: {{res 'AppSpacing.xxxl' 'h' flags.usesScreenutil}}),
-                {{#if flags.usesFlutterSvg}}
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: {{res 20 'w' flags.usesScreenutil}},
-                      children: [
-                        SizedBox(
-                          width: {{res 50 'w' flags.usesScreenutil}},
-                          height: {{res 50 'w' flags.usesScreenutil}},
-                          child: TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFFEA4335).withValues(alpha: 0.8),
-                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: AppBorders.button,
-                              ),
-                            ),
-                            child: SvgPicture.asset(AppAssets.googleIcon),
-                          ),
-                        ),
-                        SizedBox(
-                          width: {{res 50 'w' flags.usesScreenutil}},
-                          height: {{res 50 'w' flags.usesScreenutil}},
-                          child: TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFF4285F4),
-                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: AppBorders.button,
-                              ),
-                            ),
-                            child: SvgPicture.asset(AppAssets.facebookIcon),
-                          ),
-                        ),
-                        SizedBox(
-                          width: {{res 50 'w' flags.usesScreenutil}},
-                          height: {{res 50 'w' flags.usesScreenutil}},
-                          child: TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFF000000),
-                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: AppBorders.button,
-                              ),
-                            ),
-                            child: SvgPicture.asset(AppAssets.appleIcon),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
-                  ],
-                ),
-                {{/if}}
-                InkWell(
-                  onTap: () => Navigator.pop(context),
-                  child: RichText(
-                    text: TextSpan(
-                      text: {{#if flags.supportsLocalization}}'auth.already_have_account'.tr(){{else}}'Already have an account? '{{/if}},
-                      style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                      children: [
-                        TextSpan(
-                          text: {{#if flags.supportsLocalization}}'auth.sign_up'.tr(){{else}}'Login'{{/if}},
-                          style: TextStyle(
-                            color: cs.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
-              ],
-            ),
-          ),
-        ),
-      ),
+      formKey: formKey,
+      nameController: nameController,
+      emailController: emailController,
+      passwordController: passwordController,
+      confirmPasswordController: confirmPasswordController,
+      obscurePassword: obscurePassword.value,
+      obscureConfirmPassword: obscureConfirmPassword.value,
+      isLoading: isLoading,
+      onToggleObscure: () => obscurePassword.value = !obscurePassword.value,
+      onToggleConfirmObscure: () => obscureConfirmPassword.value = !obscureConfirmPassword.value,
+      onSignup: handleSignup,
+      cs: cs,
+      tt: tt,
+    ));
     {{#if flags.isGetX}}
-    );
-    });
-    {{else}}
     );
     {{/if}}
   }
 }
 {{else}}
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends {{#if flags.isRiverpod}}ConsumerStatefulWidget{{else}}StatefulWidget{{/if}} {
   const SignupScreen({super.key});
+
   @override
+  {{#if flags.isRiverpod}}
+  ConsumerState<SignupScreen> createState() => _SignupScreenState();
+  {{else}}
   State<SignupScreen> createState() => _SignupScreenState();
+  {{/if}}
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupScreenState extends {{#if flags.isRiverpod}}ConsumerState<SignupScreen>{{else}}State<SignupScreen>{{/if}} {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -373,18 +178,76 @@ class _SignupScreenState extends State<SignupScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  {{#if (or flags.isNoneState flags.isMobX)}}
   bool _isLoading = false;
+  {{/if}}
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    {{#if flags.isRiverpod}}
+    final isLoading = ref.watch(authControllerProvider);
+    {{else if flags.isBloc}}
+    final isLoading = context.select((AuthBloc bloc) => bloc.state.isLoading);
+    {{else if flags.isProvider}}
+    final isLoading = context.select((AuthProvider p) => p.isLoading);
+    {{else if flags.isGetX}}
+    final controller = Get.find<AuthController>();
+    {{else if flags.isMobX}}
+    final isLoading = _isLoading;
+    {{else}}
+    final isLoading = _isLoading;
+    {{/if}}
+
     final cs = context.theme.colorScheme;
     final tt = context.theme.textTheme;
 
     Future<void> handleSignup() async {
-      if (!(_formKey.currentState?.validate() ?? false)) {
-        return;
-      }
-      setState(() { _isLoading = true; });
+      if (!(_formKey.currentState?.validate() ?? false)) return;
+      
+      {{#if (or flags.isNoneState flags.isMobX)}}
+      setState(() => _isLoading = true);
+      {{/if}}
+
+      {{#if flags.isRiverpod}}
+      ref.read(authControllerProvider.notifier).signUp(
+        context: context, 
+        name: _nameController.text,
+        email: _emailController.text, 
+        password: _passwordController.text,
+      );
+      {{else if flags.isBloc}}
+      context.read<AuthBloc>().add(
+        SignUpRequested(
+          context: context, 
+          name: _nameController.text,
+          email: _emailController.text, 
+          password: _passwordController.text,
+        ),
+      );
+      {{else if flags.isProvider}}
+      context.read<AuthProvider>().signUp(
+        context: context, 
+        name: _nameController.text,
+        email: _emailController.text, 
+        password: _passwordController.text,
+      );
+      {{else if flags.isGetX}}
+      controller.signUp(
+        context: context, 
+        name: _nameController.text,
+        email: _emailController.text, 
+        password: _passwordController.text,
+      );
+      {{else}}
       try {
         final result = await AuthService.instance.signUp(
           name: _nameController.text.trim(),
@@ -409,12 +272,84 @@ class _SignupScreenState extends State<SignupScreen> {
       } catch (e) {
         showToast(context, message: e.toString(), status: 'error');
       } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
+        if (mounted) setState(() => _isLoading = false);
       }
+      {{/if}}
     }
 
+    {{#if flags.isGetX}}
+    return Obx(() {
+      final isLoading = controller.isLoading.value;
+      return _SignupView(
+        formKey: _formKey,
+        nameController: _nameController,
+        emailController: _emailController,
+        passwordController: _passwordController,
+        confirmPasswordController: _confirmPasswordController,
+        obscurePassword: _obscurePassword,
+        obscureConfirmPassword: _obscureConfirmPassword,
+        isLoading: isLoading,
+        onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
+        onToggleConfirmObscure: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+        onSignup: handleSignup,
+        cs: cs,
+        tt: tt,
+      );
+    });
+    {{else}}
+    return _SignupView(
+      formKey: _formKey,
+      nameController: _nameController,
+      emailController: _emailController,
+      passwordController: _passwordController,
+      confirmPasswordController: _confirmPasswordController,
+      obscurePassword: _obscurePassword,
+      obscureConfirmPassword: _obscureConfirmPassword,
+      isLoading: isLoading,
+      onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
+      onToggleConfirmObscure: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+      onSignup: handleSignup,
+      cs: cs,
+      tt: tt,
+    );
+    {{/if}}
+  }
+}
+{{/if}}
+
+class _SignupView extends StatelessWidget {
+  const _SignupView({
+    required this.formKey,
+    required this.nameController,
+    required this.emailController,
+    required this.passwordController,
+    required this.confirmPasswordController,
+    required this.obscurePassword,
+    required this.obscureConfirmPassword,
+    required this.isLoading,
+    required this.onToggleObscure,
+    required this.onToggleConfirmObscure,
+    required this.onSignup,
+    required this.cs,
+    required this.tt,
+  });
+
+  final GlobalKey<FormState> formKey;
+  final TextEditingController nameController;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final TextEditingController confirmPasswordController;
+  final bool obscurePassword;
+  final bool obscureConfirmPassword;
+  final bool isLoading;
+  final VoidCallback onToggleObscure;
+  final VoidCallback onToggleConfirmObscure;
+  final VoidCallback onSignup;
+  final ColorScheme cs;
+  final TextTheme tt;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -425,33 +360,36 @@ class _SignupScreenState extends State<SignupScreen> {
               children: [
                 SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
                 Text(
-                  {{#if flags.supportsLocalization}}'auth.create_account'.tr(){{else}}'Create Account'{{/if}},
+                  {{#if flags.supportsLocalization}}'auth.sign_up'.tr(){{else}}'Create Account'{{/if}},
                   style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-                ).animate().fadeIn().slideY(begin: 0.2),
+                ),
                 SizedBox(height: {{res 'AppSpacing.sm' 'h' flags.usesScreenutil}}),
                 Text(
-                  {{#if flags.supportsLocalization}}'auth.create_account_subtitle'.tr(){{else}}'Join us today and get started'{{/if}},
+                  {{#if flags.supportsLocalization}}'auth.sign_up_subtitle'.tr(){{else}}'Join us and start your journey'{{/if}},
                   textAlign: TextAlign.center,
                   style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                ).animate().fadeIn().slideY(begin: 0.2),
+                ),
                 SizedBox(height: {{res 'AppSpacing.xxxl' 'h' flags.usesScreenutil}}),
-                // Form Card
                 Form(
-                  key: _formKey,
+                  key: formKey,
                   child: Column(
                     children: [
                       AppTextField(
-                        controller: _nameController,
-                        enabled: !_isLoading,
+                        controller: nameController,
+                        enabled: !isLoading,
                         label: {{#if flags.supportsLocalization}}'auth.name'.tr(){{else}}'Full Name'{{/if}},
                         prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.user{{else}}Icons.person_outline{{/if}}),
-                        validator: (v) => AppUtils.isBlank(v) ? {{#if flags.supportsLocalization}}'auth.name_required'.tr(){{else}}'Name is required'{{/if}} : null,
+                        validator: (v) {
+                          if (AppUtils.isBlank(v)) {
+                            return {{#if flags.supportsLocalization}}'auth.name_required'.tr(){{else}}'Name is required'{{/if}};
+                          }
+                          return null;
+                        },
                       ),
                       SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
                       AppTextField(
-                        controller: _emailController,
-                        enabled: !_isLoading,
-                        keyboardType: TextInputType.emailAddress,
+                        controller: emailController,
+                        enabled: !isLoading,
                         label: {{#if flags.supportsLocalization}}'auth.email'.tr(){{else}}'Email'{{/if}},
                         prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.sms{{else}}Icons.email_outlined{{/if}}),
                         validator: (v) {
@@ -466,14 +404,14 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
                       AppTextField(
-                        controller: _passwordController,
-                        enabled: !_isLoading,
+                        controller: passwordController,
+                        enabled: !isLoading,
                         label: {{#if flags.supportsLocalization}}'auth.password'.tr(){{else}}'Password'{{/if}},
-                        obscureText: _obscurePassword,
+                        obscureText: obscurePassword,
                         prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.lock{{else}}Icons.lock_outline{{/if}}),
                         suffixIcon: IconButton(
-                          icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          icon: Icon(obscurePassword ? Icons.visibility_off : Icons.visibility),
+                          onPressed: onToggleObscure,
                         ),
                          validator: (v) {
                           if (AppUtils.isBlank(v)) {
@@ -487,20 +425,20 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
                       AppTextField(
-                        controller: _confirmPasswordController,
-                        enabled: !_isLoading,
+                        controller: confirmPasswordController,
+                        enabled: !isLoading,
                         label: {{#if flags.supportsLocalization}}'auth.confirm_password'.tr(){{else}}'Confirm Password'{{/if}},
-                        obscureText: _obscureConfirmPassword,
+                        obscureText: obscureConfirmPassword,
                         prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.lock{{else}}Icons.lock_outline{{/if}}),
                         suffixIcon: IconButton(
-                          icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
-                          onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                          icon: Icon(obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
+                          onPressed: onToggleConfirmObscure,
                         ),
-                        validator: (v) {
+                         validator: (v) {
                           if (AppUtils.isBlank(v)) {
                             return {{#if flags.supportsLocalization}}'auth.confirm_password_required'.tr(){{else}}'Confirm password is required'{{/if}};
                           }
-                          if (v != _passwordController.text) {
+                          if (v != passwordController.text) {
                             return {{#if flags.supportsLocalization}}'auth.passwords_do_not_match'.tr(){{else}}'Passwords do not match'{{/if}};
                           }
                           return null;
@@ -508,9 +446,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
                       AppButton(
-                        label: 'Create Account',
-                        isLoading: _isLoading,
-                        onPressed: _isLoading ? null : handleSignup,
+                        label: 'Sign Up',
+                        isLoading: isLoading,
+                        onPressed: isLoading ? null : onSignup,
                         width: ButtonSize.large,
                         isFullWidth: false,
                       ),
@@ -518,73 +456,25 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 SizedBox(height: {{res 'AppSpacing.xxxl' 'h' flags.usesScreenutil}}),
-                {{#if flags.usesFlutterSvg}}
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: {{res 20 'w' flags.usesScreenutil}},
-                      children: [
-                        SizedBox(
-                          width: {{res 50 'w' flags.usesScreenutil}},
-                          height: {{res 50 'w' flags.usesScreenutil}},
-                          child: TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFFEA4335).withValues(alpha: 0.8),
-                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: AppBorders.button,
-                              ),
-                            ),
-                            child: SvgPicture.asset(AppAssets.googleIcon),
-                          ),
-                        ),
-                        SizedBox(
-                          width: {{res 50 'w' flags.usesScreenutil}},
-                          height: {{res 50 'w' flags.usesScreenutil}},
-                          child: TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFF4285F4),
-                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: AppBorders.button,
-                              ),
-                            ),
-                            child: SvgPicture.asset(AppAssets.facebookIcon),
-                          ),
-                        ),
-                        SizedBox(
-                          width: {{res 50 'w' flags.usesScreenutil}},
-                          height: {{res 50 'w' flags.usesScreenutil}},
-                          child: TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xFF000000),
-                              padding: EdgeInsets.symmetric(horizontal: {{res 10 'w' flags.usesScreenutil}}),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: AppBorders.button,
-                              ),
-                            ),
-                            child: SvgPicture.asset(AppAssets.appleIcon),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
-                  ],
-                ),
-                {{/if}}
                 InkWell(
-                  onTap: () => Navigator.pop(context),
+                  onTap: () {
+                    {{#if (eq flags.routerPackage "go_router")}}
+                    context.push(AppRoutes.login);
+                    {{else if (eq flags.routerPackage "auto_route")}}
+                    context.pushRoute(const LoginRoute());
+                    {{else if flags.isGetX}}
+                    Get.toNamed(AppRoutes.login);
+                    {{else}}
+                    Navigator.pushNamed(context, AppRoutes.login);
+                    {{/if}}
+                  },
                   child: RichText(
                     text: TextSpan(
                       text: {{#if flags.supportsLocalization}}'auth.already_have_account'.tr(){{else}}'Already have an account? '{{/if}},
                       style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
                       children: [
                         TextSpan(
-                          text: {{#if flags.supportsLocalization}}'auth.sign_up'.tr(){{else}}'Login'{{/if}},
+                          text: {{#if flags.supportsLocalization}}'auth.log_in'.tr(){{else}}'Log In'{{/if}},
                           style: TextStyle(
                             color: cs.primary,
                             fontWeight: FontWeight.bold,
@@ -603,4 +493,3 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 }
-{{/if}}
