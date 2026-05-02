@@ -93,6 +93,9 @@ ThemeData _buildTheme(ColorScheme colorScheme, AppColorsExtension customColors) 
     primaryColor: colorScheme.primary,
     colorScheme: colorScheme,
     textTheme: textTheme,
+    {{#if flags.hasCustomFonts}}
+    fontFamily: '{{flags.primaryFontFamily}}',
+    {{/if}}
     extensions: [
       customColors,
       AppDesignTokens.fallback,
@@ -384,37 +387,45 @@ CupertinoThemeData buildCupertinoTheme({required String primaryColorHex}) {
     textTheme: CupertinoTextThemeData(
       primaryColor: seed,
       textStyle: const TextStyle(
+        {{#if flags.hasCustomFonts}}fontFamily: '{{flags.primaryFontFamily}}',{{/if}}
         fontSize: 17,
         letterSpacing: -0.41,
       ),
       actionTextStyle: TextStyle(
+        {{#if flags.hasCustomFonts}}fontFamily: '{{flags.primaryFontFamily}}',{{/if}}
         color: seed,
         fontSize: 17,
         fontWeight: FontWeight.w400,
       ),
       navTitleTextStyle: const TextStyle(
+        {{#if flags.hasCustomFonts}}fontFamily: '{{flags.primaryFontFamily}}',{{/if}}
         fontWeight: FontWeight.w600,
         fontSize: 17,
         letterSpacing: -0.41,
       ),
       navLargeTitleTextStyle: const TextStyle(
+        {{#if flags.hasCustomFonts}}fontFamily: '{{flags.primaryFontFamily}}',{{/if}}
         fontWeight: FontWeight.bold,
         fontSize: 34,
         letterSpacing: 0.41,
       ),
       tabLabelTextStyle: const TextStyle(
+        {{#if flags.hasCustomFonts}}fontFamily: '{{flags.primaryFontFamily}}',{{/if}}
         fontSize: 10,
         fontWeight: FontWeight.w500,
         letterSpacing: -0.24,
       ),
       pickerTextStyle: const TextStyle(
+        {{#if flags.hasCustomFonts}}fontFamily: '{{flags.primaryFontFamily}}',{{/if}}
         fontSize: 21,
         letterSpacing: -0.41,
       ),
       dateTimePickerTextStyle: const TextStyle(
+        {{#if flags.hasCustomFonts}}fontFamily: '{{flags.primaryFontFamily}}',{{/if}}
         fontSize: 21,
         letterSpacing: -0.41,
       ),
     ),
   );
 }
+

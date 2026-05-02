@@ -8,10 +8,26 @@ export const dynamic = "force-dynamic"
 
 export async function POST(request: NextRequest) {
     try {
-        const payload = await request.json()
-        const config = scaffoldConfigSchema.parse(payload)
+        // Payload arrives as multipart/form-data so that binary font blobs can
+        // be transmitted alongside the JSON config without serialization.
+        const form = await request.formData()
 
-        const zipBuffer = await generateFlutterScaffold(config)
+        const configRaw = form.get("config")
+        if (typeof configRaw !== "string") {
+            return new Response(
+                JSON.stringify({ error: "Missing config field in form data" }),
+                { status: 400, headers: { "Content-Type": "application/json" } }
+            )
+        }
+
+        const config = scaffoldConfigSchema.parse(JSON.parse(configRaw))
+
+        // Collect font blobs — each File entry's name corresponds to the
+        // fileName stored in config.theme.customFonts[].fileName.
+        // We process them one at a time to limit peak memory usage.
+        const fontEntries = form.getAll("font") as File[]
+
+        const zipBuffer = await generateFlutterScaffold(config, fontEntries)
         const fileName = `${config.appName.replace(/\s+/g, "-").toLowerCase()}.zip`
 
         return new Response(zipBuffer as any, {

@@ -3,6 +3,54 @@ import { z } from "zod"
 export const themePresetSchema = z.enum(["material3", "cupertino", "custom"])
 export type ThemePreset = z.infer<typeof themePresetSchema>
 
+// Flutter-supported font formats (no .woff/.woff2 on desktop)
+export const SUPPORTED_FONT_EXTENSIONS = [".ttf", ".otf", ".ttc"] as const
+export const FONT_MAX_SIZE_BYTES = 10 * 1024 * 1024 // 10 MB
+
+export const fontStyleSchema = z.enum(["normal", "italic"])
+export type FontStyle = z.infer<typeof fontStyleSchema>
+
+export const fontWeightSchema = z.enum(["100", "200", "300", "400", "500", "600", "700", "800", "900"])
+export type FontWeight = z.infer<typeof fontWeightSchema>
+
+/**
+ * Derives a font family name from a file name.
+ * e.g. "Inter-Bold.ttf" → "Inter"
+ *      "inter_bold.ttf" → "Inter"
+ *      "Roboto-Italic.otf" → "Roboto"
+ */
+const WEIGHT_STYLE_KEYWORDS = [
+    "thin", "extralight", "light", "regular", "medium",
+    "semibold", "bold", "extrabold", "black",
+    "italic", "oblique",
+    "100", "200", "300", "400", "500", "600", "700", "800", "900",
+]
+export function deriveFontFamily(fileName: string): string {
+    // Strip extension
+    const base = fileName.replace(/\.[^.]+$/, "")
+    // Split on - or _
+    const parts = base.split(/[-_]/)
+    // Drop trailing weight/style keyword segments (case-insensitive)
+    const familyParts: string[] = []
+    for (const part of parts) {
+        if (WEIGHT_STYLE_KEYWORDS.includes(part.toLowerCase())) break
+        familyParts.push(part)
+    }
+    const family = (familyParts.length > 0 ? familyParts : parts).join(" ")
+    // Capitalize first letter of each word
+    return family.replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+export const customFontEntrySchema = z.object({
+    /** Logical font family name, e.g. "Inter" */
+    family: z.string().min(1),
+    /** Original file name, e.g. "Inter-Bold.ttf" */
+    fileName: z.string().min(1),
+    style: fontStyleSchema.default("normal"),
+    weight: fontWeightSchema.default("400"),
+})
+export type CustomFontEntry = z.infer<typeof customFontEntrySchema>
+
 export const themePresetOptions = [
     { value: "material3", label: "Material 3", description: "Google's modern design system." },
     { value: "cupertino", label: "Cupertino", description: "Native iOS-style widgets." },
@@ -88,6 +136,8 @@ const themeSchema = z.object({
     preset: themePresetSchema,
     primaryColor: z.string().optional(),
     darkMode: darkModeSchema,
+    /** Font files the user uploaded; metadata only (File blobs stored separately) */
+    customFonts: z.array(customFontEntrySchema).default([]),
 })
 export type ThemeConfig = z.infer<typeof themeSchema>
 
@@ -242,6 +292,7 @@ export const defaultConfig: ScaffoldConfig = {
         preset: "material3",
         primaryColor: "#6750A4",
         darkMode: { enabled: true, system: true },
+        customFonts: [],
     },
     icons: {
         default: true,

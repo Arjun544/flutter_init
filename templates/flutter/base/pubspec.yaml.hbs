@@ -213,5 +213,24 @@ flutter:
     {{#if flags.supportsLocalization}}
     - assets/translations/
     {{/if}}
+    {{#if flags.hasCustomFonts}}
+    - assets/fonts/
+    {{/if}}
     - .env
 
+  {{#if flags.hasCustomFonts}}
+  fonts:
+    {{#each flags.fontFamilies}}
+    - family: {{this.family}}
+      fonts:
+        {{#each this.fonts}}
+        - asset: assets/fonts/{{this.fileName}}
+          {{#if (eq this.style "italic")}}
+          style: italic
+          {{/if}}
+          {{#unless (eq this.weight "400")}}
+          weight: {{this.weight}}
+          {{/unless}}
+        {{/each}}
+    {{/each}}
+  {{/if}}

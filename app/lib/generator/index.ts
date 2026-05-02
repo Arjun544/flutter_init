@@ -4,7 +4,7 @@ import path from "node:path"
 
 import JSZip from "jszip"
 
-import { ScaffoldConfig, scaffoldConfigSchema } from "../config/schema"
+import { CustomFontEntry, ScaffoldConfig, scaffoldConfigSchema } from "../config/schema"
 
 import { createHandlebarsEnvironment } from "./handlebars"
 
@@ -62,10 +62,26 @@ type TemplateContext = ScaffoldConfig & {
         usesSupabaseDb: boolean
         usesAppwriteAuth: boolean
         usesAppwriteDb: boolean
+        /** True when at least one custom font was uploaded */
+        hasCustomFonts: boolean
+        /**
+         * The first font family name (used as the app-wide fontFamily in ThemeData).
+         * Empty string when no custom fonts are uploaded.
+         */
+        primaryFontFamily: string
+        /**
+         * Fonts grouped by family name for pubspec.yaml.
+         * Each entry = one `family:` block with one or more `fonts:` items.
+         * e.g. [{ family: "Inter", fonts: [{ fileName, style, weight }, ...] }]
+         */
+        fontFamilies: Array<{
+            family: string
+            fonts: Array<Pick<CustomFontEntry, "fileName" | "style" | "weight">>
+        }>
     }
 }
 
-export async function generateFlutterScaffold(input: unknown) {
+export async function generateFlutterScaffold(input: unknown, fontEntries: File[] = []) {
     const config = scaffoldConfigSchema.parse(input)
     const context = buildTemplateContext(config)
 
@@ -86,8 +102,6 @@ export async function generateFlutterScaffold(input: unknown) {
             const translationsDir = path.join(workingDir, "assets", "translations")
             await fs.mkdir(translationsDir, { recursive: true })
 
-            // We read the en.json.hbs template and use it to seed all configured locales
-            // In a real scenario, these would ideally hit an API to pre-translate or come out empty.
             const baseTransPath = path.join(templatesRoot, "overlays", "extras", "localization", "assets", "translations", "en.json.hbs")
             let templateContent = "{\n}"
             try {
@@ -101,6 +115,20 @@ export async function generateFlutterScaffold(input: unknown) {
 
             for (const locale of context.flags.supportedLocales) {
                 await fs.writeFile(path.join(translationsDir, `${locale}.json`), rendered, "utf8")
+            }
+        }
+
+        // Write font binary files into assets/fonts/ one at a time to keep
+        // peak memory bounded (sequential rather than Promise.all).
+        if (fontEntries.length > 0) {
+            const fontsDir = path.join(workingDir, "assets", "fonts")
+            await fs.mkdir(fontsDir, { recursive: true })
+
+            for (const fontFile of fontEntries) {
+                const safeName = path.basename(fontFile.name) // strip any path component
+                const destPath = path.join(fontsDir, safeName)
+                const buffer = Buffer.from(await fontFile.arrayBuffer())
+                await fs.writeFile(destPath, buffer)
             }
         }
 
@@ -126,6 +154,19 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
     } else {
         routerPackage = undefined
     }
+
+    // Group fonts by family name for pubspec.yaml emission.
+    // Multiple files with the same family (e.g. Inter-Regular + Inter-Bold)
+    // collapse into one `family:` block with multiple `fonts:` entries.
+    const customFonts = config.theme.customFonts ?? []
+    const familyMap = new Map<string, Array<Pick<CustomFontEntry, "fileName" | "style" | "weight">>>()
+    for (const font of customFonts) {
+        const existing = familyMap.get(font.family) ?? []
+        familyMap.set(font.family, [...existing, { fileName: font.fileName, style: font.style, weight: font.weight }])
+    }
+    const fontFamilies = Array.from(familyMap.entries()).map(([family, fonts]) => ({ family, fonts }))
+    // First unique family becomes the app-wide fontFamily in ThemeData
+    const primaryFontFamily = fontFamilies.length > 0 ? fontFamilies[0].family : ""
 
     return {
         ...config,
@@ -182,6 +223,9 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             usesSupabaseDb: config.backend.provider === "supabase" ? config.backend.options.database : false,
             usesAppwriteAuth: config.backend.provider === "appwrite" ? config.backend.options.auth : false,
             usesAppwriteDb: config.backend.provider === "appwrite" ? config.backend.options.database : false,
+            hasCustomFonts: fontFamilies.length > 0,
+            primaryFontFamily,
+            fontFamilies,
         },
     }
 }

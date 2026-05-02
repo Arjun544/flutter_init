@@ -78,7 +78,7 @@ const steps: Record<
 }
 
 export function WizardShell() {
-    const { step, setStep, stepIndex, isHydrated, config } = useWizard()
+    const { step, setStep, stepIndex, isHydrated, config, fontFiles } = useWizard()
     const [isGenerating, setIsGenerating] = React.useState(false)
     const [error, setError] = React.useState<string | null>(null)
 
@@ -96,14 +96,28 @@ export function WizardShell() {
         try {
             void trackGeneration(config)
 
+            // Use multipart/form-data so binary font blobs can be sent alongside
+            // the JSON config without serialization issues.
+            const form = new FormData()
+            form.append("config", JSON.stringify(config))
+
+            // Attach each font file the user dropped (keyed by its fileName)
+            for (const [fileName, file] of fontFiles) {
+                // Use the original File object; fileName is used as the field name
+                // so the server can correlate it with config.theme.customFonts[].fileName
+                form.append("font", file, fileName)
+            }
+
+            // Do NOT set Content-Type — browser sets it automatically with the
+            // correct multipart boundary.
             const response = await fetch("/api/generate", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(config),
+                body: form,
             })
 
             if (!response.ok) {
-                throw new Error("Failed to generate project")
+                const body = await response.json().catch(() => ({}))
+                throw new Error((body as any)?.error ?? "Failed to generate project")
             }
 
             const blob = await response.blob()

@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import {
+    CustomFontEntry,
     ScaffoldConfig,
     StepId,
     defaultConfig,
@@ -28,6 +29,11 @@ type WizardContextValue = {
     reset: () => void
     selectedItem: string | null
     setSelectedItem: (item: string | null) => void
+    /** Binary font files (not persisted — reset on page reload) */
+    fontFiles: Map<string, File>
+    addFontFile: (file: File, meta: CustomFontEntry) => void
+    removeFontFile: (fileName: string) => void
+    clearFontFiles: () => void
 }
 
 const WizardContext = React.createContext<WizardContextValue | null>(null)
@@ -47,6 +53,8 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     const [step, setStepInternal] = React.useState<StepId>(stepOrder[0])
     const [isHydrated, setIsHydrated] = React.useState(false)
     const [selectedItem, setSelectedItem] = React.useState<string | null>(null)
+    // Non-persisted: stores binary File objects keyed by fileName
+    const [fontFiles, setFontFiles] = React.useState<Map<string, File>>(new Map())
 
     React.useEffect(() => {
         if (typeof window === "undefined") return
@@ -67,7 +75,15 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     React.useEffect(() => {
         if (!isHydrated) return
         try {
-            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
+            // Do not persist custom fonts. They must be re-uploaded on refresh.
+            const configToSave = {
+                ...config,
+                theme: {
+                    ...config.theme,
+                    customFonts: [],
+                },
+            }
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(configToSave))
             
             // Sync with dev script if in development
             if (process.env.NODE_ENV === "development") {
@@ -125,11 +141,51 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     const reset = React.useCallback(() => {
         setConfig(defaultConfig)
         setStepInternal(stepOrder[0])
+        setFontFiles(new Map()) // clear non-persisted font blobs too
         try {
             window.localStorage.removeItem(STORAGE_KEY)
         } catch {
             // ignore
         }
+    }, [])
+
+    const addFontFile = React.useCallback((file: File, meta: CustomFontEntry) => {
+        // Store the binary blob
+        setFontFiles((prev) => new Map(prev).set(meta.fileName, file))
+        // Store metadata in config
+        setConfig((prev) => {
+            const existing = prev.theme.customFonts ?? []
+            const filtered = existing.filter((f) => f.fileName !== meta.fileName)
+            return {
+                ...prev,
+                theme: { ...prev.theme, customFonts: [...filtered, meta] },
+            }
+        })
+    }, [])
+
+    const removeFontFile = React.useCallback((fileName: string) => {
+        setFontFiles((prev) => {
+            const next = new Map(prev)
+            next.delete(fileName)
+            return next
+        })
+        setConfig((prev) => ({
+            ...prev,
+            theme: {
+                ...prev.theme,
+                customFonts: (prev.theme.customFonts ?? []).filter(
+                    (f) => f.fileName !== fileName
+                ),
+            },
+        }))
+    }, [])
+
+    const clearFontFiles = React.useCallback(() => {
+        setFontFiles(new Map())
+        setConfig((prev) => ({
+            ...prev,
+            theme: { ...prev.theme, customFonts: [] },
+        }))
     }, [])
 
     const stepIndex = React.useMemo(
@@ -150,8 +206,12 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
             prev,
             reset,
             setSelectedItem,
+            fontFiles,
+            addFontFile,
+            removeFontFile,
+            clearFontFiles,
         }),
-        [config, isHydrated, next, prev, setStep, step, stepIndex, updateConfig, selectedItem, setSelectedItem]
+        [config, isHydrated, next, prev, setStep, step, stepIndex, updateConfig, selectedItem, setSelectedItem, fontFiles, addFontFile, removeFontFile, clearFontFiles]
     )
 
     return (

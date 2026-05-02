@@ -64,7 +64,7 @@ export function BackendStep() {
                                 <SelectItem key={option.value} value={option.value}>
                                     <div className="flex items-center justify-between w-full pr-6">
                                         <div className="flex flex-col py-0.5">
-                                            <span className="font-semibold">{option.label}</span>
+                                            <span className="font-medium">{option.label}</span>
                                             {backend.provider !== option.value && (
                                                 <span className="text-[10px] text-muted-foreground font-normal line-clamp-1">{option.description}</span>
                                             )}
