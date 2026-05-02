@@ -1,4 +1,7 @@
 name: "Tests — Tier 3 (Full Matrix + Dart Validation)"
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 
 # Pre-release gate.
 # Runs ALL valid combinations through both Layer 1 and Layer 2.

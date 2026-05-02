@@ -1,4 +1,7 @@
 name: "Tests — Tier 2 (Critical Combos + Dart Validation)"
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 
 # Runs on pull requests to main.
 # Layer 1 + Layer 2 Dart validation for ~30 critical combinations.

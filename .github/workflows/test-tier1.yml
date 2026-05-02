@@ -1,4 +1,7 @@
 name: "Tests — Tier 1 (Layer 1 Unit Tests)"
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 
 # Runs on every push to any branch.
 # Layer 1 only: fast, in-memory template tests.
