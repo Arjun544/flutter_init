@@ -135,7 +135,9 @@ dependencies:
   smooth_page_indicator: ^2.0.1
 
   # Environment
+  {{#if flags.usesDotenv}}
   flutter_dotenv: ^6.0.0
+  {{/if}}
 
   # Logging
   {{#if flags.usesLogger}}
@@ -224,7 +226,9 @@ flutter:
     {{#if flags.hasCustomFonts}}
     - assets/fonts/
     {{/if}}
+    {{#if flags.usesDotenv}}
     - .env
+    {{/if}}
 
   {{#if flags.hasCustomFonts}}
   fonts:

@@ -35,6 +35,7 @@ type TemplateContext = ScaffoldConfig & {
         usesScreenutil: boolean
         usesFlutterNativeSplash: boolean
         usesLogger: boolean
+        usesDotenv: boolean
         usesIconsaxPlus: boolean
         usesFlutterRemix: boolean
         usesHugeicons: boolean
@@ -196,6 +197,7 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             usesScreenutil: config.misc.usesScreenutil,
             usesFlutterNativeSplash: config.misc.usesFlutterNativeSplash,
             usesLogger: config.misc.usesLogger,
+            usesDotenv: config.misc.usesDotenv,
             supportsLocalization: config.localization.enabled,
             supportedLocales: config.localization.supportedLocales.length > 0 ? config.localization.supportedLocales : ["en"],
             fallbackLocale: config.localization.supportedLocales.length > 0 ? config.localization.supportedLocales[0] : "en",
@@ -278,7 +280,7 @@ async function resolveOverlayDirs(
             config.misc.usesAppVersionUpdate,
         ],
         [path.join(root, "overlays", "extras", "flavors"), true],
-        [path.join(root, "overlays", "extras", "dotenv"), true],
+        [path.join(root, "overlays", "extras", "dotenv"), config.misc.usesDotenv],
     ]
 
     for (const [candidate, enabled] of candidates) {
