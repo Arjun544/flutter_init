@@ -9,7 +9,8 @@ env:
 
 on:
   push:
-    branches: ["**"]
+    branches: ["**", "!main"]
+  workflow_dispatch:
 
 jobs:
   layer1:

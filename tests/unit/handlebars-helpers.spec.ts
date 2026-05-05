@@ -149,7 +149,7 @@ describe("Handlebars Helpers", () => {
 
         it("returns plain double when ScreenUtil disabled (number input)", () => {
             const template = hbs.compile("{{res 16 'w' usesScreenutil}}")
-            expect(template({ usesScreenutil: false })).toBe("16.0")
+            expect(template({ usesScreenutil: false })).toBe("16")
         })
 
         it("returns expression as-is when ScreenUtil disabled (string input)", () => {

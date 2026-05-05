@@ -82,9 +82,6 @@ export function registerHelpers(hbs: Hbs) {
     hbs.registerHelper("res", (value: unknown, unit: string, usesScreenutil: boolean) => {
         if (usesScreenutil) return `${value}.${unit}`;
         
-        if (typeof value === 'number') {
-            return value % 1 === 0 ? `${value}.0` : String(value);
-        }
         return String(value);
     })
     hbs.registerHelper("when", function (this: unknown, condition, options) {
