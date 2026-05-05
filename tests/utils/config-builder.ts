@@ -2,10 +2,9 @@ import type {
     BackendConfig,
     ScaffoldConfig,
 } from "../../app/lib/config/schema"
-import { defaultBackendConfig } from "../../app/lib/config/schema"
+import { defaultBackendConfig, MiscConfig } from "../../app/lib/config/schema"
 import { PrimaryCombo } from "./matrix.config"
 import { MISC_DEFAULT, safeProfile } from "./misc-profiles"
-import { MiscConfig } from "../../app/lib/config/schema"
 
 /**
  * Build a full ScaffoldConfig from a PrimaryCombo and an optional MiscProfile.

@@ -7,16 +7,17 @@
  * This runs in Tier 2 CI (PR checks) where Flutter is installed.
  */
 
+import { execSync } from "node:child_process"
 import fs from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
-import { execSync } from "node:child_process"
 
-import { describe, expect, it, beforeAll } from "vitest"
+import { beforeAll, describe, it } from "vitest"
 
+import { buildConfig } from "../utils/config-builder"
+import { CRITICAL_COMBOS as CRITICAL_COMBINATIONS } from "../utils/critical-combos"
 import { generateToDisk } from "../utils/generate"
-import { buildConfig, combinationLabel } from "../utils/matrix.config"
-import { CRITICAL_COMBINATIONS } from "../utils/critical-combos"
+import { COMBO_LABEL as combinationLabel } from "../utils/matrix.config"
 
 // ── Check if Dart SDK is available ──────────────────────────────
 
@@ -89,7 +90,7 @@ describe("Layer 2 — Dart Validation (Critical Combinations)", { timeout: 3_600
                     throw new Error(`dart analyze failed:\n${output}`)
                 }
             } finally {
-                await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => {})
+                await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => { })
             }
         }
     )

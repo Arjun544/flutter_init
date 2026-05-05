@@ -6,10 +6,10 @@ import {
     assertRequiredFilesExist,
     assertValidPubspec,
 } from "../utils/assertions"
-import { generateToMap, getPubspecContent, getFile } from "../utils/generate"
-import { COMBO_LABEL } from "../utils/matrix.config"
 import { buildConfig } from "../utils/config-builder"
 import { CRITICAL_COMBOS } from "../utils/critical-combos"
+import { generateToMap, getFile, getPubspecContent } from "../utils/generate"
+import { COMBO_LABEL } from "../utils/matrix.config"
 
 describe("Full Pipeline — Critical Combinations", () => {
     it.each(

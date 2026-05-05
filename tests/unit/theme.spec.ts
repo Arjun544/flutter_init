@@ -1,8 +1,8 @@
 import { beforeAll, describe, expect, it } from "vitest"
 import { getFileContent } from "../utils/assertions"
+import { buildConfig } from "../utils/config-builder"
 import { generateToMap, getPubspecContent } from "../utils/generate"
 import { PrimaryCombo } from "../utils/matrix.config"
-import { buildConfig } from "../utils/config-builder"
 
 const base: PrimaryCombo = {
     architecture: "feature-first",
@@ -14,7 +14,7 @@ const base: PrimaryCombo = {
 describe("Theme Flags", () => {
     let defaultFiles: Map<string, string>
     let defaultPubspec: string
-    
+
     let cupertinoFiles: Map<string, string>
     let cupertinoPubspec: string
 
@@ -23,10 +23,10 @@ describe("Theme Flags", () => {
 
     beforeAll(async () => {
         const defaultConfig = buildConfig(base)
-        
+
         const cupertinoConfig = buildConfig(base)
         cupertinoConfig.theme.preset = "cupertino"
-        
+
         const customFontConfig = buildConfig(base)
         customFontConfig.theme.customFonts = [
             { family: "Inter", fileName: "Inter-Regular.ttf", style: "normal", weight: "400" },
@@ -42,10 +42,10 @@ describe("Theme Flags", () => {
 
         defaultFiles = defMap
         defaultPubspec = getPubspecContent(defMap)
-        
+
         cupertinoFiles = cupMap
         cupertinoPubspec = getPubspecContent(cupMap)
-        
+
         customFontFiles = fontMap
         customFontPubspec = getPubspecContent(fontMap)
     })

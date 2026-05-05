@@ -3,7 +3,7 @@ import {
     BACKEND_OPTIONS,
     NAVIGATION_OPTIONS,
     STATE_OPTIONS,
-} from "./matrix.config"
+} from "./matrix.config";
 
 /**
  * Cartesian product generator for any number of dimensions.

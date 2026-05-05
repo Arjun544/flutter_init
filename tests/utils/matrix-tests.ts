@@ -1,4 +1,4 @@
-import { beforeAll, describe, it, expect } from "vitest"
+import { beforeAll, describe, it } from "vitest"
 import {
     assertArchitectureStructure,
     assertDependencyAbsent,
@@ -8,9 +8,9 @@ import {
     assertRequiredFilesExist,
     assertValidPubspec,
 } from "./assertions"
+import { buildConfig } from "./config-builder"
 import { generateToMap, getPubspecContent } from "./generate"
 import { COMBO_LABEL, PrimaryCombo } from "./matrix.config"
-import { buildConfig } from "./config-builder"
 
 export function runMatrixTests(combos: PrimaryCombo[]) {
     for (const combo of combos) {

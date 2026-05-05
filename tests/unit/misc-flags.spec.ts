@@ -1,8 +1,8 @@
 import { beforeAll, describe, expect, it } from "vitest"
 import { assertDependencyAbsent, assertDependencyPresent, getFileContent } from "../utils/assertions"
+import { buildConfig } from "../utils/config-builder"
 import { generateToMap, getPubspecContent } from "../utils/generate"
 import { PrimaryCombo } from "../utils/matrix.config"
-import { buildConfig } from "../utils/config-builder"
 import { MISC_ALL_ON, MISC_BARE_MINIMUM, MISC_DEFAULT } from "../utils/misc-profiles"
 
 const base: PrimaryCombo = {

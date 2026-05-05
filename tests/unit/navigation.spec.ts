@@ -4,9 +4,9 @@ import {
     assertDependencyPresent,
     getFileContent
 } from "../utils/assertions"
+import { buildConfig } from "../utils/config-builder"
 import { generateToMap, getPubspecContent } from "../utils/generate"
 import { PrimaryCombo } from "../utils/matrix.config"
-import { buildConfig } from "../utils/config-builder"
 import { MISC_DEFAULT } from "../utils/misc-profiles"
 
 const base: Omit<PrimaryCombo, "navigation"> = {

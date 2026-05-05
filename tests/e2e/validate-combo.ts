@@ -14,12 +14,13 @@
  *   2 — generation failed
  */
 
+import { execSync } from "node:child_process"
 import fs from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
-import { execSync } from "node:child_process"
 
-import { ALL_COMBINATIONS, buildConfig, combinationLabel, type Combination } from "../utils/matrix.config"
+import { buildConfig } from "../utils/config-builder"
+import { PRIMARY_COMBINATIONS as ALL_COMBINATIONS, COMBO_LABEL as combinationLabel, type PrimaryCombo as Combination } from "../utils/matrix.config"
 
 // ── Parse CLI args ──────────────────────────────────────────────
 
@@ -62,7 +63,7 @@ function runCommand(cmd: string, cwd: string): { success: boolean; output: strin
 async function main() {
     const combo = parseCombination()
     const label = combinationLabel(combo)
-    const config = buildConfig(combo)
+    const config = buildConfig(combo, (combo as any).miscProfile)
 
     console.log(`\n${"═".repeat(60)}`)
     console.log(`Validating: ${label}`)
@@ -119,7 +120,7 @@ async function main() {
         process.exit(2)
     } finally {
         // Cleanup
-        await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => {})
+        await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => { })
     }
 }
 

@@ -12,8 +12,8 @@
 
 import path from "node:path"
 
-import { ALL_COMBINATIONS, combinationLabel, type Combination } from "../utils/matrix.config"
-import { CRITICAL_COMBINATIONS } from "../utils/critical-combos"
+import { CRITICAL_COMBOS as CRITICAL_COMBINATIONS } from "../utils/critical-combos"
+import { PRIMARY_COMBINATIONS as ALL_COMBINATIONS, COMBO_LABEL as combinationLabel, type PrimaryCombo as Combination } from "../utils/matrix.config"
 
 // ── Parse args ──────────────────────────────────────────────────
 
@@ -81,7 +81,7 @@ function validateCombo(combo: Combination): Result {
         )
 
         const output = (result.stdout || "") + "\n" + (result.stderr || "")
-        
+
         return {
             combo,
             label,

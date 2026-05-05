@@ -1,6 +1,6 @@
+import { createHandlebarsEnvironment } from "@/app/lib/generator/handlebars"
 import path from "node:path"
 import { beforeAll, describe, expect, it } from "vitest"
-import { createHandlebarsEnvironment } from "@/app/lib/generator/handlebars"
 
 const partialsDir = path.join(process.cwd(), "templates", "flutter", "partials")
 

@@ -1,6 +1,6 @@
-import { PrimaryCombo } from "./matrix.config"
 import { MiscConfig } from "../../app/lib/config/schema"
-import { MISC_DEFAULT, MISC_BARE_MINIMUM, MISC_ALL_ON, MISC_HIGH_RISK } from "./misc-profiles"
+import { PrimaryCombo } from "./matrix.config"
+import { MISC_ALL_ON, MISC_BARE_MINIMUM, MISC_DEFAULT, MISC_HIGH_RISK } from "./misc-profiles"
 
 interface CriticalCombo extends PrimaryCombo {
     miscProfile: MiscConfig
