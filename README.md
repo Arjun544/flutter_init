@@ -50,7 +50,7 @@
 **FlutterInit** is an open-source project designed to eliminate the "initial drag" of Flutter development. It provides a highly opinionated yet flexible scaffolding system that maps your architectural vision to a production-ready codebase in seconds.
 
 ### 🎯 Why use FlutterInit?
-- **Elite Quality**: Follows `flutter_lints` and SOLID principles by default.
+- **Elite Quality**: Follows `flutter_lints`, SOLID principles, and validated against a comprehensive matrix of critical architectural combinations.
 - **Extreme Speed**: From a blank screen to a running app with routing & state in < 60s.
 - **Enterprise DNA**: Pre-configured with logging, error handling, and environment management.
 
@@ -132,7 +132,7 @@ Explore our technical guides to understand the architecture and flags:
 *   **[Generated Output Reference](docs/generated-output.md)**: Understanding the "src-first" structure.
 *   **[Architecture Overview](docs/architecture.md)**: Under the hood of the Next.js/Handlebars engine.
 *   **[Handlebars Language Guide](docs/handlebars.md)**: Logic patterns for template contributors.
-*   **[Testing Guide](docs/testing.md)**: How our 2-layer automated testing suite works.
+*   **[Testing Guide](docs/testing.md)**: Our comprehensive 2-layer validation strategy and tiered CI/CD pipeline.
 *   **[Contribution Guide](CONTRIBUTING.md)**: How to add your own patterns.
 
 ---

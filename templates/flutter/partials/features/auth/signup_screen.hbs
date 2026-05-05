@@ -10,9 +10,13 @@ import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}pr
 {{else if flags.isGetX}}
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/controllers/auth/{{else if (eq architecture "mvc")}}controllers/auth/{{else if (eq architecture "mvvm")}}ui/auth/controllers/{{else}}features/auth/presentation/controllers/{{/if}}auth_controller.dart';
 {{else if flags.isMobX}}
+{{#if flags.usesFlutterHooks}}
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/{{else if (eq architecture "mvc")}}controllers/auth/{{else if (eq architecture "mvvm")}}ui/auth/stores/{{else}}features/auth/presentation/providers/{{/if}}auth_store.dart';
+{{/if}}
 {{else}}
+{{#if flags.usesFlutterHooks}}
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/{{else if (eq architecture "mvc")}}controllers/auth/{{else if (eq architecture "mvvm")}}ui/auth/view_models/{{else}}features/auth/presentation/providers/{{/if}}auth_view_model.dart';
+{{/if}}
 {{/if}}
 
 {{#if (eq flags.routerPackage "auto_route")}}
@@ -113,7 +117,11 @@ class SignupScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hoo
         );
 
         result.fold(
-          (failure) => showToast(context, message: failure.message, status: 'error'),
+          (failure) {
+            if (context.mounted) {
+              showToast(context, message: failure.message, status: 'error');
+            }
+          },
           (user) {
             if (context.mounted) {
               {{#if (eq flags.routerPackage "go_router")}}
@@ -127,7 +135,9 @@ class SignupScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hoo
           },
         );
       } catch (e) {
-        showToast(context, message: e.toString(), status: 'error');
+        if (context.mounted) {
+          showToast(context, message: e.toString(), status: 'error');
+        }
       } finally {
         isLoadingState.value = false;
       }
@@ -152,7 +162,7 @@ class SignupScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hoo
       onSignup: handleSignup,
       cs: cs,
       tt: tt,
-    ));
+    );
     {{#if flags.isGetX}}
     );
     {{/if}}
@@ -256,9 +266,13 @@ class _SignupScreenState extends {{#if flags.isRiverpod}}ConsumerState<SignupScr
         );
 
         result.fold(
-          (failure) => showToast(context, message: failure.message, status: 'error'),
+          (failure) {
+            if (context.mounted) {
+              showToast(context, message: failure.message, status: 'error');
+            }
+          },
           (user) {
-            if (mounted) {
+            if (context.mounted) {
               {{#if (eq flags.routerPackage "go_router")}}
               context.go(AppRoutes.home);
               {{else if (eq flags.routerPackage "auto_route")}}
@@ -270,9 +284,11 @@ class _SignupScreenState extends {{#if flags.isRiverpod}}ConsumerState<SignupScr
           },
         );
       } catch (e) {
-        showToast(context, message: e.toString(), status: 'error');
+        if (context.mounted) {
+          showToast(context, message: e.toString(), status: 'error');
+        }
       } finally {
-        if (mounted) setState(() => _isLoading = false);
+        if (context.mounted) setState(() => _isLoading = false);
       }
       {{/if}}
     }

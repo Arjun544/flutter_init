@@ -35,12 +35,12 @@ class AppEmptyState extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(40),
+        padding: {{#if flags.usesScreenutil}}EdgeInsets.all(40.w){{else}}const EdgeInsets.all(40){{/if}},
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AppIcon(icon: icon, size: 64, color: cs.onSurfaceVariant.withValues(alpha: 0.5)),
-            const SizedBox(height: 20),
+            AppIcon(icon: icon, size: {{res 64 'sp' flags.usesScreenutil}}, color: cs.onSurfaceVariant.withValues(alpha: 0.5)),
+            {{#if flags.usesScreenutil}}SizedBox(height: 20.h){{else}}const SizedBox(height: 20){{/if}},
             Text(
               title,
               style: tt.titleMedium?.copyWith(
@@ -50,7 +50,7 @@ class AppEmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
-              const SizedBox(height: 8),
+              {{#if flags.usesScreenutil}}SizedBox(height: 8.h){{else}}const SizedBox(height: 8){{/if}},
               Text(
                 subtitle!,
                 style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
@@ -58,7 +58,7 @@ class AppEmptyState extends StatelessWidget {
               ),
             ],
             if (actionLabel != null && onAction != null) ...[
-              const SizedBox(height: 28),
+              {{#if flags.usesScreenutil}}SizedBox(height: 28.h){{else}}const SizedBox(height: 28){{/if}},
               AppButton(
                 label: actionLabel!,
                 onPressed: onAction,

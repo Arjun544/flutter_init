@@ -3,7 +3,7 @@ export 'internet_connection_service.dart';
 {{#if flags.usesDio}}
 export 'dio_service.dart';
 {{/if}}
-{{#if flags.usesHttp}}
+{{#if (and flags.usesHttp (not flags.usesDio))}}
 export 'http_service.dart';
 {{/if}}
 {{#if flags.usesHive}}

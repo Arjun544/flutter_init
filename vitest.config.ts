@@ -7,12 +7,13 @@ export default defineConfig({
         include: ["tests/**/*.spec.ts"],
         // Exclude e2e tests from default `vitest run` — they need Dart SDK
         exclude: ["tests/e2e/**"],
-        testTimeout: 30_000,
+        testTimeout: 60_000,
         hookTimeout: 30_000,
-        reporters: ["default"],
+        reporters: ["default", "./tests/reporters/failed-tests-reporter.ts"],
         // Vitest 4: pool options are top-level
         isolate: false,
-        fileParallelism: false,
+        fileParallelism: true,
+        maxWorkers: 4,
     },
     resolve: {
         alias: {

@@ -95,9 +95,9 @@ class CommonImage extends StatelessWidget {
       height: height,
       color: Colors.grey[200],
       child: {{#if flags.usesHugeicons}}
-          const HugeIcon(
+          HugeIcon(
             icon: HugeIcons.strokeRoundedImageNotFound02,
-            size: 24,
+            size: {{res 24 'sp' flags.usesScreenutil}},
           )
         {{else if flags.usesIconsaxPlus}}
           const Icon(

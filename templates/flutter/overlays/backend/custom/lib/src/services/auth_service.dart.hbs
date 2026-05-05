@@ -31,15 +31,15 @@ class AuthService {
   }) async {
     return runTask(() async {
       {{#if flags.usesDio}}
-      final response = await _dio.post('/auth/login', data: {
+      final response = await _dio.post<Map<String, dynamic>>('/auth/login', data: {
         'email': email,
         'password': password,
       });
-      final data = response.data as Map<String, dynamic>;
+      final data = response.data!;
       _authStateController.add(data);
       return data;
       {{else if flags.usesHttp}}
-      final response = await _http.post(
+      final http.Response response = await _http.post(
         Uri.parse('${AppConfig.baseUrl}/auth/login'),
         body: jsonEncode({'email': email, 'password': password}),
         headers: {'Content-Type': 'application/json'},
@@ -72,16 +72,16 @@ class AuthService {
   }) async {
     return runTask(() async {
       {{#if flags.usesDio}}
-      final response = await _dio.post('/auth/signup', data: {
+      final response = await _dio.post<Map<String, dynamic>>('/auth/signup', data: {
         'name': name,
         'email': email,
         'password': password,
       });
-      final data = response.data as Map<String, dynamic>;
+      final data = response.data!;
       _authStateController.add(data);
       return data;
       {{else if flags.usesHttp}}
-      final response = await _http.post(
+      final http.Response response = await _http.post(
         Uri.parse('${AppConfig.baseUrl}/auth/signup'),
         body: jsonEncode({
           'name': name,
@@ -111,9 +111,9 @@ class AuthService {
   FutureEither<void> forgotPassword({required String email}) async {
     return runTask(() async {
       {{#if flags.usesDio}}
-      await _dio.post('/auth/forgot-password', data: {'email': email});
+      await _dio.post<void>('/auth/forgot-password', data: {'email': email});
       {{else if flags.usesHttp}}
-      await _http.post(
+      final http.Response _ = await _http.post(
         Uri.parse('${AppConfig.baseUrl}/auth/forgot-password'),
         body: jsonEncode({'email': email}),
         headers: {'Content-Type': 'application/json'},
@@ -127,9 +127,9 @@ class AuthService {
   FutureEither<void> logout() async {
     return runTask(() async {
       {{#if flags.usesDio}}
-      await _dio.post('/auth/logout');
+      await _dio.post<void>('/auth/logout');
       {{else if flags.usesHttp}}
-      await _http.post(Uri.parse('${AppConfig.baseUrl}/auth/logout'));
+      final http.Response _ = await _http.post(Uri.parse('${AppConfig.baseUrl}/auth/logout'));
       {{else}}
       await Future.delayed(const Duration(seconds: 1));
       {{/if}}
@@ -140,10 +140,10 @@ class AuthService {
   FutureEither<Map<String, dynamic>?> getCurrentUser() async {
     return runTask(() async {
       {{#if flags.usesDio}}
-      final response = await _dio.get('/auth/me');
-      return response.data as Map<String, dynamic>;
+      final response = await _dio.get<Map<String, dynamic>>('/auth/me');
+      return response.data;
       {{else if flags.usesHttp}}
-      final response = await _http.get(Uri.parse('${AppConfig.baseUrl}/auth/me'));
+      final http.Response response = await _http.get(Uri.parse('${AppConfig.baseUrl}/auth/me'));
       if (response.statusCode != 200) return null;
       return jsonDecode(response.body) as Map<String, dynamic>;
       {{else}}

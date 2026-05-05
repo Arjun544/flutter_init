@@ -11,7 +11,6 @@ class LocalizationWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    {{#if flags.supportsLocalization}}
     return EasyLocalization(
       supportedLocales: const [
         {{#each flags.supportedLocales}}
@@ -22,8 +21,5 @@ class LocalizationWrapper extends StatelessWidget {
       fallbackLocale: const Locale('{{flags.fallbackLocale}}'),
       child: child,
     );
-    {{else}}
-    return child;
-    {{/if}}
   }
 }

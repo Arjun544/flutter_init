@@ -1,5 +1,7 @@
 import 'package:{{flags.appSnake}}/src/imports/core_imports.dart';
+{{#unless flags.isNoneState}}
 import 'package:{{flags.appSnake}}/src/imports/packages_imports.dart';
+{{/unless}}
 
 {{#if flags.isRiverpod}}
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_provider.dart{{else if (eq architecture "mvc")}}controllers/auth/session_provider.dart{{else if (eq architecture "mvvm")}}ui/auth/providers/session_provider.dart{{else}}features/auth/presentation/providers/session_provider.dart{{/if}}';
@@ -11,6 +13,8 @@ import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}pr
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_store.dart{{else if (eq architecture "mvc")}}controllers/auth/session_store.dart{{else if (eq architecture "mvvm")}}ui/auth/stores/session_store.dart{{else}}features/auth/presentation/providers/session_store.dart{{/if}}';
 {{else if flags.isProvider}}
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_provider.dart{{else if (eq architecture "mvc")}}controllers/auth/session_provider.dart{{else if (eq architecture "mvvm")}}ui/auth/providers/session_provider.dart{{else}}features/auth/presentation/providers/session_provider.dart{{/if}}';
+{{else if flags.isNoneState}}
+// No session listener needed for NoneState — widget rebuilds are manual
 {{else}}
 // session_manager not easily retrieved via context globally if not using Provider, assuming single instance
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/session_manager.dart{{else if (eq architecture "mvc")}}controllers/auth/session_manager.dart{{else if (eq architecture "mvvm")}}ui/auth/view_models/session_manager.dart{{else}}features/auth/presentation/providers/session_manager.dart{{/if}}';

@@ -73,9 +73,9 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
         child: ColoredBox(
           color: Colors.transparent,
           child: {{#if flags.usesHugeicons}}
-              const HugeIcon(
+              HugeIcon(
                 icon: HugeIcons.strokeRoundedArrowLeft01,
-                size: 24,
+                size: {{res 24 'sp' flags.usesScreenutil}},
               )
             {{else if flags.usesIconsaxPlus}}
               Icon(

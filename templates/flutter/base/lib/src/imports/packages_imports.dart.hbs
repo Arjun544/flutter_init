@@ -8,12 +8,14 @@ export 'package:flutter_hooks/flutter_hooks.dart';
 {{/if}}
 export 'package:equatable/equatable.dart';
 {{#if flags.isRiverpod}}
-export 'package:flutter_riverpod/flutter_riverpod.dart' hide describeIdentity, shortHash;
+export 'package:flutter_riverpod/flutter_riverpod.dart';
+export 'package:flutter_riverpod/legacy.dart';
 {{#if flags.usesFlutterHooks}}
-export 'package:hooks_riverpod/hooks_riverpod.dart' hide describeIdentity, shortHash;
+export 'package:hooks_riverpod/hooks_riverpod.dart';
+export 'package:hooks_riverpod/legacy.dart';
 {{/if}}
 {{/if}}
-{{#if flags.isProvider}}
+{{#if (or flags.isProvider flags.isMobX)}}
 export 'package:provider/provider.dart' hide Dispose;
 {{/if}}
 {{#if flags.isBloc}}
@@ -30,19 +32,19 @@ export 'package:get/get_instance/get_instance.dart';
 {{/if}}
 {{/if}}
 {{#if flags.isMobX}}
-export 'package:mobx/mobx.dart';
-export 'package:flutter_mobx/flutter_mobx.dart';
+export 'package:mobx/mobx.dart' hide version, StringExtension, Action, Listener, Listenable;
+export 'package:flutter_mobx/flutter_mobx.dart' hide version;
 {{/if}}
 {{#if (eq flags.routerPackage "go_router")}}
 export 'package:{{flags.routerPackage}}/{{flags.routerPackage}}.dart';
 {{else if (eq flags.routerPackage "auto_route")}}
-export 'package:auto_route/auto_route.dart';
+export 'package:auto_route/auto_route.dart' hide kCupertinoModalBarrierColor, CupertinoPageTransition, CupertinoFullscreenDialogTransition;
 {{/if}}
 {{#if flags.usesDio}}
 export 'package:dio/dio.dart';
 {{/if}}
 {{#if flags.usesHttp}}
-export 'package:http/http.dart';
+export 'package:http/http.dart'{{#if flags.usesDio}} hide MultipartFile, Response{{/if}};
 {{/if}}
 {{#if flags.usesCachedNetworkImage}}
 export 'package:cached_network_image/cached_network_image.dart';

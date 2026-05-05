@@ -1,116 +1,99 @@
-/**
- * backend.spec.ts
- *
- * Focused tests per backend provider.
- * Verifies correct backend-specific packages, initialization code,
- * and absence of other backend code.
- */
-
-import { describe, it } from "vitest"
-
+import { beforeAll, describe, it } from "vitest"
 import {
     assertDependencyAbsent,
     assertDependencyPresent
 } from "../utils/assertions"
 import { generateToMap, getPubspecContent } from "../utils/generate"
-import { buildConfig, type Combination } from "../utils/matrix.config"
+import { PrimaryCombo } from "../utils/matrix.config"
+import { buildConfig } from "../utils/config-builder"
+import { MISC_ALL_ON, MISC_DEFAULT } from "../utils/misc-profiles"
 
-const base: Omit<Combination, "backend"> = {
+const base: Omit<PrimaryCombo, "backend"> = {
     architecture: "feature-first",
     stateManagement: "riverpod",
     navigation: "go_router",
-    miscProfile: "default",
 }
 
 describe("Backend Providers", () => {
     // ── Firebase ────────────────────────────────────────────────
-
     describe("firebase", () => {
-        it("includes firebase_core", async () => {
-            const files = await generateToMap(buildConfig({ ...base, backend: "firebase" }))
-            const pubspec = getPubspecContent(files)
+        let pubspec: string
+
+        beforeAll(async () => {
+            const files = await generateToMap(buildConfig({ ...base, backend: "firebase" }, MISC_DEFAULT))
+            pubspec = getPubspecContent(files)
+        })
+
+        it("includes firebase_core", () => {
             assertDependencyPresent(pubspec, "firebase_core")
         })
 
-        it("includes firebase_auth when authEmail enabled", async () => {
-            const files = await generateToMap(buildConfig({ ...base, backend: "firebase" }))
-            const pubspec = getPubspecContent(files)
-            // Default firebase config has authEmail: true
+        it("includes firebase_auth when authEmail enabled", () => {
             assertDependencyPresent(pubspec, "firebase_auth")
         })
 
-        it("includes cloud_firestore when firestore enabled", async () => {
-            const files = await generateToMap(buildConfig({ ...base, backend: "firebase" }))
-            const pubspec = getPubspecContent(files)
+        it("includes cloud_firestore when firestore enabled", () => {
             assertDependencyPresent(pubspec, "cloud_firestore")
         })
 
-        it("does not include supabase or appwrite packages", async () => {
-            const files = await generateToMap(buildConfig({ ...base, backend: "firebase" }))
-            const pubspec = getPubspecContent(files)
+        it("does not include supabase or appwrite packages", () => {
             assertDependencyAbsent(pubspec, "supabase_flutter")
             assertDependencyAbsent(pubspec, "appwrite")
         })
     })
 
     // ── Supabase ────────────────────────────────────────────────
-
     describe("supabase", () => {
-        it("includes supabase_flutter", async () => {
-            const files = await generateToMap(buildConfig({ ...base, backend: "supabase" }))
-            const pubspec = getPubspecContent(files)
+        let pubspec: string
+
+        beforeAll(async () => {
+            const files = await generateToMap(buildConfig({ ...base, backend: "supabase" }, MISC_DEFAULT))
+            pubspec = getPubspecContent(files)
+        })
+
+        it("includes supabase_flutter", () => {
             assertDependencyPresent(pubspec, "supabase_flutter")
         })
 
-        it("does not include firebase or appwrite packages", async () => {
-            const files = await generateToMap(buildConfig({ ...base, backend: "supabase" }))
-            const pubspec = getPubspecContent(files)
+        it("does not include firebase or appwrite packages", () => {
             assertDependencyAbsent(pubspec, "firebase_core")
             assertDependencyAbsent(pubspec, "appwrite")
         })
     })
 
     // ── Appwrite ────────────────────────────────────────────────
-
     describe("appwrite", () => {
-        it("includes appwrite", async () => {
-            const files = await generateToMap(buildConfig({ ...base, backend: "appwrite" }))
-            const pubspec = getPubspecContent(files)
+        let pubspec: string
+
+        beforeAll(async () => {
+            const files = await generateToMap(buildConfig({ ...base, backend: "appwrite" }, MISC_DEFAULT))
+            pubspec = getPubspecContent(files)
+        })
+
+        it("includes appwrite", () => {
             assertDependencyPresent(pubspec, "appwrite")
         })
 
-        it("does not include firebase or supabase packages", async () => {
-            const files = await generateToMap(buildConfig({ ...base, backend: "appwrite" }))
-            const pubspec = getPubspecContent(files)
+        it("does not include firebase or supabase packages", () => {
             assertDependencyAbsent(pubspec, "firebase_core")
             assertDependencyAbsent(pubspec, "supabase_flutter")
         })
     })
 
     // ── Custom ──────────────────────────────────────────────────
-
     describe("custom", () => {
-        it("requires dio or http — full profile has dio", async () => {
-            const files = await generateToMap(
-                buildConfig({
-                    ...base,
-                    backend: "custom",
-                    miscProfile: "full", // full has usesDio: true
-                })
-            )
-            const pubspec = getPubspecContent(files)
+        let pubspec: string
+
+        beforeAll(async () => {
+            const files = await generateToMap(buildConfig({ ...base, backend: "custom" }, MISC_ALL_ON))
+            pubspec = getPubspecContent(files)
+        })
+
+        it("requires dio or http — MISC_ALL_ON has dio", () => {
             assertDependencyPresent(pubspec, "dio")
         })
 
-        it("does not include any backend SDK packages", async () => {
-            const files = await generateToMap(
-                buildConfig({
-                    ...base,
-                    backend: "custom",
-                    miscProfile: "full",
-                })
-            )
-            const pubspec = getPubspecContent(files)
+        it("does not include any backend SDK packages", () => {
             assertDependencyAbsent(pubspec, "firebase_core")
             assertDependencyAbsent(pubspec, "supabase_flutter")
             assertDependencyAbsent(pubspec, "appwrite")
@@ -118,11 +101,15 @@ describe("Backend Providers", () => {
     })
 
     // ── None ────────────────────────────────────────────────────
-
     describe("none", () => {
-        it("has no backend SDK packages", async () => {
-            const files = await generateToMap(buildConfig({ ...base, backend: "none" }))
-            const pubspec = getPubspecContent(files)
+        let pubspec: string
+
+        beforeAll(async () => {
+            const files = await generateToMap(buildConfig({ ...base, backend: "none" }, MISC_DEFAULT))
+            pubspec = getPubspecContent(files)
+        })
+
+        it("has no backend SDK packages", () => {
             assertDependencyAbsent(pubspec, "firebase_core")
             assertDependencyAbsent(pubspec, "firebase_auth")
             assertDependencyAbsent(pubspec, "cloud_firestore")

@@ -74,123 +74,37 @@ final GoRouter appRouter = GoRouter(
 import 'package:auto_route/auto_route.dart';
 import 'package:{{flags.appSnake}}/src/routing/global_navigator.dart';
 import 'package:{{flags.appSnake}}/src/routing/app_routes.dart';
+export 'app_router.gr.dart';
+import 'app_router.gr.dart';
 
-{{#if (eq architecture "layer-first")}}
-import 'package:{{flags.appSnake}}/src/presentation/screens/auth/login_screen.dart';
-import 'package:{{flags.appSnake}}/src/presentation/screens/auth/signup_screen.dart';
-import 'package:{{flags.appSnake}}/src/presentation/screens/auth/forgot_password_screen.dart';
-{{else if (eq architecture "mvc")}}
-import 'package:{{flags.appSnake}}/src/views/auth/login_screen.dart';
-import 'package:{{flags.appSnake}}/src/views/auth/signup_screen.dart';
-import 'package:{{flags.appSnake}}/src/views/auth/forgot_password_screen.dart';
-{{else if (eq architecture "mvvm")}}
-import 'package:{{flags.appSnake}}/src/ui/auth/login_screen.dart';
-import 'package:{{flags.appSnake}}/src/ui/auth/signup_screen.dart';
-import 'package:{{flags.appSnake}}/src/ui/auth/forgot_password_screen.dart';
-{{else}}
-import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/login_screen.dart';
-import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/signup_screen.dart';
-import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/forgot_password_screen.dart';
-{{/if}}
-
-{{#if (eq architecture "layer-first")}}
-import 'package:{{flags.appSnake}}/src/presentation/screens/home/home_page.dart';
-import 'package:{{flags.appSnake}}/src/presentation/screens/onboarding/onboarding_page.dart';
-
-{{else if (eq architecture "mvc")}}
-import 'package:{{flags.appSnake}}/src/views/home/home_page.dart';
-import 'package:{{flags.appSnake}}/src/views/onboarding/onboarding_page.dart';
-
-{{else if (eq architecture "mvvm")}}
-import 'package:{{flags.appSnake}}/src/ui/home/home_page.dart';
-import 'package:{{flags.appSnake}}/src/ui/onboarding/onboarding_page.dart';
-
-{{else}}
-import 'package:{{flags.appSnake}}/src/features/home/presentation/screens/home_page.dart';
-import 'package:{{flags.appSnake}}/src/features/onboarding/presentation/screens/onboarding_page.dart';
-
-{{/if}}
-
+@AutoRouterConfig()
 class AppRouter extends RootStackRouter {
   AppRouter() : super(navigatorKey: rootNavigatorKey);
 
   @override
-  final Map<String, PageFactory> pagesMap = {
-    OnboardingRoute.name: (routeData) => AutoRoutePage<dynamic>(
-          routeData: routeData,
-          child: const OnboardingPage(),
-        ),
-    LoginRoute.name: (routeData) => AutoRoutePage<dynamic>(
-          routeData: routeData,
-          child: const LoginScreen(),
-        ),
-    SignupRoute.name: (routeData) => AutoRoutePage<dynamic>(
-          routeData: routeData,
-          child: const SignupScreen(),
-        ),
-    ForgotPasswordRoute.name: (routeData) => AutoRoutePage<dynamic>(
-          routeData: routeData,
-          child: const ForgotPasswordScreen(),
-        ),
-    HomeRoute.name: (routeData) => AutoRoutePage<dynamic>(
-          routeData: routeData,
-          child: const HomePage(),
-        ),
-  };
-
-  @override
-  List<RouteConfig> get routes => [
-        RouteConfig(
-          OnboardingRoute.name,
+  List<AutoRoute> get routes => [
+        AutoRoute(
+          page: OnboardingRoute.page,
           path: AppRoutes.onboarding,
+          initial: true,
         ),
-        RouteConfig(
-          LoginRoute.name,
+        AutoRoute(
+          page: LoginRoute.page,
           path: AppRoutes.login,
         ),
-        RouteConfig(
-          SignupRoute.name,
+        AutoRoute(
+          page: SignupRoute.page,
           path: AppRoutes.signup,
         ),
-        RouteConfig(
-          ForgotPasswordRoute.name,
+        AutoRoute(
+          page: ForgotPasswordRoute.page,
           path: AppRoutes.forgotPassword,
         ),
-        RouteConfig(
-          HomeRoute.name,
+        AutoRoute(
+          page: HomeRoute.page,
           path: AppRoutes.home,
         ),
       ];
-}
-
-class OnboardingRoute extends PageRouteInfo<void> {
-  const OnboardingRoute() : super(name, path: AppRoutes.onboarding);
-
-  static const String name = 'OnboardingRoute';
-}
-
-class LoginRoute extends PageRouteInfo<void> {
-  const LoginRoute() : super(name, path: AppRoutes.login);
-
-  static const String name = 'LoginRoute';
-}
-
-class SignupRoute extends PageRouteInfo<void> {
-  const SignupRoute() : super(name, path: AppRoutes.signup);
-
-  static const String name = 'SignupRoute';
-}
-
-class ForgotPasswordRoute extends PageRouteInfo<void> {
-  const ForgotPasswordRoute() : super(name, path: AppRoutes.forgotPassword);
-
-  static const String name = 'ForgotPasswordRoute';
-}
-
-class HomeRoute extends PageRouteInfo<void> {
-  const HomeRoute() : super(name, path: AppRoutes.home);
-
-  static const String name = 'HomeRoute';
 }
 {{else if (eq flags.routerPackage "getx")}}
 import 'package:{{flags.appSnake}}/src/imports/imports.dart';

@@ -89,6 +89,19 @@ async function main() {
         }
         console.log("✓ dart pub get passed")
 
+        // 2.5 dart run build_runner build (if needed)
+        const needsBuild = config.navigation === "auto_route" || config.stateManagement === "mobx"
+        if (needsBuild) {
+            console.log("\nRunning build_runner...")
+            const buildResult = runCommand("dart run build_runner build --delete-conflicting-outputs", projectDir)
+            if (!buildResult.success) {
+                console.error("✗ build_runner FAILED")
+                console.error(buildResult.output)
+                process.exit(1)
+            }
+            console.log("✓ build_runner passed")
+        }
+
         // 3. dart analyze --fatal-infos
         console.log("\nRunning dart analyze --fatal-infos...")
         const analyzeResult = runCommand("dart analyze --fatal-infos", projectDir)

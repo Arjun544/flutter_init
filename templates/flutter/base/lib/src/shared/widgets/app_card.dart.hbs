@@ -64,7 +64,7 @@ class AppCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                if (leading != null) ...[leading!, const SizedBox(width: 12)],
+                if (leading != null) ...[leading!, {{#if flags.usesScreenutil}}SizedBox(width: 12.w){{else}}const SizedBox(width: 12){{/if}}],
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

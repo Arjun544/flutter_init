@@ -44,23 +44,18 @@ class HomePage extends StatelessWidget {
 
     {{#if flags.isRiverpod}}
     final session = ref.watch(sessionProvider);
-    final user = session.user;
     {{else if flags.isBloc}}
     final session = context.watch<SessionBloc>().state;
-    final user = session.user;
     {{else if flags.isGetX}}
     final session = Get.find<SessionController>();
-    final user = session.user.value;
     {{else if flags.isProvider}}
     final session = context.watch<SessionProvider>();
-    final user = session.user;
     {{else if flags.isMobX}}
     final session = context.watch<SessionStore>();
-    final user = session.user;
-    {{else}}
-    // Add custom state retrieval here or replace with actual
-    final user = null;
     {{/if}}
+    {{#unless (or flags.isGetX flags.isMobX)}}
+    {{#if (or flags.isRiverpod flags.isBloc flags.isProvider)}}final{{else}}const{{/if}} user = {{#if flags.isRiverpod}}session.user{{else if flags.isBloc}}session.user{{else if flags.isProvider}}session.user{{else}}null{{/if}};
+    {{/unless}}
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -81,25 +76,31 @@ class HomePage extends StatelessWidget {
               ),
               SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
               {{#if flags.isGetX}}
-              Obx(() => Text(
-                user?.name ?? user?.email ?? ({{#if flags.supportsLocalization}}'home.welcome_home'.tr(){{else}}'Welcome Home!'{{/if}}),
-                textAlign: TextAlign.center,
-                style: textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: colorScheme.onSurface,
-                  fontSize: {{res 28 'sp' flags.usesScreenutil}},
-                ),
-              )),
+              Obx(() {
+                final user = session.user.value;
+                return Text(
+                  user?.name ?? user?.email ?? ({{#if flags.supportsLocalization}}'home.welcome_home'.tr(){{else}}'Welcome Home!'{{/if}}),
+                  textAlign: TextAlign.center,
+                  style: textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: colorScheme.onSurface,
+                    fontSize: {{res 28 'sp' flags.usesScreenutil}},
+                  ),
+                );
+              }),
               {{else if flags.isMobX}}
-              Observer(builder: (_) => Text(
-                session.user?.name ?? session.user?.email ?? ({{#if flags.supportsLocalization}}'home.welcome_home'.tr(){{else}}'Welcome Home!'{{/if}}),
-                textAlign: TextAlign.center,
-                style: textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: colorScheme.onSurface,
-                  fontSize: {{res 28 'sp' flags.usesScreenutil}},
-                ),
-              )),
+              Observer(builder: (_) {
+                final user = session.user;
+                return Text(
+                  user?.name ?? user?.email ?? ({{#if flags.supportsLocalization}}'home.welcome_home'.tr(){{else}}'Welcome Home!'{{/if}}),
+                  textAlign: TextAlign.center,
+                  style: textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: colorScheme.onSurface,
+                    fontSize: {{res 28 'sp' flags.usesScreenutil}},
+                  ),
+                );
+              }),
               {{else}}
               Text(
                 user?.name ?? user?.email ?? ({{#if flags.supportsLocalization}}'home.welcome_home'.tr(){{else}}'Welcome Home!'{{/if}}),
@@ -113,26 +114,32 @@ class HomePage extends StatelessWidget {
               {{/if}}
               SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
               {{#if flags.isGetX}}
-              Obx(() => Text(
-                user?.email != null && user?.name != null ? user!.email! : ({{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}}),
-                textAlign: TextAlign.center,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontSize: {{res 14 'sp' flags.usesScreenutil}},
-                ),
-              )),
+              Obx(() {
+                final user = session.user.value;
+                return Text(
+                  user != null && user.name != null ? user.email : ({{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}}),
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontSize: {{res 14 'sp' flags.usesScreenutil}},
+                  ),
+                );
+              }),
               {{else if flags.isMobX}}
-              Observer(builder: (_) => Text(
-                session.user?.email != null && session.user?.name != null ? session.user!.email! : ({{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}}),
-                textAlign: TextAlign.center,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontSize: {{res 14 'sp' flags.usesScreenutil}},
-                ),
-              )),
+              Observer(builder: (_) {
+                final user = session.user;
+                return Text(
+                  user != null && user.name != null ? user.email : ({{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}}),
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontSize: {{res 14 'sp' flags.usesScreenutil}},
+                  ),
+                );
+              }),
               {{else}}
               Text(
-                user?.email != null && user?.name != null ? user!.email : ({{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}}),
+                user != null && user.name != null ? user.email : ({{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}}),
                 textAlign: TextAlign.center,
                 style: textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,

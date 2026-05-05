@@ -1,8 +1,6 @@
 import '../../imports/imports.dart';
 
 /// A wrapper widget that handles different icon libraries.
-/// 
-/// It automatically switches between [Icon] and [HugeIcon] based on the provided data.
 class AppIcon extends StatelessWidget {
   const AppIcon({
     super.key,
@@ -11,27 +9,15 @@ class AppIcon extends StatelessWidget {
     this.color,
   });
 
-  /// The icon to display. Can be [IconData] or HugeIcon data (List<List<dynamic>>).
-  final dynamic icon;
+  /// The icon to display.
+  final IconData icon;
   final double? size;
   final Color? color;
 
   @override
   Widget build(BuildContext context) {
-    if (icon == null) return const SizedBox.shrink();
-
-    {{#if flags.usesHugeicons}}
-    if (icon is! IconData) {
-      return HugeIcon(
-        icon: icon,
-        size: size ?? 24,
-        color: color ?? context.theme.iconTheme.color,
-      );
-    }
-    {{/if}}
-
     return Icon(
-      icon as IconData,
+      icon,
       size: size,
       color: color,
     );

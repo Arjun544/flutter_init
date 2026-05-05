@@ -48,3 +48,8 @@ next-env.d.ts
 # Generator Output
 /dev_out/
 scripts/dev_config.json
+
+# Test Results
+tests/results/
+.temp/
+

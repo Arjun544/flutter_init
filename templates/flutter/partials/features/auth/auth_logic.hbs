@@ -1,5 +1,11 @@
 import 'package:{{flags.appSnake}}/src/imports/core_imports.dart';
+{{#if (or flags.isRiverpod flags.isBloc flags.isMobX flags.isGetX)}}
 import 'package:{{flags.appSnake}}/src/imports/packages_imports.dart';
+{{else if (or flags.isProvider flags.isNoneState)}}
+{{#if (or (eq flags.routerPackage "go_router") (eq flags.routerPackage "auto_route"))}}
+import 'package:{{flags.appSnake}}/src/imports/packages_imports.dart';
+{{/if}}
+{{/if}}
 
 {{#if flags.isRiverpod}}
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
@@ -31,7 +37,11 @@ class AuthController extends StateNotifier<bool> {
     
     state = false;
     result.fold(
-      (failure) => showToast(context, message: failure.message, status: 'error'),
+      (failure) {
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
+      },
       (user) {
         if (rootContext?.mounted ?? false) {
           {{#if (eq flags.routerPackage "go_router")}}
@@ -50,10 +60,14 @@ class AuthController extends StateNotifier<bool> {
     state = true;
     
     final result = await _repository.signUp(name: name, email: email, password: password);
-
+    
     state = false;
     result.fold(
-      (failure) => showToast(context, message: failure.message, status: 'error'),
+      (failure) {
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
+      },
       (user) {
         if (rootContext?.mounted ?? false) {
           {{#if (eq flags.routerPackage "go_router")}}
@@ -75,9 +89,15 @@ class AuthController extends StateNotifier<bool> {
 
     state = false;
     result.fold(
-      (failure) => showToast(context, message: failure.message, status: 'error'),
+      (failure) {
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
+      },
       (success) {
-        showToast(context, message: 'Password reset link sent successfully', status: 'success');
+        if (context.mounted) {
+          showToast(context, message: 'Password reset link sent successfully', status: 'success');
+        }
         if (context.mounted) {
           {{#if (eq flags.routerPackage "go_router")}}
           context.go(AppRoutes.login);
@@ -114,7 +134,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) {
         emit(state.copyWith(isLoading: false));
-        showToast(event.context, message: failure.message, status: 'error');
+        if (event.context.mounted) {
+          showToast(event.context, message: failure.message, status: 'error');
+        }
       },
       (user) {
         emit(state.copyWith(isLoading: false));
@@ -142,7 +164,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) {
         emit(state.copyWith(isLoading: false));
-        showToast(event.context, message: failure.message, status: 'error');
+        if (event.context.mounted) {
+          showToast(event.context, message: failure.message, status: 'error');
+        }
       },
       (user) {
         emit(state.copyWith(isLoading: false));
@@ -170,11 +194,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) {
         emit(state.copyWith(isLoading: false));
-        showToast(event.context, message: failure.message, status: 'error');
+        if (event.context.mounted) {
+          showToast(event.context, message: failure.message, status: 'error');
+        }
       },
       (success) {
         emit(state.copyWith(isLoading: false));
-        showToast(event.context, message: 'Password reset link sent successfully', status: 'success');
+        if (event.context.mounted) {
+          showToast(event.context, message: 'Password reset link sent successfully', status: 'success');
+        }
         if (event.context.mounted) {
           {{#if (eq flags.routerPackage "go_router")}}
           event.context.go(AppRoutes.login);
@@ -251,7 +279,9 @@ class AuthViewModel extends ChangeNotifier {
     _setLoading(false);
     result.fold(
       (failure) {
-        showToast(context, message: failure.message, status: 'error');
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
       },
       (user) {
         if (context.mounted) {
@@ -275,7 +305,9 @@ class AuthViewModel extends ChangeNotifier {
     _setLoading(false);
     result.fold(
       (failure) {
-        showToast(context, message: failure.message, status: 'error');
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
       },
       (user) {
         if (context.mounted) {
@@ -299,10 +331,14 @@ class AuthViewModel extends ChangeNotifier {
     _setLoading(false);
     result.fold(
       (failure) {
-        showToast(context, message: failure.message, status: 'error');
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
       },
       (success) {
-        showToast(context, message: 'Password reset link sent successfully', status: 'success');
+        if (context.mounted) {
+          showToast(context, message: 'Password reset link sent successfully', status: 'success');
+        }
       },
     );
   }
@@ -332,7 +368,9 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(false);
     result.fold(
       (failure) {
-        showToast(context, message: failure.message, status: 'error');
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
       },
       (user) {
         if (context.mounted) {
@@ -356,7 +394,9 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(false);
     result.fold(
       (failure) {
-        showToast(context, message: failure.message, status: 'error');
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
       },
       (user) {
         if (context.mounted) {
@@ -380,10 +420,14 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(false);
     result.fold(
       (failure) {
-        showToast(context, message: failure.message, status: 'error');
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
       },
       (success) {
-        showToast(context, message: 'Password reset link sent successfully', status: 'success');
+        if (context.mounted) {
+          showToast(context, message: 'Password reset link sent successfully', status: 'success');
+        }
         if (context.mounted) {
           {{#if (eq flags.routerPackage "go_router")}}
           context.go(AppRoutes.login);
@@ -415,7 +459,9 @@ class AuthController extends GetxController {
     isLoading.value = false;
     result.fold(
       (failure) {
-        showToast(context, message: failure.message, status: 'error');
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
       },
       (user) {
         Get.offAllNamed(AppRoutes.home);
@@ -431,7 +477,9 @@ class AuthController extends GetxController {
     isLoading.value = false;
     result.fold(
       (failure) {
-        showToast(context, message: failure.message, status: 'error');
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
       },
       (user) {
         Get.offAllNamed(AppRoutes.home);
@@ -447,10 +495,14 @@ class AuthController extends GetxController {
     isLoading.value = false;
     result.fold(
       (failure) {
-        showToast(context, message: failure.message, status: 'error');
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
       },
       (success) {
-        showToast(context, message: 'Password reset link sent successfully', status: 'success');
+        if (context.mounted) {
+          showToast(context, message: 'Password reset link sent successfully', status: 'success');
+        }
         Get.offNamed(AppRoutes.login);
       },
     );
@@ -461,12 +513,12 @@ import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}do
 
 part 'auth_store.g.dart';
 
-class AuthStore = _AuthStore with _$AuthStore;
+class AuthStore = AuthStoreBase with _$AuthStore;
 
-abstract class _AuthStore with Store {
+abstract class AuthStoreBase with Store {
   final AuthRepository _repository;
 
-  _AuthStore({required AuthRepository repository}) : _repository = repository;
+  AuthStoreBase({required AuthRepository repository}) : _repository = repository;
 
   @observable
   bool isLoading = false;
@@ -480,7 +532,9 @@ abstract class _AuthStore with Store {
     isLoading = false;
     result.fold(
       (failure) {
-        showToast(context, message: failure.message, status: 'error');
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
       },
       (user) {
         if (context.mounted) {
@@ -505,7 +559,9 @@ abstract class _AuthStore with Store {
     isLoading = false;
     result.fold(
       (failure) {
-        showToast(context, message: failure.message, status: 'error');
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
       },
       (user) {
         if (context.mounted) {
@@ -530,10 +586,14 @@ abstract class _AuthStore with Store {
     isLoading = false;
     result.fold(
       (failure) {
-        showToast(context, message: failure.message, status: 'error');
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
       },
       (success) {
-        showToast(context, message: 'Password reset link sent successfully', status: 'success');
+        if (context.mounted) {
+          showToast(context, message: 'Password reset link sent successfully', status: 'success');
+        }
         if (context.mounted) {
           {{#if (eq flags.routerPackage "go_router")}}
           context.go(AppRoutes.login);

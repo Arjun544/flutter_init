@@ -1,89 +1,86 @@
-/**
- * navigation.spec.ts
- *
- * Focused tests per navigation option.
- * Verifies correct routing packages, router file content,
- * and absence of other navigation code.
- */
-
-import { describe, expect, it } from "vitest"
-
+import { beforeAll, describe, expect, it } from "vitest"
 import {
     assertDependencyAbsent,
     assertDependencyPresent,
     getFileContent
 } from "../utils/assertions"
 import { generateToMap, getPubspecContent } from "../utils/generate"
-import { buildConfig, type Combination } from "../utils/matrix.config"
+import { PrimaryCombo } from "../utils/matrix.config"
+import { buildConfig } from "../utils/config-builder"
+import { MISC_DEFAULT } from "../utils/misc-profiles"
 
-const base: Omit<Combination, "navigation"> = {
+const base: Omit<PrimaryCombo, "navigation"> = {
     architecture: "feature-first",
     stateManagement: "riverpod",
     backend: "none",
-    miscProfile: "default",
 }
 
 describe("Navigation", () => {
     // ── go_router ───────────────────────────────────────────────
-
     describe("go_router", () => {
-        it("includes go_router in pubspec", async () => {
-            const files = await generateToMap(buildConfig({ ...base, navigation: "go_router" }))
-            const pubspec = getPubspecContent(files)
+        let files: Map<string, string>
+        let pubspec: string
+
+        beforeAll(async () => {
+            files = await generateToMap(buildConfig({ ...base, navigation: "go_router" }, MISC_DEFAULT))
+            pubspec = getPubspecContent(files)
+        })
+
+        it("includes go_router in pubspec", () => {
             assertDependencyPresent(pubspec, "go_router")
         })
 
-        it("does not include auto_route", async () => {
-            const files = await generateToMap(buildConfig({ ...base, navigation: "go_router" }))
-            const pubspec = getPubspecContent(files)
+        it("does not include auto_route", () => {
             assertDependencyAbsent(pubspec, "auto_route")
             assertDependencyAbsent(pubspec, "auto_route_generator")
         })
 
-        it("generates router configuration file", async () => {
-            const files = await generateToMap(buildConfig({ ...base, navigation: "go_router" }))
+        it("generates router configuration file", () => {
             const routerFile = getFileContent(files, "app_router.dart")
             expect(routerFile).toBeDefined()
         })
     })
 
     // ── auto_route ──────────────────────────────────────────────
-
     describe("auto_route", () => {
-        it("includes auto_route in pubspec", async () => {
-            const files = await generateToMap(buildConfig({ ...base, navigation: "auto_route" }))
-            const pubspec = getPubspecContent(files)
+        let pubspec: string
+
+        beforeAll(async () => {
+            const files = await generateToMap(buildConfig({ ...base, navigation: "auto_route" }, MISC_DEFAULT))
+            pubspec = getPubspecContent(files)
+        })
+
+        it("includes auto_route in pubspec", () => {
             assertDependencyPresent(pubspec, "auto_route")
         })
 
-        it("includes auto_route_generator in dev_dependencies", async () => {
-            const files = await generateToMap(buildConfig({ ...base, navigation: "auto_route" }))
-            const pubspec = getPubspecContent(files)
+        it("includes auto_route_generator in dev_dependencies", () => {
             assertDependencyPresent(pubspec, "auto_route_generator")
             assertDependencyPresent(pubspec, "build_runner")
         })
 
-        it("does not include go_router", async () => {
-            const files = await generateToMap(buildConfig({ ...base, navigation: "auto_route" }))
-            const pubspec = getPubspecContent(files)
+        it("does not include go_router", () => {
             assertDependencyAbsent(pubspec, "go_router")
         })
     })
 
     // ── imperative ──────────────────────────────────────────────
-
     describe("imperative (Navigator 1.0)", () => {
-        it("does not include any routing package", async () => {
-            const files = await generateToMap(buildConfig({ ...base, navigation: "imperative" }))
-            const pubspec = getPubspecContent(files)
+        let files: Map<string, string>
+        let pubspec: string
+
+        beforeAll(async () => {
+            files = await generateToMap(buildConfig({ ...base, navigation: "imperative" }, MISC_DEFAULT))
+            pubspec = getPubspecContent(files)
+        })
+
+        it("does not include any routing package", () => {
             assertDependencyAbsent(pubspec, "go_router")
             assertDependencyAbsent(pubspec, "auto_route")
             assertDependencyAbsent(pubspec, "auto_route_generator")
         })
 
-        it("still generates app_router.dart", async () => {
-            const files = await generateToMap(buildConfig({ ...base, navigation: "imperative" }))
-            // Even imperative navigation should have a router config file
+        it("still generates app_router.dart", () => {
             const routerFile = getFileContent(files, "app_router.dart")
             expect(routerFile).toBeDefined()
         })

@@ -53,6 +53,10 @@ export async function generateToDisk(
     config: ScaffoldConfig,
     outputDir: string
 ): Promise<string[]> {
+    // Clear directory to avoid stale files from previous runs
+    await fs.rm(outputDir, { recursive: true, force: true })
+    await fs.mkdir(outputDir, { recursive: true })
+
     const buffer = await generateFlutterScaffold(config)
     const zip = await JSZip.loadAsync(buffer)
 

@@ -1,33 +1,24 @@
-/**
- * full-pipeline.spec.ts
- *
- * Integration tests that exercise the full generation pipeline
- * for the critical combinations. Each test generates a complete
- * project and runs ALL assertion categories against it.
- */
-
 import { describe, expect, it } from "vitest"
-
 import {
     assertArchitectureStructure,
     assertNoEmptyFiles,
     assertNoUnresolvedTokens,
     assertRequiredFilesExist,
     assertValidPubspec,
-    getFileContent,
 } from "../utils/assertions"
-import { generateToMap, getPubspecContent } from "../utils/generate"
-import { buildConfig, combinationLabel } from "../utils/matrix.config"
-import { CRITICAL_COMBINATIONS } from "../utils/critical-combos"
+import { generateToMap, getPubspecContent, getFile } from "../utils/generate"
+import { COMBO_LABEL } from "../utils/matrix.config"
+import { buildConfig } from "../utils/config-builder"
+import { CRITICAL_COMBOS } from "../utils/critical-combos"
 
 describe("Full Pipeline — Critical Combinations", () => {
     it.each(
-        CRITICAL_COMBINATIONS.map((c, i) => [i, combinationLabel(c), c] as const)
+        CRITICAL_COMBOS.map((c, i) => [i, COMBO_LABEL(c), c] as const)
     )(
         "combo #%i — %s passes all assertions",
         { timeout: 30_000 },
         async (_index, _label, combo) => {
-            const config = buildConfig(combo)
+            const config = buildConfig(combo, combo.miscProfile)
             const files = await generateToMap(config)
 
             // 1. Token cleanliness
@@ -46,7 +37,7 @@ describe("Full Pipeline — Critical Combinations", () => {
             expect(pubspec).toContain("name: test_app")
 
             // 5. main.dart has substantive content
-            const mainDart = getFileContent(files, "lib/main.dart")
+            const mainDart = getFile(files, "lib/main.dart")
             expect(mainDart).toBeDefined()
             expect(mainDart!.length).toBeGreaterThan(50)
             expect(mainDart).toContain("main()")

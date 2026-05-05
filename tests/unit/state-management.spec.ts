@@ -1,114 +1,117 @@
-/**
- * state-management.spec.ts
- *
- * Focused tests per state management option.
- * Verifies that the correct wrapper patterns, imports, and file structures
- * are generated for each state manager, and that other state managers' code
- * is completely absent (no option bleed).
- */
-
-import { describe, expect, it } from "vitest"
-
+import { beforeAll, describe, expect, it } from "vitest"
 import { assertFileContains, assertFileNotContains, getFileContent } from "../utils/assertions"
 import { generateToMap, getPubspecContent } from "../utils/generate"
-import { buildConfig, type Combination } from "../utils/matrix.config"
+import { PrimaryCombo } from "../utils/matrix.config"
+import { buildConfig } from "../utils/config-builder"
+import { MISC_ALL_ON, MISC_DEFAULT } from "../utils/misc-profiles"
 
-/** Base combo — we vary only the stateManagement field */
-const base: Omit<Combination, "stateManagement"> = {
+const base: Omit<PrimaryCombo, "stateManagement"> = {
     architecture: "feature-first",
     backend: "none",
     navigation: "go_router",
-    miscProfile: "default",
 }
 
 describe("State Management", () => {
     // ── Riverpod ────────────────────────────────────────────────
-
     describe("riverpod", () => {
-        it("wraps app with ProviderScope", async () => {
-            const files = await generateToMap(buildConfig({ ...base, stateManagement: "riverpod" }))
+        let files: Map<string, string>
+
+        beforeAll(async () => {
+            files = await generateToMap(buildConfig({ ...base, stateManagement: "riverpod" }, MISC_DEFAULT))
+        })
+
+        it("wraps app with ProviderScope", () => {
             assertFileContains(files, "state_wrapper.dart", "ProviderScope")
         })
 
-        it("does not contain Bloc or Provider patterns", async () => {
-            const files = await generateToMap(buildConfig({ ...base, stateManagement: "riverpod" }))
+        it("does not contain Bloc or Provider patterns", () => {
             assertFileNotContains(files, "state_wrapper.dart", "MultiBlocProvider")
             assertFileNotContains(files, "state_wrapper.dart", "MultiProvider")
         })
 
         it("includes hooks_riverpod when hooks enabled", async () => {
-            const files = await generateToMap(
-                buildConfig({ ...base, stateManagement: "riverpod", miscProfile: "hooks" })
+            const filesWithHooks = await generateToMap(
+                buildConfig({ ...base, stateManagement: "riverpod" }, MISC_ALL_ON)
             )
-            const pubspec = getPubspecContent(files)
+            const pubspec = getPubspecContent(filesWithHooks)
             expect(pubspec).toContain("hooks_riverpod")
         })
     })
 
     // ── Provider ────────────────────────────────────────────────
-
     describe("provider", () => {
-        it("wraps app with MultiProvider", async () => {
-            const files = await generateToMap(buildConfig({ ...base, stateManagement: "provider" }))
+        let files: Map<string, string>
+
+        beforeAll(async () => {
+            files = await generateToMap(buildConfig({ ...base, stateManagement: "provider" }, MISC_DEFAULT))
+        })
+
+        it("wraps app with MultiProvider", () => {
             assertFileContains(files, "state_wrapper.dart", "MultiProvider")
         })
 
-        it("does not contain Riverpod or Bloc patterns", async () => {
-            const files = await generateToMap(buildConfig({ ...base, stateManagement: "provider" }))
+        it("does not contain Riverpod or Bloc patterns", () => {
             assertFileNotContains(files, "state_wrapper.dart", "ProviderScope")
             assertFileNotContains(files, "state_wrapper.dart", "MultiBlocProvider")
         })
     })
 
     // ── Bloc ────────────────────────────────────────────────────
-
     describe("bloc", () => {
-        it("wraps app with MultiBlocProvider", async () => {
-            const files = await generateToMap(buildConfig({ ...base, stateManagement: "bloc" }))
+        let files: Map<string, string>
+
+        beforeAll(async () => {
+            files = await generateToMap(buildConfig({ ...base, stateManagement: "bloc" }, MISC_DEFAULT))
+        })
+
+        it("wraps app with MultiBlocProvider", () => {
             assertFileContains(files, "state_wrapper.dart", "MultiBlocProvider")
         })
 
-        it("does not contain Riverpod or Provider patterns", async () => {
-            const files = await generateToMap(buildConfig({ ...base, stateManagement: "bloc" }))
+        it("does not contain Riverpod or Provider patterns", () => {
             assertFileNotContains(files, "state_wrapper.dart", "ProviderScope")
             assertFileNotContains(files, "state_wrapper.dart", "MultiProvider")
         })
     })
 
     // ── MobX ────────────────────────────────────────────────────
-
     describe("mobx", () => {
-        it("includes mobx and flutter_mobx in pubspec", async () => {
-            const files = await generateToMap(buildConfig({ ...base, stateManagement: "mobx" }))
-            const pubspec = getPubspecContent(files)
+        let files: Map<string, string>
+        let pubspec: string
+
+        beforeAll(async () => {
+            files = await generateToMap(buildConfig({ ...base, stateManagement: "mobx" }, MISC_DEFAULT))
+            pubspec = getPubspecContent(files)
+        })
+
+        it("includes mobx and flutter_mobx in pubspec", () => {
             expect(pubspec).toContain("mobx:")
             expect(pubspec).toContain("flutter_mobx:")
         })
 
-        it("includes build_runner and mobx_codegen in dev_dependencies", async () => {
-            const files = await generateToMap(buildConfig({ ...base, stateManagement: "mobx" }))
-            const pubspec = getPubspecContent(files)
+        it("includes build_runner and mobx_codegen in dev_dependencies", () => {
             expect(pubspec).toContain("build_runner:")
             expect(pubspec).toContain("mobx_codegen:")
         })
     })
 
     // ── None (setState) ─────────────────────────────────────────
-
     describe("none (setState)", () => {
-        it("does not generate StateWrapper", async () => {
-            const files = await generateToMap(buildConfig({ ...base, stateManagement: "none" }))
+        let files: Map<string, string>
+        let pubspec: string
 
-            // main.dart should NOT wrap with StateWrapper
+        beforeAll(async () => {
+            files = await generateToMap(buildConfig({ ...base, stateManagement: "none" }, MISC_DEFAULT))
+            pubspec = getPubspecContent(files)
+        })
+
+        it("does not generate StateWrapper", () => {
             const mainDart = getFileContent(files, "lib/main.dart")
             expect(mainDart).toBeDefined()
             expect(mainDart).not.toContain("StateWrapper")
         })
 
-        it("has no state management packages in pubspec", async () => {
-            const files = await generateToMap(buildConfig({ ...base, stateManagement: "none" }))
-            const pubspec = getPubspecContent(files)
-
+        it("has no state management packages in pubspec", () => {
             expect(pubspec).not.toContain("flutter_riverpod:")
             // Use regex to match standalone "provider:" (not "path_provider:" or "shared_preferences:")
             expect(pubspec).not.toMatch(/^\s+provider:\s/m)

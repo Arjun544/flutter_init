@@ -1,116 +1,256 @@
-# FlutterInit Testing Guide
+# FlutterInit — Comprehensive Testing Guide
 
-This guide explains the testing infrastructure for **FlutterInit**, covering the two-layer validation strategy, the automated matrix runner, and CI/CD integration.
+**Version:** 1.1  
+**Scope:** Template integrity, output validation, full combination coverage, and CI/CD integration  
+**Stack:** Bun, Vitest, Handlebars.js, Dart, GitHub Actions
 
 ---
 
-## 1. Testing Philosophy
+## Table of Contents
 
-We use a two-layer approach to ensure that the template generator produces reliable, production-grade Flutter code.
+1. [Overview and Philosophy](#1-overview-and-philosophy)
+2. [Understanding the Testing Problem](#2-understanding-the-testing-problem)
+3. [The Two-Layer Model](#3-the-two-layer-model)
+4. [Layer 1 — Template Integrity Testing](#4-layer-1--template-integrity-testing)
+5. [Layer 2 — Dart Output Validation](#5-layer-2--dart-output-validation)
+6. [Full Combination Coverage](#6-full-combination-coverage)
+7. [The Combination Generator](#7-the-combination-generator)
+8. [What to Assert in Every Test](#8-what-to-assert-in-every-test)
+9. [Test Directory Structure](#9-test-directory-structure)
+10. [CI/CD Strategy and Tiering](#10-cicd-strategy-and-tiering)
+11. [The Pre-Production Gate](#11-the-pre-production-gate)
+12. [Snapshot Testing for Regression Prevention](#12-snapshot-testing-for-regression-prevention)
+13. [Combination Coverage Reporting](#13-combination-coverage-reporting)
+14. [Failure Handling and Debugging](#14-failure-handling-and-debugging)
+15. [Common Pitfalls and How to Avoid Them](#15-common-pitfalls-and-how-to-avoid-them)
+16. [Testing Checklist Before Every Release](#16-testing-checklist-before-every-release)
 
-### Layer 1: Template Integrity (Unit & Integration)
-- **Goal**: Fast, in-memory validation of the generator engine and Handlebars templates.
-- **Scope**: All 1,350+ valid combinations of architecture, state management, and backend.
+---
+
+## 1. Overview and Philosophy
+
+FlutterInit is a scaffolding engine. Unlike a standard web application or API, it does not serve data or process requests at runtime — it generates code. This fundamentally changes what testing means and what it must guarantee.
+
+A bug in a web app breaks a feature. A bug in FlutterInit breaks every project a developer creates with it. A developer who generates a broken project from FlutterInit may spend hours debugging before realizing the issue was in the tool, not their code. That erosion of trust is irreversible.
+
+**The primary goal of FlutterInit's test suite is a single guarantee:**
+
+> Every valid combination of user choices must produce a Flutter project that compiles, analyzes cleanly, and reflects exactly what the user configured.
+
+Nothing less is acceptable before a production release.
+
+---
+
+## 2. Understanding the Testing Problem
+
+Most scaffolding tools test only whether their templates compile — meaning, whether the template engine successfully processes the template file without throwing an error. This is a dangerously incomplete definition of "passing."
+
+FlutterInit has a unique testing challenge because it sits at the intersection of two languages and two systems:
+
+**The JavaScript system** is responsible for taking user input, resolving template logic, injecting variables, and producing file strings. Bugs here include unresolved Handlebars tokens, incorrect conditionals, variable name mismatches, wrong file paths, and missing files for certain option combinations.
+
+**The Dart system** is the output of the JavaScript system. Bugs here include syntactically invalid Dart code, incorrect import paths, missing or duplicate dependencies in pubspec.yaml, conflicting package versions, and architectural folder structures that don't match what was requested.
+
+---
+
+## 3. The Two-Layer Model
+
+Think of FlutterInit's output pipeline as two sequential layers, each requiring its own validation strategy.
+
+**Layer 1 — The Template Engine (Unit & Integration)**
+- **Scope**: All 375 primary valid combinations of architecture, state management, and backend.
+- **Tools**: Vitest, Bun.
 - **Speed**: Very fast (seconds to minutes).
 - **Environment**: Node.js/Bun (no Flutter SDK required).
 
-### Layer 2: Output Validation (E2E)
+**Layer 2 — The Generated Flutter Project (E2E)**
 - **Goal**: Guarantee that the generated code actually compiles and follows Dart best practices.
-- **Scope**: Critical combinations and full matrix validation.
-- **Speed**: Slow (minutes to hours).
+- **Tools**: Dart SDK (`dart pub get`, `dart analyze`), Bun.
+- **Speed**: Slower (minutes).
 - **Environment**: Requires Flutter/Dart SDK.
 
 ---
 
-## 2. Directory Structure
+## 4. Layer 1 — Template Integrity Testing
+
+### Purpose
+Layer 1 tests verify that the Handlebars templating engine is correctly processing every template file for every valid combination of inputs.
+
+### Running Layer 1 Tests
+```bash
+# Run all unit and integration tests
+npm run test:layer1
+
+# Run unit tests only
+npm run test:unit
+
+# Run integration tests only
+npm run test:integration
+```
+
+### What Layer 1 Tests Verify
+- **No unresolved Handlebars tokens**: No `{{variable}}` sequences left in output.
+- **No empty output files**: Every file must have substantive content.
+- **Presence of required files**: `pubspec.yaml`, `main.dart`, etc.
+- **Correct conditional inclusion**: Ensuring no "option bleed" (e.g., Bloc code in a Riverpod project).
+- **Valid pubspec.yaml structure**: Parseable as valid YAML.
+
+---
+
+## 5. Layer 2 — Dart Output Validation
+
+### Purpose
+Layer 2 tests verify that the files written to disk constitute a valid Flutter project.
+
+### Running Layer 2 Tests
+```bash
+# Run validation for Critical Combinations
+npm run test:layer2
+```
+
+### The Validation Pipeline
+1.  **Project Generation**: Writes files to a temporary directory.
+2.  **Dependency Resolution**: Runs `dart pub get`.
+3.  **Code Generation**: Runs `build_runner` (if MobX or AutoRoute is used).
+4.  **Static Analysis**: Runs `dart analyze --fatal-infos`.
+
+### What Layer 2 Catches
+- **Import path errors**: Typographical errors in package imports.
+- **pubspec.yaml version conflicts**: Conflicting constraints between packages.
+- **Missing platform configuration**: Incomplete setup for services like Firebase.
+- **Architectural consistency**: Verifying that imports match the requested folder structure.
+
+---
+
+## 6. Full Combination Coverage
+
+### Why Full Coverage Matters
+The interactions between options are where the most subtle bugs live. "None" is a first-class option that must be explicitly tested.
+
+### Defining the Option Space
+The file `tests/utils/matrix.config.ts` defines the available options and filters out invalid combinations. Every valid permutation (375 primary combinations) must eventually be tested before a major release.
+
+---
+
+## 7. The Combination Generator
+
+The combination generator (`tests/utils/combinations.ts`) is a shared utility that produces the complete list of valid combinations. It powers the full matrix test suite and ensures consistency across all test tiers.
+
+---
+
+## 8. What to Assert in Every Test
+
+- **Structural**: Does the folder structure match (Clean, Feature-First, MVVM)?
+- **Content**: Are the files populated correctly?
+- **Dependency**: Is `pubspec.yaml` correct for the selected flags?
+- **Token Cleanliness**: No `{{tokens}}` in output.
+- **Analysis (Layer 2)**: Zero errors, warnings, or info diagnostics.
+
+---
+
+## 9. Test Directory Structure
 
 ```text
 tests/
 ├── unit/               # Layer 1: Specific feature tests
 │   ├── backend.spec.ts
 │   ├── dependencies.spec.ts
-│   ├── token-cleanliness.spec.ts  # Scans for unresolved {{tokens}}
 │   └── ...
 ├── integration/        # Layer 1: Pipeline tests
-│   └── full-pipeline.spec.ts      # Generates full project in-memory
-├── e2e/                # Layer 2: Dart SDK validation
-│   ├── validate-combo.ts          # CLI tool for single combo
-│   ├── run-matrix.ts              # Matrix orchestrator
-│   └── dart-validation.spec.ts    # Vitest wrapper for E2E
-└── utils/              # Shared logic
-    ├── matrix.config.ts           # Source of truth for options
-    └── assertions.ts              # Custom Flutter/Dart assertions
+│   └── full-pipeline.spec.ts
+├── results/            # Automated failure logs (gitignored)
+│   ├── layer1/failed-tests.log
+│   └── layer2/failed-tests.log
+├── utils/              # Shared logic
+│   ├── matrix.config.ts      # Option definitions
+│   ├── critical-combos.ts    # CI subset
+│   ├── combinations.ts       # Generator utility
+│   └── assertions.ts         # Custom matchers
+└── reporters/          # Custom test output formatters
 ```
 
 ---
 
-## 3. The Matrix Configuration
+## 10. CI/CD Strategy and Tiering
 
-The file `tests/utils/matrix.config.ts` defines the available options and filters out invalid combinations.
+### Tier 1 — Every Push (Unit & Integration)
+- **Runs**: `npm run test:layer1`
+- **Goal**: Immediate feedback on template logic.
+- **Duration**: < 3 mins.
 
-- **`ALL_COMBINATIONS`**: Every valid permutation of the configuration space (~1,350).
-- **`CRITICAL_COMBINATIONS`**: A curated subset (~30) that covers the most diverse and high-risk edge cases.
+### Tier 2 — Every PR to Main (Critical E2E)
+- **Runs**: Layer 1 + `npm run test:layer2` (30 Critical Combos).
+- **Goal**: Verify core architectural integrity.
+- **Duration**: < 15 mins (parallelized).
 
-Whenever you add a new feature or flag to `schema.ts`, you **must** update the constants in `matrix.config.ts`.
+### Tier 3 — Pre-Release Gate (Full Matrix)
+- **Runs**: Full validation for all 375 primary combinations.
+- **Goal**: Zero-bug guarantee for production.
+- **Duration**: 45-90 mins (distributed runners).
 
 ---
 
-## 4. Running Tests Locally
+## 11. The Pre-Production Gate
 
-### Fast Checks (Layer 1)
+Before any release, the "Preflight" command must pass:
+
 ```bash
-# Run all unit and integration tests
-npm run test:unit
-
-# Run a specific test file
-npx vitest tests/unit/backend.spec.ts
+npm run test:preflight
 ```
 
-### Full Validation (Layer 1 + Layer 2)
-Requires Flutter/Dart SDK installed and available in your PATH.
+This chains Layer 1 and Layer 2 validation. If any step fails, the deployment is blocked.
 
+---
+
+## 12. Snapshot Testing for Regression Prevention
+
+We use snapshot testing for critical combinations to catch unintended changes in generated code structure. Snapshots are stored in version control and must be reviewed when updated.
+
+---
+
+## 13. Failure Handling and Debugging
+
+### Automated Logs
+When tests fail, diagnostics are automatically aggregated:
+- **Layer 1 Logs**: `tests/results/layer1/failed-tests.log`
+- **Layer 2 Logs**: `tests/results/layer2/failed-tests.log`
+
+### CI/CD Artifacts
+When a test fails in GitHub Actions, these detailed logs are preserved as artifacts:
+1. Navigate to the failed **Action run** in GitHub.
+2. Scroll to the **Artifacts** section at the bottom of the summary page.
+3. Download the relevant log (e.g., `tier2-failure-logs`).
+4. These logs match your local `tests/results/` structure and contain the full error context.
+
+### Debugging a Specific Combination
+If a specific combination fails (e.g., `layer-first|none|none|auto_route`):
 ```bash
-# Run the "Critical Gate" (Unit + 30 Critical E2E Combos)
-npm run test:gate
-
-# Run E2E for critical combos only
-npm run test:e2e
-
-# Run E2E for the ENTIRE matrix (Caution: Takes hours)
-npm run test:matrix
+# Generate and debug a specific combo
+bun scripts/validate-dart.ts --combo "layer-first|none|none|auto_route" --keep-output
 ```
+Inspect the generated code in `./.temp/flutterinit/` and run `dart analyze` manually.
 
 ---
 
-## 5. CI/CD Pipeline
+## 14. Common Pitfalls
 
-The project uses GitHub Actions with a tiered strategy:
-
-1.  **Tier 1 (Every Push)**: Runs all unit and integration tests (Layer 1). Target: < 3 minutes.
-2.  **Tier 2 (PR to Main)**: Runs Layer 1 + Layer 2 for the **30 Critical Combinations**. Target: < 15 minutes.
-3.  **Tier 3 (Release Gate)**: Runs the full Layer 1 + Layer 2 validation for all 1,350+ combinations in parallel.
-
----
-
-## 6. Debugging Failures
-
-### Layer 1 Failures
-Usually mean a Handlebars helper failed, a file is missing from an overlay, or a token like `{{name}}` was found in the output. The test output will typically show the exact file and line number of the unresolved token.
-
-### Layer 2 Failures
-Usually mean the generated Dart code has a syntax error or a version mismatch in `pubspec.yaml`. 
-To debug a specific failing combo:
-```bash
-# Use the CLI validator for the failing combo index (e.g. #42)
-bun tests/e2e/validate-combo.ts 42
-```
-This will generate the project to a temporary directory and show the raw output from `dart analyze`.
+- **Testing Only Happy Paths**: Always test the "None" options.
+- **Ignoring Infos**: `dart analyze` MUST pass with `--fatal-infos`.
+- **Option Bleed**: Accidental inclusion of code from unselected flags.
+- **Missing build_runner**: Forgetting to run generation for MobX/AutoRoute.
 
 ---
 
-## 7. Best Practices for Template Changes
+## 15. Testing Checklist Before Every Release
 
-1.  **Check Tokens**: If you add a new variable, ensure it's handled in `index.ts` and that it appears in `token-cleanliness.spec.ts`.
-2.  **Add Assertions**: If a package is mandatory for a flag, add a dependency assertion in `tests/unit/dependencies.spec.ts`.
-3.  **Verify Structure**: If you change the folder structure (e.g., adding a `services` folder), update `tests/unit/structural.spec.ts`.
-4.  **Run the Gate**: Always run `npm run test:gate` before pushing a PR.
+- [ ] `npm run test:layer1` passes 100%.
+- [ ] `npm run test:layer2` passes for all 25 critical combinations.
+- [ ] Unresolved token assertions pass globally for all primary combinations.
+- [ ] Every individual option value appears in at least three tested combinations.
+- [ ] Snapshot diffs have been reviewed and approved.
+- [ ] `tests/results/` logs are clean.
+
+---
+
+*This guide is the source of truth for FlutterInit quality standards. Update it whenever new options are added or the validation pipeline is enhanced.*
+

@@ -232,7 +232,7 @@ class _OnboardingView extends StatelessWidget {
                           ],
                         ),
                       ),
-                      SizedBox(height: {{res 40 'h' flags.usesScreenutil}}),
+                      {{#if flags.usesScreenutil}}SizedBox(height: 40.h){{else}}const SizedBox(height: 40){{/if}},
                     ],
                   );
                 },
@@ -244,7 +244,7 @@ class _OnboardingView extends StatelessWidget {
               padding: EdgeInsets.all({{res 'AppSpacing.xl' 'w' flags.usesScreenutil}}),
               child: Column(
                 children: [
-                   SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
+                   {{#if flags.usesScreenutil}}SizedBox(height: AppSpacing.xl){{else}}const SizedBox(height: 32){{/if}},
                   // Get Started Button
                   AppButton(
                     label: {{#if flags.supportsLocalization}}'shared.get_started'.tr(){{else}}'Get Started'{{/if}},
@@ -252,7 +252,7 @@ class _OnboardingView extends StatelessWidget {
                     variant: ButtonVariant.primary,
                     width: ButtonSize.medium,
                   ),
-                  SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
+                  {{#if flags.usesScreenutil}}SizedBox(height: AppSpacing.md){{else}}const SizedBox(height: 16){{/if}},
                 ],
               ),
             ),

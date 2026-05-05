@@ -8,12 +8,12 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
-    "test:unit": "vitest run --config vitest.config.ts",
-    "test:e2e": "vitest run --config vitest.e2e.config.ts",
-    "test:matrix": "bun tests/e2e/run-matrix.ts",
-    "test:matrix:critical": "bun tests/e2e/run-matrix.ts --critical",
-    "test:gate": "npm run test:unit && npm run test:matrix:critical",
-    "test:gate:full": "npm run test:unit && npm run test:matrix"
+    "test:unit": "vitest run --config vitest.config.ts tests/unit/",
+    "test:integration": "vitest run --config vitest.config.ts tests/integration/",
+    "test:layer1": "npm run test:unit && npm run test:integration",
+    "test:layer2": "bun scripts/validate-dart.ts --mode critical",
+    "test:tier3": "bun tests/e2e/run-matrix.ts",
+    "test:preflight": "npm run test:layer1 && npm run test:layer2"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",

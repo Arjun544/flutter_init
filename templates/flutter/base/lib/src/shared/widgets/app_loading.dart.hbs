@@ -38,7 +38,7 @@ class AppLoading extends StatelessWidget {
             ),
           ),
           if (message != null) ...[
-            const SizedBox(height: 16),
+            {{#if flags.usesScreenutil}}SizedBox(height: 16.h){{else}}const SizedBox(height: 16){{/if}},
             Text(
               message!,
               style: context.theme.textTheme.bodyMedium?.copyWith(

@@ -2,7 +2,6 @@ import 'dart:async';
 import '../utils/utils.dart';
 import '../config/app_config.dart';
 import 'package:appwrite/appwrite.dart';
-import 'package:appwrite/models.dart' as appwrite_models;
 
 class AuthService {
   AuthService._();
@@ -22,7 +21,7 @@ class AuthService {
     required String password,
   }) async {
     return runTask(() async {
-      final session = await _account.createEmailPasswordSession(
+      await _account.createEmailPasswordSession(
         email: email, 
         password: password
       );

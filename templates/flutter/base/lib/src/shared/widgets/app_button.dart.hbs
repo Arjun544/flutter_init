@@ -46,26 +46,26 @@ class AppButton extends StatelessWidget {
     final appColors = context.theme.extension<AppColorsExtension>()!;
     final isDisabled = onPressed == null || isLoading;
 
-    final buttonHeight = switch (height) {
+    final double buttonHeight = switch (height) {
       ButtonSize.small  => {{res 36 'h' flags.usesScreenutil}},
       ButtonSize.medium => {{res 48 'h' flags.usesScreenutil}},
       ButtonSize.large  => {{res 56 'h' flags.usesScreenutil}},
     };
 
-    final buttonWidth = switch (width) {
+    final double? buttonWidth = switch (width) {
       ButtonSize.small  => {{res 100 'w' flags.usesScreenutil}},
       ButtonSize.medium => {{res 150 'w' flags.usesScreenutil}},
       ButtonSize.large  => {{res 200 'w' flags.usesScreenutil}},
       null              => null,
     };
 
-    final horizontalPadding = switch (height) {
+    final double horizontalPadding = switch (height) {
       ButtonSize.small  => {{res 12 'w' flags.usesScreenutil}},
       ButtonSize.medium => {{res 20 'w' flags.usesScreenutil}},
       ButtonSize.large  => {{res 28 'w' flags.usesScreenutil}},
     };
 
-    final fontSize = switch (height) {
+    final double fontSize = switch (height) {
       ButtonSize.small  => {{res 12 'sp' flags.usesScreenutil}},
       ButtonSize.medium => {{res 14 'sp' flags.usesScreenutil}},
       ButtonSize.large  => {{res 16 'sp' flags.usesScreenutil}},
@@ -86,8 +86,8 @@ class AppButton extends StatelessWidget {
       child: isLoading
           ? SizedBox(
               key: const ValueKey('loader'),
-              width: 20,
-              height: 20,
+              width: {{res 20 'w' flags.usesScreenutil}},
+              height: {{res 20 'h' flags.usesScreenutil}},
               child: CircularProgressIndicator(
                 strokeWidth: 2,
                 color: fg,
@@ -99,7 +99,7 @@ class AppButton extends StatelessWidget {
               children: [
                 if (prefixIcon != null) ...[
                   prefixIcon!,
-                  const SizedBox(width: 8),
+                  {{#if flags.usesScreenutil}}SizedBox(width: 8.w){{else}}const SizedBox(width: 8){{/if}},
                 ],
                 Text(
                   label,
@@ -110,7 +110,7 @@ class AppButton extends StatelessWidget {
                   ),
                 ),
                 if (suffixIcon != null) ...[
-                  const SizedBox(width: 8),
+                  {{#if flags.usesScreenutil}}SizedBox(width: 8.w){{else}}const SizedBox(width: 8){{/if}},
                   suffixIcon!,
                 ],
               ],
