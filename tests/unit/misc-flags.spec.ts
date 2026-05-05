@@ -19,16 +19,20 @@ describe("Misc Flags", () => {
     let minimalPubspec: string
     let defaultFiles: Map<string, string>
     let defaultPubspec: string
+    let noDotenvFiles: Map<string, string>
+    let noDotenvPubspec: string
 
     beforeAll(async () => {
-        [fullFiles, minimalFiles, defaultFiles] = await Promise.all([
+        [fullFiles, minimalFiles, defaultFiles, noDotenvFiles] = await Promise.all([
             generateToMap(buildConfig(base, MISC_ALL_ON)),
             generateToMap(buildConfig(base, MISC_BARE_MINIMUM)),
             generateToMap(buildConfig(base, MISC_DEFAULT)),
+            generateToMap(buildConfig(base, { ...MISC_DEFAULT, usesDotenv: false })),
         ])
         fullPubspec = getPubspecContent(fullFiles)
         minimalPubspec = getPubspecContent(minimalFiles)
         defaultPubspec = getPubspecContent(defaultFiles)
+        noDotenvPubspec = getPubspecContent(noDotenvFiles)
     })
 
     // ── ScreenUtil ──────────────────────────────────────────────
@@ -186,6 +190,25 @@ describe("Misc Flags", () => {
                 f.includes("translations/") && f.endsWith(".json")
             )
             expect(translationFiles.length).toBeGreaterThanOrEqual(2) // en.json + es.json
+        })
+    })
+
+    // ── Dotenv ──────────────────────────────────────────────────
+    describe("usesDotenv", () => {
+        it("when enabled: flutter_dotenv in pubspec", () => {
+            assertDependencyPresent(defaultPubspec, "flutter_dotenv")
+        })
+
+        it("when enabled: .env is in pubspec assets", () => {
+            expect(defaultPubspec).toMatch(/- \.env/g)
+        })
+
+        it("when disabled: no flutter_dotenv in pubspec", () => {
+            assertDependencyAbsent(noDotenvPubspec, "flutter_dotenv")
+        })
+
+        it("when disabled: .env is not in pubspec assets", () => {
+            expect(noDotenvPubspec).not.toMatch(/- \.env/g)
         })
     })
 })

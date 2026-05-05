@@ -188,7 +188,7 @@ const miscSchema = z.object({
     usesCachedNetworkImage: z.boolean(),
     usesFlutterSvg: z.boolean(),
     usesSkeletonizer: z.boolean(),
-    usesDotenv: z.literal(true).default(true),
+    usesDotenv: z.boolean().default(true),
     usesLogger: z.boolean(),
     // Hooks
     usesFlutterHooks: z.boolean(),
