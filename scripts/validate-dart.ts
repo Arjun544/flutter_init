@@ -1,3 +1,4 @@
+/// <reference types="bun-types" />
 import { $ } from "bun"
 import { existsSync, mkdirSync, unlinkSync, writeFileSync } from "node:fs"
 import fs from "node:fs/promises"
@@ -5,7 +6,7 @@ import path from "node:path"
 import { buildConfig } from "../tests/utils/config-builder"
 import { CRITICAL_COMBOS } from "../tests/utils/critical-combos"
 import { generateToDisk } from "../tests/utils/generate"
-import { COMBO_LABEL } from "../tests/utils/matrix.config"
+import { COMBO_LABEL, type PrimaryCombo } from "../tests/utils/matrix.config"
 
 import { generatePrimaryCombinations } from "../tests/utils/combinations"
 import { MISC_DEFAULT } from "../tests/utils/misc-profiles"
@@ -19,7 +20,7 @@ console.log(`⚡ Starting Dart Validation (Mode: ${MODE})`)
 const TEMP_BASE = "./.temp/flutterinit"
 await fs.mkdir(TEMP_BASE, { recursive: true })
 
-let combosToRun = CRITICAL_COMBOS
+let combosToRun: Array<typeof CRITICAL_COMBOS[0] | PrimaryCombo> = CRITICAL_COMBOS
 
 if (COMBO) {
     const foundInCritical = CRITICAL_COMBOS.find(c => COMBO_LABEL(c) === COMBO)
