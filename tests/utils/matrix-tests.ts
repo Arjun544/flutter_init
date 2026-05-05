@@ -63,8 +63,8 @@ export function runMatrixTests(combos: PrimaryCombo[]) {
                             absent: ["flutter_riverpod", "provider", "mobx", "flutter_mobx"],
                         },
                         mobx: {
-                            present: ["mobx", "flutter_mobx"],
-                            absent: ["flutter_riverpod", "provider", "flutter_bloc"],
+                            present: ["mobx", "flutter_mobx", "provider"],
+                            absent: ["flutter_riverpod", "flutter_bloc"],
                         },
                         none: {
                             present: [],

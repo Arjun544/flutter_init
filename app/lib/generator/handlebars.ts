@@ -83,7 +83,7 @@ export function registerHelpers(hbs: Hbs) {
         if (usesScreenutil) return `${value}.${unit}`;
         
         if (typeof value === 'number') {
-            return String(value);
+            return value % 1 === 0 ? `${value}.0` : String(value);
         }
         return String(value);
     })
