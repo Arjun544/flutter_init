@@ -64,7 +64,7 @@ jobs:
       - name: Calculate matrix chunks
         id: count
         run: |
-          TOTAL=$(bun -e "import { ALL_COMBINATIONS } from './tests/utils/matrix.config'; console.log(ALL_COMBINATIONS.length)")
+          TOTAL=$(bun -e "import { PRIMARY_COMBINATIONS } from './tests/utils/matrix.config'; console.log(PRIMARY_COMBINATIONS.length)")
           CHUNK_SIZE=${{ inputs.concurrency || '75' }}
           CHUNKS=$(( (TOTAL + CHUNK_SIZE - 1) / CHUNK_SIZE ))
 
