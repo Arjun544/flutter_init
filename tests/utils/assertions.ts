@@ -128,6 +128,9 @@ const ALWAYS_REQUIRED_FILES = [
     "pubspec.yaml",
     "lib/main.dart",
     "analysis_options.yaml",
+    "AGENTS.md",
+    "DESIGN.md",
+    ".cursor/rules/flutter-project.mdc",
 ]
 
 export function assertRequiredFilesExist(files: Map<string, string>): void {

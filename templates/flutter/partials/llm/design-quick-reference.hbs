@@ -1,0 +1,14 @@
+## Design system (summary)
+
+Full reference: **[DESIGN.md](DESIGN.md)**
+
+- **Theme:** `lib/src/theme/theme.dart` — no per-widget `ThemeData` overrides
+- **Tokens:** `package:{{flags.appSlug}}/src/theme/theme_constants.dart` → `AppSpacing`, `AppBorders`, `AppShadows`, `AppDurations`, `AppCurves`
+- **Colors:** `context.colors` (Material roles); `context.appColors` (`success`, `warning`, `info` in `color_schemes.dart`)
+- **Typography:** `context.textTheme` / `context.typography` — no raw `fontFamily` in widgets
+{{#if theme.primaryColor}}- **Seed color:** `{{theme.primaryColor}}`{{/if}}
+{{#if flags.hasCustomFonts}}- **Primary font:** {{flags.primaryFontFamily}}{{/if}}
+{{#if flags.hasDarkMode}}- **Dark mode:** enabled{{#if theme.darkMode.system}} (system){{/if}} — use semantic colors, not `Colors.white`/`Colors.black`{{/if}}
+{{#if flags.usesScreenutil}}- **ScreenUtil:** baseline 390×844; `.w` `.h` `.r` `.sp`; single `ScreenUtilInit` in app wrapper{{else}}- **Layout:** `MediaQuery` / `LayoutBuilder` / `Flexible` — no ScreenUtil{{/if}}
+- **Extensions:** `lib/src/extensions/context_extension.dart` — `showAppDialog`, `showTypedSnackBar`, `width`/`height`
+- **Widgets:** reusable UI in `lib/src/shared/widgets/` only

@@ -32,7 +32,7 @@ export 'package:get/get_instance/get_instance.dart';
 {{/if}}
 {{/if}}
 {{#if flags.isMobX}}
-export 'package:mobx/mobx.dart' hide version, StringExtension, Action, Listener, Listenable;
+export 'package:mobx/mobx.dart' hide version, StringExtension, Action, Listener, Listenable, Interceptor, Interceptors;
 export 'package:flutter_mobx/flutter_mobx.dart' hide version;
 {{/if}}
 {{#if (eq flags.routerPackage "go_router")}}

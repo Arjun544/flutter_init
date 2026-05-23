@@ -1,0 +1,16 @@
+## Networking
+
+{{#if flags.usesDio}}
+- Use the shared `Dio` instance from `lib/src/config/app_config.dart` — never `Dio()` inside a widget or screen.
+- Extend or use existing services under `lib/src/services/` for HTTP calls.
+- Map transport errors to `Failure` / `FutureEither` results via `runTask()` — do not leak raw `DioException` to UI.
+{{/if}}
+
+{{#if (and flags.usesHttp (not flags.usesDio))}}
+- Use the HTTP service exported from `lib/src/services/` — do not call `http.get` directly from presentation code.
+- Handle timeouts and socket errors explicitly in the service layer.
+{{/if}}
+
+{{#unless (or flags.usesDio flags.usesHttp)}}
+- No HTTP client package is enabled — use mock/local data patterns already in the template or add Dio/HTTP via `pubspec.yaml` deliberately.
+{{/unless}}

@@ -1,0 +1,14 @@
+## Design system (summary)
+
+Full reference: **[DESIGN.md](DESIGN.md)**
+
+- **Theme:** `lib/src/theme/theme.dart` — global `ThemeData` only; no per-widget theme overrides.
+- **Preset:** `{{theme.preset}}`{{#if flags.isCupertino}} (Cupertino){{/if}}{{#if theme.primaryColor}} · seed `{{theme.primaryColor}}`{{/if}}
+- **Dark mode:** {{#if flags.hasDarkMode}}on{{#if theme.darkMode.system}} (system){{/if}}{{else}}off (light only){{/if}}
+- **Colors:** `context.colors` (Material roles), `context.appColors` (`success`, `warning`, `info`)
+- **Typography:** `context.textTheme` / `context.typography` — no raw `fontFamily` in widgets
+{{#if flags.hasCustomFonts}}- **Fonts:** primary `{{flags.primaryFontFamily}}` (see `lib/src/theme/text_theme.dart`){{/if}}
+- **Tokens:** `AppSpacing`, `AppBorders`, `AppShadows`, `AppDurations`, `AppCurves` from `lib/src/theme/theme_constants.dart`
+- **Extensions:** `context_extension.dart` — `width`, `height`, `isDarkMode`, `showAppDialog`, `showTypedSnackBar`
+{{#if flags.usesScreenutil}}- **ScreenUtil:** baseline 390×844; `.w` `.h` `.r` `.sp`; wrapper already in app — no second `ScreenUtilInit`{{else}}- **Layout:** `MediaQuery` / `LayoutBuilder` / `Flexible` — no ScreenUtil{{/if}}
+- **Widgets:** reusable UI in `lib/src/shared/widgets/`; use tokens not magic numbers

@@ -93,6 +93,26 @@ describe("State Management", () => {
             expect(pubspec).toContain("build_runner:")
             expect(pubspec).toContain("mobx_codegen:")
         })
+
+        it("hides mobx Interceptor when dio is enabled (avoids ambiguous export)", async () => {
+            const mobxDioFiles = await generateToMap(
+                buildConfig(
+                    {
+                        architecture: "mvc",
+                        stateManagement: "mobx",
+                        backend: "custom",
+                        navigation: "imperative",
+                    },
+                    MISC_DEFAULT,
+                ),
+            )
+            assertFileContains(
+                mobxDioFiles,
+                "lib/src/imports/packages_imports.dart",
+                "hide version, StringExtension, Action, Listener, Listenable, Interceptor, Interceptors",
+            )
+            assertFileContains(mobxDioFiles, "lib/src/imports/packages_imports.dart", "export 'package:dio/dio.dart'")
+        })
     })
 
     // ── None (setState) ─────────────────────────────────────────

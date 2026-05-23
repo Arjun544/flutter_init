@@ -6,6 +6,12 @@
       "sourceType": "github",
       "computedHash": "82588484b29316f3106185374cc6aedf409c38a0698d49f7034c9b5ec07a1aa7"
     },
+    "hallmark": {
+      "source": "nutlope/hallmark",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "a5c828f76d82801993fe9d9826720af459360720235e1a68e10290bcb1f6491e"
+    },
     "markdown-to-html": {
       "source": "github/awesome-copilot",
       "sourceType": "github",

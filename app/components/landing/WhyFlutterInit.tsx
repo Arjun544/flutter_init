@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { cn } from '@/lib/utils';
 import {
+  AiBrain01Icon,
   Clock01Icon,
   CpuIcon,
   DashboardSquare01Icon,
@@ -25,8 +26,9 @@ const bentoClasses = [
   "md:col-span-2 md:row-span-1", // Row 2: Item 3
   "md:col-span-2 md:row-span-1", // Row 2: Item 4
   "md:col-span-2 md:row-span-1", // Row 2: Item 5
-  "md:col-span-3 md:row-span-1", // Row 3: Item 6
-  "md:col-span-3 md:row-span-1", // Row 3: Item 7
+  "md:col-span-2 md:row-span-1", // Row 3: Item 6
+  "md:col-span-2 md:row-span-1", // Row 3: Item 7
+  "md:col-span-2 md:row-span-1", // Row 3: Item 8
 ]
 
 export function WhyFlutterInit() {
@@ -65,6 +67,11 @@ export function WhyFlutterInit() {
       iconColor: "text-cyan-500",
       glow: "from-cyan-500/10 to-transparent",
       chip: "bg-cyan-500/8 border-cyan-500/15",
+    },
+    violet: {
+      iconColor: "text-violet-500",
+      glow: "from-violet-500/10 to-transparent",
+      chip: "bg-violet-500/8 border-violet-500/15",
     },
   } as const;
 
@@ -117,6 +124,13 @@ export function WhyFlutterInit() {
       icon: Globe02Icon,
       accent: accents.cyan,
       label: "Localization"
+    },
+    {
+      title: "AI-Ready Context",
+      description: "AGENTS.md, DESIGN.md, and Cursor rules ship with every project.",
+      icon: AiBrain01Icon,
+      accent: accents.violet,
+      label: "AI Assistants"
     }
   ];
 
@@ -151,8 +165,7 @@ export function WhyFlutterInit() {
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-6 md:auto-rows-[220px]">
           {features.map((feature, index) => {
-            const isWideTile = index === 0 || index === 1 || index === 5 || index === 6;
-            const isCompactTile = index === 2 || index === 3 || index === 4;
+            const isWideTile = index === 0 || index === 1;
             return (
               <Card
                 key={feature.title}

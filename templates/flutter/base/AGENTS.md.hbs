@@ -1,0 +1,108 @@
+# Agent guide — {{appName}}
+
+{{> llm/stack-summary}}
+
+---
+
+{{> llm/architecture-rules}}
+
+---
+
+{{> llm/state-management-rules}}
+
+---
+
+{{> llm/navigation-rules}}
+
+---
+
+{{#unless (eq backend.provider "none")}}
+{{> llm/backend-rules}}
+
+---
+{{/unless}}
+
+{{> llm/networking-rules}}
+
+---
+
+{{> llm/services-conventions}}
+
+---
+
+{{> llm/packages-list}}
+
+---
+
+{{> llm/add-feature-workflow}}
+
+---
+
+## Safe to modify
+
+| Path | Guidance |
+|------|----------|
+{{#if (or (eq architecture "clean") (eq architecture "feature-first"))}}| `lib/src/features/**` | Feature screens, widgets, domain/data/presentation code |{{/if}}
+{{#if (eq architecture "mvc")}}| `lib/src/views/**`, `lib/src/controllers/**` | UI and controllers for your features |{{/if}}
+{{#if (eq architecture "mvvm")}}| `lib/src/ui/**`, `lib/src/data/**` | UI and data layer for your features |{{/if}}
+{{#if (eq architecture "layer-first")}}| `lib/src/presentation/**`, `lib/src/domain/**`, `lib/src/data/**` | Layer slices for new behavior |{{/if}}
+| `lib/src/shared/widgets/**` | Reusable UI components |
+| `lib/src/shared/helpers/**` | App-wide helpers (when not generated-only) |
+| `test/**` | Unit and widget tests |
+| `README.md` | Project documentation |
+
+## Modify with caution
+
+| Path | Why |
+|------|-----|
+| `lib/src/routing/app_router.dart` | Central navigation — breaks deep links if wrong |
+| `lib/main.dart` | Initialization order (Firebase, dotenv, localization, flavors) |
+| `lib/src/config/app_config.dart` | SDK and HTTP client setup |
+| `lib/src/theme/**` | Global visual system |
+| `lib/src/imports/**` | Barrel exports — keep pattern consistent |
+| `pubspec.yaml` | Dependency graph for the whole app |
+{{#if flags.usesDotenv}}| `.env` | Secrets — never commit real values |{{/if}}
+
+## Do not touch
+
+| Path | Why |
+|------|-----|
+| `android/`, `ios/`, `web/`, desktop folders | Native project configuration |
+{{#if flags.usesDotenv}}| `.env` with real secrets | Security |{{/if}}
+{{#if flags.usesFirebase}}| `google-services.json`, `GoogleService-Info.plist` | Environment-specific credentials |{{/if}}
+
+---
+
+## Verification after changes
+
+```bash
+flutter pub get
+flutter analyze
+```
+
+{{> llm/build-runner-note}}
+
+{{#if flags.supportsLocalization}}
+### Localization
+
+After editing `assets/translations/*.json`:
+
+```bash
+flutter pub run easy_localization:generate -S assets/translations -O lib/src/core/i18n -o locale_keys.g.dart
+```
+{{/if}}
+
+```bash
+flutter test
+```
+
+---
+
+## Hard limits
+
+- Do not disable `flutter_lints` rules without an explanatory comment.
+- Do not call backend or networking code directly from widgets.
+- Do not commit `.env` files containing production secrets.
+- Do not introduce a second state-management or routing library.
+- For platform setup and API keys, use **[SETUP.md](SETUP.md)**.
+- For UI tokens and spacing, use **[DESIGN.md](DESIGN.md)**.

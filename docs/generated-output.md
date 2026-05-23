@@ -26,6 +26,9 @@ my_app/
 │       └── utils/      # General utilities, logging, and error handling
 ├── test/               # Unit and Widget tests
 ├── pubspec.yaml        # Flutter dependency management
+├── AGENTS.md           # AI/agent context (stack, architecture, safe zones)
+├── DESIGN.md           # Design system tokens and UI conventions
+├── .cursor/rules/      # Cursor IDE rules (flutter-project.mdc)
 └── SETUP.md            # Post-generation setup instructions
 ```
 

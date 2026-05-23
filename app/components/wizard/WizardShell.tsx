@@ -29,6 +29,7 @@ import Image from "next/image"
 import * as React from "react"
 import { PackageInfoPanel } from "./PackageInfoPanel"
 import { StepContent } from "./StepContent"
+import Link from "next/link"
 
 const steps: Record<
     StepId,
@@ -258,14 +259,15 @@ function WizardSidebar() {
         <Sidebar variant="sidebar" className="border-r border-border/40 bg-background/50 backdrop-blur-xl">
             <SidebarHeader className="p-4 border-b border-border/40">
                 <div className="flex items-center gap-3">
-                    <Image
-                        src="/logo.svg"
-                        alt="FlutterInit Logo"
-                        width={24}
-                        height={24}
-                        className="h-6 w-6"
-                        priority
-                    />
+                    <Link href={"/"}>
+                        <Image
+                            src="/logo.svg"
+                            alt="FlutterInit Logo"
+                            width={24}
+                            height={24}
+                            className="h-6 w-6"
+                            priority
+                        /></Link>
                     <Badge variant="outline" className="ml-auto bg-background/50 backdrop-blur-sm border-primary/20 text-primary hover:bg-transparent">
                         1.0
                     </Badge>
