@@ -23,9 +23,6 @@ import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}pr
 @RoutePage()
 {{/if}}
 {{#if flags.isGetX}}
-{{#if (eq flags.routerPackage "auto_route")}}
-@RoutePage()
-{{/if}}
 class LoginScreen extends GetView<AuthController> {
   const LoginScreen({super.key});
 
