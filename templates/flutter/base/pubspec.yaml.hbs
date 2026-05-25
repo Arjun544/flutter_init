@@ -45,7 +45,9 @@ dependencies:
   flutter_bloc: ^9.1.1
   {{/if}}
   {{#if flags.isGetX}}
+  {{#unless (eq flags.routerPackage "getx")}}
   get: ^4.7.3
+  {{/unless}}
   {{/if}}
   {{#if flags.isProvider}}
   provider: ^6.1.5+1

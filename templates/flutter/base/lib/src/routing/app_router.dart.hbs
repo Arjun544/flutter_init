@@ -108,63 +108,26 @@ class AppRouter extends RootStackRouter {
 }
 {{else if (eq flags.routerPackage "getx")}}
 import 'package:{{flags.appSnake}}/src/imports/imports.dart';
-import 'package:{{flags.appSnake}}/src/routing/app_routes.dart';
-
-{{#if (eq architecture "layer-first")}}
-import 'package:{{flags.appSnake}}/src/presentation/screens/auth/login_screen.dart';
-import 'package:{{flags.appSnake}}/src/presentation/screens/auth/signup_screen.dart';
-import 'package:{{flags.appSnake}}/src/presentation/screens/auth/forgot_password_screen.dart';
-{{else if (eq architecture "mvc")}}
-import 'package:{{flags.appSnake}}/src/views/auth/login_screen.dart';
-import 'package:{{flags.appSnake}}/src/views/auth/signup_screen.dart';
-import 'package:{{flags.appSnake}}/src/views/auth/forgot_password_screen.dart';
-{{else if (eq architecture "mvvm")}}
-import 'package:{{flags.appSnake}}/src/ui/auth/login_screen.dart';
-import 'package:{{flags.appSnake}}/src/ui/auth/signup_screen.dart';
-import 'package:{{flags.appSnake}}/src/ui/auth/forgot_password_screen.dart';
-{{else}}
-import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/login_screen.dart';
-import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/signup_screen.dart';
-import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/forgot_password_screen.dart';
-{{/if}}
-
-{{#if (eq architecture "layer-first")}}
-import 'package:{{flags.appSnake}}/src/presentation/screens/home/home_page.dart';
-import 'package:{{flags.appSnake}}/src/presentation/screens/onboarding/onboarding_page.dart';
-
-{{else if (eq architecture "mvc")}}
-import 'package:{{flags.appSnake}}/src/views/home/home_page.dart';
-import 'package:{{flags.appSnake}}/src/views/onboarding/onboarding_page.dart';
-
-{{else if (eq architecture "mvvm")}}
-import 'package:{{flags.appSnake}}/src/ui/home/home_page.dart';
-import 'package:{{flags.appSnake}}/src/ui/onboarding/onboarding_page.dart';
-
-{{else}}
-import 'package:{{flags.appSnake}}/src/features/home/presentation/screens/home_page.dart';
-import 'package:{{flags.appSnake}}/src/features/onboarding/presentation/screens/onboarding_page.dart';
-
-{{/if}}
 
 class AppRouter {
-  static List<GetPage> get getPages => [
-    GetPage(
+  static List<GetPage<dynamic>> get getPages => [
+    GetPage<dynamic>(
       name: AppRoutes.onboarding,
       page: () => const OnboardingPage(),
     ),
-    GetPage(
+    GetPage<dynamic>(
       name: AppRoutes.login,
       page: () => const LoginScreen(),
     ),
-    GetPage(
+    GetPage<dynamic>(
       name: AppRoutes.signup,
       page: () => const SignupScreen(),
     ),
-    GetPage(
+    GetPage<dynamic>(
       name: AppRoutes.forgotPassword,
       page: () => const ForgotPasswordScreen(),
     ),
-    GetPage(
+    GetPage<dynamic>(
       name: AppRoutes.home,
       page: () => const HomePage(),
     ),

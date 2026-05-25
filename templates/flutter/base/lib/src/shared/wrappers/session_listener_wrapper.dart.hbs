@@ -116,9 +116,9 @@ class _SessionListenerWrapperState extends State<SessionListenerWrapper> {
           FlutterNativeSplash.remove();
           {{/if}}
           if (status == SessionStatus.authenticated) {
-            Get.offAllNamed(AppRoutes.home);
+            Get.offAllNamed<dynamic>(AppRoutes.home);
           } else if (status == SessionStatus.unauthenticated) {
-            Get.offAllNamed(AppRoutes.onboarding);
+            Get.offAllNamed<dynamic>(AppRoutes.onboarding);
           }
         }
       }, condition: () => session.status.value != SessionStatus.unknown);

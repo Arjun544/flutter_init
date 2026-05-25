@@ -451,6 +451,37 @@ class AuthController extends GetxController {
 
   final isLoading = false.obs;
 
+  // Login controllers & states
+  final loginFormKey = GlobalKey<FormState>();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final obscurePassword = true.obs;
+
+  // SignUp controllers & states
+  final signUpFormKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final signUpEmailController = TextEditingController();
+  final signUpPasswordController = TextEditingController();
+  final signUpConfirmPasswordController = TextEditingController();
+  final signUpObscurePassword = true.obs;
+  final signUpObscureConfirmPassword = true.obs;
+
+  // ForgotPassword controllers & states
+  final forgotPasswordFormKey = GlobalKey<FormState>();
+  final forgotPasswordEmailController = TextEditingController();
+
+  @override
+  void onClose() {
+    emailController.dispose();
+    passwordController.dispose();
+    nameController.dispose();
+    signUpEmailController.dispose();
+    signUpPasswordController.dispose();
+    signUpConfirmPasswordController.dispose();
+    forgotPasswordEmailController.dispose();
+    super.onClose();
+  }
+
   void login({required BuildContext context, required String email, required String password}) async {
     isLoading.value = true;
     
@@ -464,7 +495,7 @@ class AuthController extends GetxController {
         }
       },
       (user) {
-        Get.offAllNamed(AppRoutes.home);
+        Get.offAllNamed<dynamic>(AppRoutes.home);
       },
     );
   }
@@ -482,7 +513,7 @@ class AuthController extends GetxController {
         }
       },
       (user) {
-        Get.offAllNamed(AppRoutes.home);
+        Get.offAllNamed<dynamic>(AppRoutes.home);
       },
     );
   }
@@ -503,7 +534,7 @@ class AuthController extends GetxController {
         if (context.mounted) {
           showToast(context, message: 'Password reset link sent successfully', status: 'success');
         }
-        Get.offNamed(AppRoutes.login);
+        Get.offNamed<dynamic>(AppRoutes.login);
       },
     );
   }

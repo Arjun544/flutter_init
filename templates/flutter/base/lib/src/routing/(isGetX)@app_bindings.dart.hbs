@@ -8,7 +8,7 @@ import 'package:{{flags.appSnake}}/src/controllers/auth/auth_controller.dart';
 {{else if (eq architecture "mvvm")}}
 import 'package:{{flags.appSnake}}/src/ui/auth/controllers/auth_controller.dart';
 {{else}}
-import 'package:{{flags.appSnake}}/src/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:{{flags.appSnake}}/src/features/auth/presentation/providers/auth_controller.dart';
 {{/if}}
 
 class AppBindings implements Bindings {
