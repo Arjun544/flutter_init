@@ -1,3 +1,4 @@
+import { createPublishableSupabaseClient } from "@/app/lib/supabase/server"
 import { StatsShowcase, StatsShowcaseSkeleton } from "@/app/components/landing/StatsShowcase"
 
 type StatsResponse = {
@@ -14,17 +15,15 @@ type StatsResponse = {
   dark_mode_enabled?: number
 }
 
-
 async function getStats(): Promise<StatsResponse | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_VERCEL_URL}/api/stats`, {
-      // next: {
-      //   revalidate: 60,
-      //   tags: ["generator-stats"],
-      // },
-    })
-    if (!res.ok) return null
-    return (await res.json()) as StatsResponse
+    const supabase = createPublishableSupabaseClient()
+    const { data, error } = await supabase
+      .from("stats_summary")
+      .select("*")
+      .single()
+    if (error) return null
+    return data as StatsResponse
   } catch {
     return null
   }
