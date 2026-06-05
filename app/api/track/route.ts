@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 
 import { architectureSchema, navigationSchema, stateManagementSchema } from "@/app/lib/config/schema"
 import { createPublishableSupabaseClient } from "@/app/lib/supabase/server"
@@ -85,6 +86,10 @@ export async function POST(req: NextRequest) {
         if (error) {
             return NextResponse.json({ error: "track_failed" }, { status: 503 })
         }
+
+        // Bust the landing page ISR cache so the next visitor sees updated stats
+        // immediately rather than waiting up to 60 seconds.
+        revalidatePath("/")
 
         return NextResponse.json({ ok: true }, { status: 202 })
     } catch {
