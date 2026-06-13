@@ -226,7 +226,7 @@ When a test fails in GitHub Actions, these detailed logs are preserved as artifa
 If a specific combination fails (e.g., `layer-first|none|none|auto_route`):
 ```bash
 # Generate and debug a specific combo
-bun scripts/validate-dart.ts --combo "layer-first|none|none|auto_route" --keep-output
+bun scripts/validate-dart.ts --combo "mvvm|bloc|supabase|auto_route" --keep-output
 ```
 Inspect the generated code in `./.temp/flutterinit/` and run `dart analyze` manually.
 

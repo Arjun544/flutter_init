@@ -16,7 +16,6 @@
     <img src="https://img.shields.io/badge/Build-Passing-2ecc71?style=flat-square&logo=github-actions&logoColor=white" alt="Build Status" />
     <a href="https://github.com/Arjun544/flutter_init/stargazers"><img src="https://img.shields.io/github/stars/Arjun544/flutter_init?style=flat-square&color=2ecc71&logo=github&logoColor=white" alt="Stars" /></a>
     <a href="https://github.com/Arjun544/flutter_init/network/members"><img src="https://img.shields.io/github/forks/Arjun544/flutter_init?style=flat-square&color=3498db&logo=github&logoColor=white" alt="Forks" /></a>
-    <img src="https://img.shields.io/badge/Status-Under_Development-e67e22?style=flat-square&logo=github&logoColor=white" alt="Under Development" />
     <a href="https://github.com/Arjun544/flutter_init/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-10b981?style=flat-square" alt="License" /></a>
   </p>
 
@@ -26,13 +25,13 @@
     <tr>
       <td align="center">
         <a href="https://flutterinit.com/">
-          <img src="https://img.shields.io/badge/🚀_LAUNCH-DASHBOARD-6366f1?style=for-the-badge&logoColor=white" height="40" alt="Launch Dashboard" />
+          <img src="https://img.shields.io/badge/🚀_Generate_Your_Project-6366f1?style=for-the-badge&logoColor=white" height="40" alt="Generate Your Project" />
         </a>
       </td>
       <td width="20"></td>
       <td align="center">
         <a href="docs/getting-started.md">
-          <img src="https://img.shields.io/badge/📚_READ-DOCUMENTATION-34495e?style=for-the-badge&logoColor=white" height="40" alt="Read Docs" />
+          <img src="https://img.shields.io/badge/📚_Documentation-34495e?style=for-the-badge&logoColor=white" height="40" alt="Read Docs" />
         </a>
       </td>
     </tr>
@@ -45,68 +44,84 @@
 
 ---
 
-## 🏛️ The Architecture of Speed
+**No installation required.** Open **[flutterinit.com](https://flutterinit.com)** and generate.
 
-**FlutterInit** is an open-source project designed to eliminate the "initial drag" of Flutter development. It provides a highly opinionated yet flexible scaffolding system that maps your architectural vision to a production-ready codebase in seconds.
+## 🏛️ What is FlutterInit?
 
-### 🎯 Why use FlutterInit?
-- **Elite Quality**: Follows `flutter_lints`, SOLID principles, and validated against a comprehensive matrix of critical architectural combinations.
-- **Extreme Speed**: From a blank screen to a running app with routing & state in < 60s.
-- **Enterprise DNA**: Pre-configured with logging, error handling, and environment management.
+FlutterInit is a web-based scaffolding engine for Flutter. 
+
+You visit flutterinit.com, pick your architecture, state management, backend, and navigation style — and FlutterInit generates a production-ready Flutter project as a downloadable zip.
+
+No templates to clone. No CLI to install. Open the dashboard, configure, download, build.
+
+---
+
+## 🔄 How It Works
+
+1. Open **[flutterinit.com](https://flutterinit.com)**
+2. Name your project and choose your options:
+   - **Architecture:** Clean Architecture, MVVM, Feature-First
+   - **State Management:** Riverpod, Bloc, Provider, GetX, MobX
+   - **Backend:** Firebase, Supabase, Appwrite, or none
+   - **Navigation:** GoRouter, AutoRoute, or imperative
+   - **Design:** Material 3, dark mode, ScreenUtil
+   - **Extras:** localization, logging, permissions, image picker, etc.
+3. Click **"Generate Project"**
+4. Download the `.zip`
+5. Unzip → `cd` into the folder → run `flutter pub get` → `flutter run`
+
+---
+
+## 📦 What's Inside the Generated Project?
+
+Every generated project includes:
+- Folder structure matching your chosen architecture
+- Routing pre-configured with your chosen navigation package
+- State management boilerplate set up and ready to extend
+- `pubspec.yaml` with all chosen dependencies declared
+- Environment config (`.env` support via `flutter_dotenv`)
+- Logging, error handling, and base network layer (if Dio selected)
+- Material 3 theme with dark mode support
+- AI context files: `CLAUDE.md`, `AGENTS.md`, `.cursorrules` — pre-written for your exact stack so AI editors have full project context from day one
+
+---
+
+## ⚡ Quick Start
+
+**No installation required.**
+
+1. Go to **[flutterinit.com](https://flutterinit.com)**
+2. Configure your stack using the visual dashboard
+3. Click **Generate Project** and download your `.zip`
+4. Unzip and run:
+
+```bash
+cd your_project_name
+flutter pub get
+flutter run
+```
+
+That's it. Your project is ready.
 
 ---
 
 ## 🛠️ Prerequisites
 
-Ensure your environment meets these requirements before starting:
+### To use a generated project
+- Flutter SDK `^3.5.0` ([install guide](https://docs.flutter.dev/get-started/install))
 
-*   **Flutter SDK**: `^3.5.0` (Latest Stable recommended)
-*   **Runtime**: [Node.js](https://nodejs.org/) `^20.0.0` or [Bun](https://bun.sh/) `^1.1.0`
-*   **Platforms**: macOS, Windows (WSL2 recommended), or Linux
+No other tools required. FlutterInit runs in your browser.
 
-## ⚡ Quick Start
-
-Get your professional Flutter scaffold running in 3 steps:
-
-1.  **Clone & Install**:
-    ```bash
-    git clone https://github.com/Arjun544/flutter_init.git
-    cd flutter_init && bun install
-    ```
-2.  **Launch Dashboard**:
-    ```bash
-    bun run dev
-    ```
-3.  **Generate**: Open `http://localhost:3000`, pick your stack, and download your `.zip`.
+### To run FlutterInit locally (contributors only)
+- Node.js `^20.0.0` or Bun `^1.1.0`
+- Flutter SDK (for running `dart analyze` on generated output during testing)
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup
 
 ---
 
-## ✨ Features (Elevated)
+## 🧩 Support Matrix
 
-<table border="0">
-  <tr>
-    <td width="50%" valign="top">
-      <h3>🚀 Zero Boilerplate</h3>
-      <p>Forget the 4-hour setup. We generate the folder structure, base classes, and core utilities so you can focus on building features.</p>
-    </td>
-    <td width="50%" valign="top">
-      <h3>🏗️ Architecture First</h3>
-      <p>Optimized for Clean Architecture, MVVM, and Feature-First structures. The engine adapts to your team's mental model.</p>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>🎨 Design System Ready</h3>
-      <p>Material 3 tokens, dark mode support, and responsive scaling (via ScreenUtil) are baked into every scaffold.</p>
-    </td>
-    <td width="50%" valign="top">
-      <h3>⚙️ Industrial Strength</h3>
-      <p>Includes an intuitive Web Dashboard for managing your project lifecycle from initialization to deployment.</p>
-    </td>
-  </tr>
-</table>
-
-### 🧩 Support Matrix
+You configure all of these options directly in the dashboard — no config files, no flags. The matrix below shows every supported option.
 
 | Category | Supported Options |
 | :--- | :--- |
@@ -123,7 +138,21 @@ Get your professional Flutter scaffold running in 3 steps:
 
 ---
 
+## 🤖 AI-Ready From Day One
+
+Every generated project includes pre-written AI context files tailored to your exact stack:
+
+- `CLAUDE.md` — for Claude Code
+- `AGENTS.md` — for Codex and other agent workflows  
+- `.cursor/rules/flutter-project.mdc` — for Cursor
+
+These files give your AI editor full context about your architecture, state management pattern, folder structure, and conventions — without you having to write a single prompt.
+
+---
+
 ## 📚 Documentation
+
+New to FlutterInit? Start with the [Getting Started Guide](docs/getting-started.md).
 
 Explore our technical guides to understand the architecture and flags:
 
@@ -137,19 +166,6 @@ Explore our technical guides to understand the architecture and flags:
 
 ---
 
-## 🤝 Contribution-Based Growth
-
-This repository is built on the principle of **Contribution Based Evolution**. We don't just want users; we want architects.
-
-- **Submit Patterns**: Add architectural overlays (Layer-First, MVC, MVVM) to the `templates/` directory.
-- **Refine the Core**: Improve the Next.js visual wizard or generator logic in `app/lib/`.
-- **Bug Hunter**: Help us identify and fix synchronization issues in the template dev loop.
-- **Template Dev**: Learn our real-time [Template Dev workflow](docs/template-development.md).
-
-> [!TIP]
-> Every contributor who gets a PR merged receives a special place in our contributors' hall of fame.
----
-
 ## 🗺️ Roadmap
 
 We use GitHub Projects to track what's in progress and what's coming next.
@@ -157,6 +173,28 @@ We use GitHub Projects to track what's in progress and what's coming next.
 👉 [View the FlutterInit Roadmap](https://github.com/users/Arjun544/projects/1)
 
 Want to contribute? Pick up any open issue labeled [`good first issue`](https://github.com/Arjun544/flutter_init/issues?q=label%3A%22good+first+issue%22).
+
+---
+
+## 🧑‍💻 Running FlutterInit Locally (Contributors)
+
+If you want to contribute to FlutterInit's engine or templates, you'll need to run it locally.
+
+**Clone & install:**
+```bash
+git clone https://github.com/Arjun544/flutter_init.git
+cd flutter_init
+bun install
+```
+
+**Start the development server:**
+```bash
+bun run dev
+```
+
+Open `http://localhost:3000` to use the local dashboard.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Architecture Overview](docs/architecture.md) for how the Handlebars templating engine works.
 
 ---
 
