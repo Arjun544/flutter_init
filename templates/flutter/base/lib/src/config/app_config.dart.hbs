@@ -59,7 +59,7 @@ class AppConfig {
     {{#if (eq backend.provider "supabase")}}
     await Supabase.initialize(
       url: dotenv.get('SUPABASE_URL', fallback: 'https://YOUR-PROJECT.supabase.co'),
-      anonKey: dotenv.get('SUPABASE_ANON_KEY', fallback: 'YOUR-ANON-KEY'),
+      publishableKey: dotenv.get('SUPABASE_ANON_KEY', fallback: 'YOUR-ANON-KEY'),
     );
     supabase = Supabase.instance.client;
     {{/if}}
