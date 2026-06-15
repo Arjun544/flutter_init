@@ -1,0 +1,40 @@
+## State management ({{stateManagement}})
+
+{{#if flags.isRiverpod}}
+- Use `ConsumerWidget` / `ConsumerStatefulWidget` where reactive state is needed.
+- Providers live next to features (see overlay paths under `presentation/providers/` or equivalent).
+- `ref.watch` inside `build()`; `ref.read` inside callbacks and one-off actions — never `ref.read` in `build()`.
+- Do not nest a second `ProviderScope` — one at app root is already configured.
+- This project does **not** use `@riverpod` / `riverpod_generator` — define providers manually.
+{{/if}}
+
+{{#if flags.isBloc}}
+- Events and states are immutable — prefer `const` constructors.
+- `BlocBuilder` for UI rebuilds; `BlocListener` for side effects; `BlocConsumer` when both are needed.
+- Keep handlers thin — delegate to use cases, repositories, or services.
+- One bloc per feature flow — do not share blocs across unrelated features.
+{{/if}}
+
+{{#if flags.isProvider}}
+- Call `notifyListeners()` after every state change in `ChangeNotifier`s.
+- `context.watch` in `build()`; `context.read` in callbacks — never reversed.
+- Scope providers at the appropriate subtree — not everything belongs at app root.
+{{/if}}
+
+{{#if flags.isGetX}}
+- Controllers extend `GetxController`; reactive fields use `.obs` with `Obx()`.
+- Register controllers via bindings / route setup — avoid inline `Get.put()` inside widgets.
+- `GetMaterialApp` is configured when navigation uses GetX — do not add a second material app wrapper.
+{{/if}}
+
+{{#if flags.isMobX}}
+- Annotate state with `@observable`; mutations with `@action`; derived values with `@computed`.
+- Wrap reactive UI in `Observer`.
+- Run `dart run build_runner build --delete-conflicting-outputs` after changing any store.
+{{/if}}
+
+{{#if flags.isNoneState}}
+- Session and feature state use manager / `ChangeNotifier` classes in architecture overlay paths.
+- Keep state classes free of widget imports.
+- Prefer explicit loading/error fields over silent failures.
+{{/if}}

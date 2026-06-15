@@ -1,0 +1,27 @@
+## Navigation
+
+{{#if (eq flags.routerPackage "go_router")}}
+- All routes are defined in `lib/src/routing/app_router.dart` — do not scatter route tables elsewhere.
+- Prefer typed/named routes from the central config — avoid hard-coded path strings in widgets when a named route exists.
+- `context.go()` replaces the stack; `context.push()` pushes on top.
+- Redirects and guards belong in the router configuration, not inside individual screens.
+{{/if}}
+
+{{#if (eq flags.routerPackage "auto_route")}}
+- Annotate routable pages with `@RoutePage()`.
+- Routes are code-generated — run `build_runner` after adding, renaming, or removing pages.
+- Use `context.router.push()`, `context.router.replace()`, and `context.router.pop()` for navigation.
+- Route definitions live in `lib/src/routing/app_router.dart` and generated `app_router.gr.dart`.
+{{/if}}
+
+{{#if (eq flags.routerPackage "getx")}}
+- Pages and bindings are registered via `AppRouter.getPages` in `lib/src/routing/app_router.dart`.
+- Use GetX navigation APIs consistent with the existing router setup.
+- Do not mix in a second routing package alongside GetX pages.
+{{/if}}
+
+{{#unless flags.routerPackage}}
+- Imperative navigation uses `AppRouter.onGenerateRoute` in `lib/src/routing/app_router.dart`.
+- Use `Navigator` APIs / extension helpers on `BuildContext` from `context_extension.dart`.
+- Register new screens in the central router — not ad hoc `MaterialPageRoute` factories in widgets.
+{{/unless}}

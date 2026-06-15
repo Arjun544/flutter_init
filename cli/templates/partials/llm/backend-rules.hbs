@@ -1,0 +1,30 @@
+## Backend ({{backend.provider}})
+
+{{#if flags.usesFirebase}}
+- All Firebase access goes through `lib/src/services/` and repository/datasource layers — never from widgets.
+- Use `FirebaseAuth` / SDK instances via existing app initialization in `lib/main.dart` — do not re-initialize Firebase in features.
+{{#if flags.usesFirebaseAuth}}- Auth: email/Google/phone options are pre-wired per generator config.{{/if}}
+{{#if flags.usesFirebaseFirestore}}- Firestore: keep security rules enabled; map errors to domain failures in the data layer.{{/if}}
+{{#if flags.usesFirebaseStorage}}- Storage: upload/download via repository or service abstractions.{{/if}}
+- Native config: place `google-services.json` and `GoogleService-Info.plist` per **SETUP.md** — do not commit secrets.
+{{/if}}
+
+{{#if flags.usesSupabase}}
+- All Supabase calls go through services/repositories — not from UI.
+- Assume Row Level Security on tables — never bypass RLS in client code.
+- Session persistence is handled by the SDK — avoid manual token caching.
+- Configure URL and anon key via `.env` / **SETUP.md** when `usesDotenv` is enabled.
+{{/if}}
+
+{{#if flags.usesAppwrite}}
+- Use the configured Appwrite client from app config/services — do not instantiate ad hoc clients in widgets.
+- Auth and database flags follow generator options — extend services, not screens.
+{{/if}}
+
+{{#if flags.usesCustomBackend}}
+- HTTP/Dio client is configured in `lib/src/config/app_config.dart`.
+- API calls belong in `lib/src/services/` (e.g. auth service) using the shared client.
+- Base URL comes from environment / config — see **SETUP.md**.
+{{/if}}
+
+For console setup (keys, native files, env), follow **[SETUP.md](SETUP.md)** — do not duplicate platform steps here.

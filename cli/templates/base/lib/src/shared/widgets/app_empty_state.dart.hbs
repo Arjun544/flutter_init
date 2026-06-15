@@ -1,0 +1,73 @@
+import '../../imports/imports.dart';
+
+/// Displays an empty state with an icon, title, optional subtitle, and action.
+///
+/// Usage:
+/// ```dart
+/// AppEmptyState(
+///   icon: Icons.inbox_outlined,
+///   title: 'No messages yet',
+///   subtitle: 'Your inbox will appear here.',
+///   actionLabel: 'Refresh',
+///   onAction: _refresh,
+/// )
+/// ```
+class AppEmptyState extends StatelessWidget {
+  const AppEmptyState({
+    super.key,
+    this.icon = {{#if flags.usesIconsaxPlus}}IconsaxPlusLinear.box{{else if flags.usesFlutterRemix}}FlutterRemix.inbox_line{{else if flags.usesHugeicons}}HugeIcons.strokeRoundedInbox{{else}}Icons.inbox_outlined{{/if}},
+    required this.title,
+    this.subtitle,
+    this.actionLabel,
+    this.onAction,
+  });
+
+  final dynamic icon;
+  final String title;
+  final String? subtitle;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = context.theme.colorScheme;
+    final tt = context.theme.textTheme;
+
+    return Center(
+      child: Padding(
+        padding: {{#if flags.usesScreenutil}}EdgeInsets.all(40.w){{else}}const EdgeInsets.all(40){{/if}},
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppIcon(icon: icon, size: {{res 64 'sp' flags.usesScreenutil}}, color: cs.onSurfaceVariant.withValues(alpha: 0.5)),
+            {{#if flags.usesScreenutil}}SizedBox(height: 20.h){{else}}const SizedBox(height: 20){{/if}},
+            Text(
+              title,
+              style: tt.titleMedium?.copyWith(
+                color: cs.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            if (subtitle != null) ...[
+              {{#if flags.usesScreenutil}}SizedBox(height: 8.h){{else}}const SizedBox(height: 8){{/if}},
+              Text(
+                subtitle!,
+                style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+            ],
+            if (actionLabel != null && onAction != null) ...[
+              {{#if flags.usesScreenutil}}SizedBox(height: 28.h){{else}}const SizedBox(height: 28){{/if}},
+              AppButton(
+                label: actionLabel!,
+                onPressed: onAction,
+                variant: ButtonVariant.secondary,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}

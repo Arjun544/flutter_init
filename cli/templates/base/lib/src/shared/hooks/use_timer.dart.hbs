@@ -1,0 +1,158 @@
+{{#if flags.usesFlutterHooks}}
+import 'dart:async';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+
+/// A lightweight immutable value representing the current time and time left.
+class TimerTick {
+  const TimerTick({required this.now, required this.remaining});
+
+  final DateTime now;
+  final Duration remaining;
+
+  /// Convenience formatted remaining time as mm:ss.
+  String get remainingMmSs => formatMmSs(remaining);
+}
+
+/// Runs a countdown for [duration], invokes [onComplete] at the end, and
+/// returns the current [TimerTick] containing `now` and `remaining`.
+///
+/// - Set [isActive] to false to stop the timer.
+/// - Changing [duration], [isActive], [tick], or [onComplete] restarts logic.
+/// - The timer is cancelled automatically on dispose.
+TimerTick useTimer({
+  required Duration duration,
+  required VoidCallback onComplete,
+  bool isActive = true,
+  Duration tick = const Duration(seconds: 1),
+  bool autoStart = true,
+}) =>
+    use(_TimerHook(
+      duration: duration,
+      onComplete: onComplete,
+      isActive: isActive,
+      tick: tick,
+      autoStart: autoStart,
+    ));
+
+class _TimerHook extends Hook<TimerTick> {
+  const _TimerHook({
+    required this.duration,
+    required this.onComplete,
+    required this.isActive,
+    required this.tick,
+    required this.autoStart,
+  });
+
+  final Duration duration;
+  final VoidCallback onComplete;
+  final bool isActive;
+  final Duration tick;
+  final bool autoStart;
+
+  @override
+  HookState<TimerTick, _TimerHook> createState() => _TimerHookState();
+}
+
+class _TimerHookState extends HookState<TimerTick, _TimerHook> {
+  Timer? _timer;
+  late DateTime _now;
+  late Duration _remaining;
+  DateTime? startedAt;
+  int? _lastLoggedRemainingSecs;
+  late VoidCallback _onComplete;
+
+  @override
+  void initHook() {
+    super.initHook();
+    _now = DateTime.now();
+    _remaining = hook.duration;
+    _onComplete = hook.onComplete;
+    _lastLoggedRemainingSecs = _remaining.inSeconds;
+
+    if (hook.autoStart) {
+      _startOrStop();
+    }
+  }
+
+  @override
+  void didUpdateHook(covariant _TimerHook oldHook) {
+    super.didUpdateHook(oldHook);
+    final shouldRestart = oldHook.duration != hook.duration ||
+        oldHook.isActive != hook.isActive ||
+        oldHook.tick != hook.tick;
+    // Always keep the latest completion callback without forcing a restart.
+    if (oldHook.onComplete != hook.onComplete) {
+      _onComplete = hook.onComplete;
+    }
+    if (shouldRestart) _startOrStop();
+  }
+
+  @override
+  TimerTick build(BuildContext context) =>
+      TimerTick(now: _now, remaining: _remaining);
+
+  void _startOrStop() {
+    _timer?.cancel();
+    startedAt = DateTime.now();
+    _now = startedAt!;
+    _remaining = hook.duration;
+    _lastLoggedRemainingSecs = _remaining.inSeconds;
+    if (!hook.isActive) {
+      return;
+    }
+
+    void handleTick() {
+      final current = DateTime.now();
+      final elapsed = current.difference(startedAt!);
+      final left = hook.duration - elapsed;
+      final leftSecs = left.inSeconds;
+      if (left <= Duration.zero) {
+        _now = current;
+        _remaining = Duration.zero;
+        _timer?.cancel();
+
+        if (context.mounted) _onComplete();
+        setState(() {});
+        return;
+      }
+
+      setState(() {
+        _now = current;
+        _remaining = left;
+      });
+
+      if (_lastLoggedRemainingSecs != leftSecs) {
+        _lastLoggedRemainingSecs = leftSecs;
+      }
+    }
+
+    // Fire an immediate tick so the UI reflects that the timer started
+    // without waiting for the first interval.
+    handleTick();
+
+    // Periodic updates to compute remaining and call completion.
+    _timer = Timer.periodic(hook.tick, (_) => handleTick());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+}
+
+/// Formats a [Duration] adaptively as:
+/// - H:MM:SS when hours > 0
+/// - M:SS otherwise (including pure seconds)
+String formatMmSs(Duration duration) {
+  final totalSeconds = duration.inSeconds < 0 ? 0 : duration.inSeconds;
+  final hours = totalSeconds ~/ 3600;
+  final minutes = (totalSeconds % 3600) ~/ 60;
+  final seconds = totalSeconds % 60;
+  if (hours > 0) {
+    return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+  return '$minutes:${seconds.toString().padLeft(2, '0')}';
+}
+{{/if}}

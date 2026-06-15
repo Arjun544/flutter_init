@@ -1,0 +1,20 @@
+## Services & shared conventions
+
+- Services are singletons with `ClassName.instance`, returning `FutureEither<T>` via `runTask()`.
+- Never pass `BuildContext` into services — use `rootContext` from the global navigator helper when UI is required.
+- Logging: `AppLogger`; user feedback: `showGlobalToast()`; dialogs: `showAppDialog()` / `context.showAppDialog()`.
+- Primary import barrel: `package:{{flags.appSlug}}/src/imports/imports.dart`.
+- File names: `snake_case.dart`; classes: `PascalCase`; private members: `_camelCase`.
+- Prefer `const` constructors where possible; avoid `dynamic` without justification.
+- No empty `catch` blocks — log, map to failure, or rethrow.
+- Do not add packages that duplicate existing stack choices (routing, state, backend).
+
+### Dart / Flutter anti-patterns
+
+- No business logic in widget `build()` methods.
+- No direct backend or network calls from presentation widgets.
+{{#if flags.isRiverpod}}- Do not use `ref.read` inside `build()`.{{/if}}
+{{#if flags.isBloc}}- Do not put heavy logic inside bloc event handlers — delegate outward.{{/if}}
+{{#if flags.isProvider}}- Do not use `context.watch` inside callbacks.{{/if}}
+{{#if flags.isGetX}}- Do not mix GetX routing with GoRouter/AutoRoute in the same app.{{/if}}
+{{#if flags.isMobX}}- Do not mutate `@observable` fields outside `@action` methods.{{/if}}

@@ -1,0 +1,46 @@
+{{#if (eq flags.routerPackage "go_router")}}
+/// Centralized route path constants for GoRouter.
+///
+/// Use these variables instead of raw strings throughout the app.
+/// Example: `context.go(AppRoutes.onboarding)` instead of `context.go('/')`.
+abstract final class AppRoutes {
+  AppRoutes._();
+
+  static const String splash = '/splash';
+  static const String home = '/';
+  static const String onboarding = '/onboarding';
+  static const String login = '/login';
+  static const String signup = '/signup';
+  static const String forgotPassword = '/forgot-password';
+}
+{{else if (eq flags.routerPackage "auto_route")}}
+/// Centralized route name constants for AutoRoute.
+///
+/// Reference these constants when navigating or defining routes
+/// to avoid typos in route names.
+abstract final class AppRoutes {
+  AppRoutes._();
+
+  static const String splash = '/splash';
+  static const String home = '/';
+  static const String onboarding = '/onboarding';
+  static const String login = '/login';
+  static const String signup = '/signup';
+  static const String forgotPassword = '/forgot-password';
+}
+{{else}}
+/// Centralized route name constants for named Navigator routes.
+///
+/// Use these constants with `Navigator.pushNamed(context, AppRoutes.onboarding)`
+/// instead of inline strings to prevent typos and ease refactoring.
+abstract final class AppRoutes {
+  AppRoutes._();
+
+  static const String splash = '/splash';
+  static const String home = '/';
+  static const String onboarding = '/onboarding';
+  static const String login = '/login';
+  static const String signup = '/signup';
+  static const String forgotPassword = '/forgot-password';
+}
+{{/if}}

@@ -1,0 +1,45 @@
+export 'auth_service.dart';
+export 'internet_connection_service.dart';
+{{#if flags.usesDio}}
+export 'dio_service.dart';
+{{/if}}
+{{#if (and flags.usesHttp (not flags.usesDio))}}
+export 'http_service.dart';
+{{/if}}
+{{#if flags.usesHive}}
+export 'hive_service.dart';
+{{/if}}
+{{#if flags.usesSharedPreferences}}
+export 'storage_service.dart';
+{{/if}}
+{{#if flags.usesSecureStorage}}
+export 'secure_storage_service.dart';
+{{/if}}
+{{#if flags.usesPathProvider}}
+export 'path_service.dart';
+{{/if}}
+{{#if flags.usesGeolocator}}
+export 'location_service.dart';
+{{/if}}
+{{#unless flags.usesFlutterHooks}}
+export 'copy_service.dart';
+{{#if flags.usesSharePlus}}
+export 'share_service.dart';
+{{/if}}
+{{#if flags.usesPermissionHandler}}
+export 'permission_service.dart';
+{{/if}}
+{{#if flags.usesUrlLauncher}}
+export 'url_launcher_service.dart';
+{{/if}}
+{{#if (or flags.usesImagePicker flags.usesFilePicker)}}
+export 'media_service.dart';
+{{/if}}
+{{#if flags.usesDeviceInfoPlus}}
+export 'device_info_service.dart';
+{{/if}}
+{{#if flags.usesAppVersionUpdate}}
+export 'version_update_service.dart';
+{{/if}}
+{{/unless}}
+

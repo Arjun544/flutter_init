@@ -1,0 +1,23 @@
+import 'package:get/get.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}data/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/data/repositories/{{/if}}auth_repository_impl.dart';
+
+{{#if (eq architecture "layer-first")}}
+import 'package:{{flags.appSnake}}/src/presentation/controllers/auth/auth_controller.dart';
+{{else if (eq architecture "mvc")}}
+import 'package:{{flags.appSnake}}/src/controllers/auth/auth_controller.dart';
+{{else if (eq architecture "mvvm")}}
+import 'package:{{flags.appSnake}}/src/ui/auth/controllers/auth_controller.dart';
+{{else}}
+import 'package:{{flags.appSnake}}/src/features/auth/presentation/controllers/auth_controller.dart';
+{{/if}}
+
+class AppBindings implements Bindings {
+  @override
+  void dependencies() {
+    {{#if flags.isGetX}}
+    Get.lazyPut<AuthController>(
+      () => AuthController(repository: AuthRepositoryImpl()),
+    );
+    {{/if}}
+  }
+}

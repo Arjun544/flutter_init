@@ -1,0 +1,43 @@
+import 'src/imports/core_imports.dart';
+import 'src/imports/packages_imports.dart';
+{{#if extras.flavors}}
+import 'src/flavors.dart';
+{{/if}}
+import 'src/app.dart';
+
+
+Future<void> main() async {
+  {{#if flags.usesFlutterNativeSplash}}
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  {{else}}
+  WidgetsFlutterBinding.ensureInitialized();
+  {{/if}}
+  
+  {{#if flags.supportsLocalization}}
+  await EasyLocalization.ensureInitialized();
+  {{/if}}
+  await dotenv.load(fileName: '.env');
+  {{#if extras.flavors}}
+  FlavorConfig.load(Flavor.dev);
+  {{/if}}
+  
+  await AppConfig.init();
+  {{#if flags.usesHive}}
+  await HiveService.instance.init();
+  {{/if}}
+
+  runApp(
+    {{#if flags.supportsLocalization}}
+    const LocalizationWrapper(
+      child: {{#if (eq stateManagement "none")}}App(){{else}}StateWrapper(
+        child: App(),
+      ){{/if}},
+    ),
+    {{else}}
+    {{#if (eq stateManagement "none")}}const App(){{else}}const StateWrapper(
+      child: App(),
+    ){{/if}},
+    {{/if}}
+  );
+}

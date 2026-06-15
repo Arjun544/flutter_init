@@ -1,0 +1,105 @@
+import 'package:{{flags.appSnake}}/src/imports/core_imports.dart';
+
+class App extends StatelessWidget {
+  const App({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final current = {{#if flags.isCupertino}}_buildCupertinoApp(context){{else}}_buildMaterialApp(context){{/if}};
+    {{#if flags.usesScreenutil}}
+    return ScreenUtilWrapper(child: current);
+    {{else}}
+    return current;
+    {{/if}}
+  }
+
+  {{#if flags.isCupertino}}
+  Widget _buildCupertinoApp(BuildContext context) {
+    return {{#if flags.isGetX}}GetCupertinoApp{{else}}CupertinoApp{{/if}}{{#if (and flags.routerPackage (not flags.isGetX))}}.router{{/if}}(
+      {{#if flags.isGetX}}
+      initialBinding: AppBindings(),
+      {{/if}}
+      {{#unless flags.routerPackage}}
+      navigatorKey: rootNavigatorKey,
+      {{/unless}}
+      title: '{{appName}}',
+      debugShowCheckedModeBanner: false,
+      theme: buildCupertinoTheme(primaryColorHex: '{{theme.primaryColor}}'),
+      {{#if (eq flags.routerPackage "getx")}}
+      initialRoute: AppRoutes.onboarding,
+      getPages: AppRouter.getPages,
+      {{else if flags.routerPackage}}
+      routerConfig: {{#if (eq flags.routerPackage "go_router")}}appRouter{{else}}AppRouter().config(){{/if}},
+      {{else}}
+      home: const OnboardingPage(),
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      {{/if}}
+      {{#if flags.supportsLocalization}}
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      {{/if}}
+      builder: (context, child) {
+        Widget current = child!;
+        {{#if flags.usesSkeletonizer}}
+        current = SkeletonWrapper(child: current);
+        {{/if}}
+        current = SessionListenerWrapper(child: current);
+        
+        // Ensure Material themes (tokens, widget styles like dialogs/buttons/inputs) 
+        // are available even in Cupertino mode, as many apps use a mix of both.
+        {{#if flags.isCupertino}}
+        current = Theme(
+          data: {{#if flags.hasDarkMode}}{{#if theme.darkMode.system}}(MediaQuery.of(context).platformBrightness == Brightness.dark){{else}}true{{/if}}{{else}}false{{/if}}
+              ? buildDarkTheme(primaryColorHex: '{{theme.primaryColor}}')
+              : buildLightTheme(primaryColorHex: '{{theme.primaryColor}}'),
+          child: current,
+        );
+        {{/if}}
+        
+        return current;
+      },
+    );
+  }
+  {{else}}
+  Widget _buildMaterialApp(BuildContext context) {
+    return {{#if flags.isGetX}}GetMaterialApp{{else}}MaterialApp{{/if}}{{#if (and flags.routerPackage (not (eq flags.routerPackage "getx")))}}.router{{/if}}(
+      {{#if flags.isGetX}}
+      initialBinding: AppBindings(),
+      {{/if}}
+      {{#unless flags.routerPackage}}
+      navigatorKey: rootNavigatorKey,
+      {{/unless}}
+      title: '{{appName}}',
+      debugShowCheckedModeBanner: false,
+      theme: buildLightTheme(primaryColorHex: '{{theme.primaryColor}}'),
+      {{#if flags.hasDarkMode}}
+      darkTheme: buildDarkTheme(primaryColorHex: '{{theme.primaryColor}}'),
+      themeMode: {{#if theme.darkMode.system}}ThemeMode.system{{else}}ThemeMode.dark{{/if}},
+      {{/if}}
+      {{#if (eq flags.routerPackage "getx")}}
+      initialRoute: AppRoutes.onboarding,
+      getPages: AppRouter.getPages,
+      {{else if flags.routerPackage}}
+      routerConfig: {{#if (eq flags.routerPackage "go_router")}}appRouter{{else}}AppRouter().config(){{/if}},
+      {{else}}
+      home: const OnboardingPage(),
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      {{/if}}
+      {{#if flags.supportsLocalization}}
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      {{/if}}
+      builder: (context, child) {
+        Widget current = child!;
+        {{#if flags.usesSkeletonizer}}
+        current = SkeletonWrapper(child: current);
+        {{/if}}
+        current = SessionListenerWrapper(child: current);
+        return current;
+      },
+    );
+  }
+  {{/if}}
+}

@@ -1,0 +1,56 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
+{{#if flags.isRiverpod}}
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+{{/if}}
+
+import 'package:{{snakeCase flags.appSlug}}/src/app.dart';
+{{#if flags.supportsLocalization}}
+import 'package:easy_localization/easy_localization.dart';
+{{#if flags.usesSharedPreferences}}
+import 'package:shared_preferences/shared_preferences.dart';
+{{/if}}
+{{/if}}
+
+void main() {
+  testWidgets('App should build', (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    {{#if flags.supportsLocalization}}
+    {{#if flags.usesSharedPreferences}}
+    SharedPreferences.setMockInitialValues({});
+    {{/if}}
+    await EasyLocalization.ensureInitialized();
+    {{/if}}
+
+    {{#if flags.isRiverpod}}
+    await tester.pumpWidget(
+      {{#if flags.supportsLocalization}}
+      EasyLocalization(
+        supportedLocales: const [{{#each flags.supportedLocales}}Locale('{{this}}'),{{/each}}],
+        path: 'assets/translations',
+        fallbackLocale: const Locale('{{flags.fallbackLocale}}'),
+        child: const ProviderScope(child: App()),
+      )
+      {{else}}
+      const ProviderScope(child: App())
+      {{/if}}
+    );
+    {{else}}
+    await tester.pumpWidget(
+      {{#if flags.supportsLocalization}}
+      EasyLocalization(
+        supportedLocales: const [{{#each flags.supportedLocales}}Locale('{{this}}'),{{/each}}],
+        path: 'assets/translations',
+        fallbackLocale: const Locale('{{flags.fallbackLocale}}'),
+        child: const App(),
+      )
+      {{else}}
+      const App()
+      {{/if}}
+    );
+    {{/if}}
+
+    // Verify that our base app builds successfully.
+    expect(find.byType(App), findsOneWidget);
+  });
+}

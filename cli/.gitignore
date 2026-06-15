@@ -1,0 +1,64 @@
+# ─── Dependencies ────────────────────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ─── Build output ────────────────────────────────────────────────────────────
+dist/
+build/
+out/
+*.js.map
+
+# ─── Bun ─────────────────────────────────────────────────────────────────────
+.bun/
+bun.lockb
+
+# ─── TypeScript ──────────────────────────────────────────────────────────────
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# ─── Test artifacts ──────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+junit.xml
+test-results/
+
+# ─── Generated / scaffolded projects (CLI output) ────────────────────────────
+my_app/
+
+# ─── Environment & secrets ───────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.secret
+
+# ─── Logs ────────────────────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun-debug.log*
+
+# ─── Package manager lockfiles (keep bun.lock, ignore others) ────────────────
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ─── Editor & IDE ────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# ─── OS ──────────────────────────────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/

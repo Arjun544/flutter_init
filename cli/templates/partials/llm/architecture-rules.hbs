@@ -1,0 +1,92 @@
+## Architecture (`{{architecture}}`)
+
+{{#if (eq architecture "clean")}}
+```text
+lib/src/
+├── features/<feature>/
+│   ├── data/          # datasources, models, repository impls
+│   ├── domain/        # entities, repo contracts, use cases
+│   └── presentation/  # screens, widgets, state ({{stateManagement}})
+├── routing/
+├── services/
+├── shared/
+└── theme/
+```
+
+**Rules**
+
+- `domain/` is pure Dart — no Flutter imports, no imports from `data/`.
+- `data/` implements contracts from `domain/` — never the reverse.
+- Entities are not models — no `fromJson`/`toJson` on domain entities.
+- Use cases expose a single responsibility (typically one public `call()`).
+- `presentation/` talks to use cases or state layer — not datasources directly.
+{{/if}}
+
+{{#if (eq architecture "feature-first")}}
+```text
+lib/src/
+├── features/<feature>/   # model, service, state, view per feature
+├── shared/               # cross-feature widgets & utils only
+├── routing/
+├── services/
+└── theme/
+```
+
+**Rules**
+
+- Each feature is self-contained — no imports from another feature's internals.
+- Shared code lives only under `lib/src/shared/`.
+{{/if}}
+
+{{#if (eq architecture "mvc")}}
+```text
+lib/src/
+├── controllers/    # state & orchestration ({{stateManagement}})
+├── models/
+├── services/       # repositories & API access
+├── views/          # screens & widgets
+├── routing/
+└── theme/
+```
+
+**Rules**
+
+- Views only talk to controllers — no direct service calls from widgets.
+- Controllers orchestrate services — no Flutter widget imports in controllers.
+- One controller per screen or cohesive flow.
+{{/if}}
+
+{{#if (eq architecture "mvvm")}}
+```text
+lib/src/
+├── ui/             # screens, widgets, state ({{stateManagement}})
+├── data/           # models, repository impls
+├── routing/
+├── services/
+└── theme/
+```
+
+**Rules**
+
+- UI layer binds to view models / providers / controllers under `ui/`.
+- Data access goes through repositories in `data/` or `services/`.
+- No business logic in widget `build()` methods.
+{{/if}}
+
+{{#if (eq architecture "layer-first")}}
+```text
+lib/src/
+├── presentation/   # screens, providers/blocs, widgets
+├── domain/         # entities, repo contracts
+├── data/           # models, datasources, repository impls
+├── routing/
+├── services/
+└── theme/
+```
+
+**Rules**
+
+- `domain/` has no Flutter or `data/` imports.
+- `data/` implements `domain/` contracts only.
+- `presentation/` depends on domain abstractions — not concrete datasources.
+{{/if}}

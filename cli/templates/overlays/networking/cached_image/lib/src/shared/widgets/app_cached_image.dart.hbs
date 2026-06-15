@@ -1,0 +1,160 @@
+import '../../imports/core_imports.dart';
+import '../../imports/packages_imports.dart';
+
+
+/// A premium, highly customizable wrapper around [CachedNetworkImage].
+/// 
+/// This widget provides smooth transitions, specialized error handling,
+/// and integrates with the project's design system.
+class AppCachedImage extends StatelessWidget {
+  /// The URL of the image to display.
+  final String imageUrl;
+
+  /// Optional width for the image.
+  final double? width;
+
+  /// Optional height for the image.
+  final double? height;
+
+  /// How the image should be inscribed into the box.
+  final BoxFit fit;
+
+  /// Optional placeholder displayed while the image is loading.
+  /// If null, a shimmer or loading indicator is shown.
+  final Widget? placeholder;
+
+  /// Optional widget displayed if the image fails to load.
+  final Widget? errorWidget;
+
+  /// [Optional] color to be combined with the image.
+  final Color? color;
+
+  /// [Optional] blend mode for the [color].
+  final BlendMode? colorBlendMode;
+
+  /// The borderRadius of the image.
+  final BorderRadius? borderRadius;
+
+  /// The duration of the fade-in animation.
+  final Duration? fadeInDuration;
+
+  /// How to align the image within its bounds.
+  final Alignment alignment;
+
+  /// If true, the image will be wrapped in a [Skeletonizer] during loading.
+  final bool useSkeleton;
+
+  /// Optional key to use for caching.
+  final String? cacheKey;
+
+  const AppCachedImage({
+    super.key,
+    required this.imageUrl,
+    this.width,
+    this.height,
+    this.fit = BoxFit.cover,
+    this.placeholder,
+    this.errorWidget,
+    this.color,
+    this.colorBlendMode,
+    this.borderRadius,
+    this.fadeInDuration,
+    this.alignment = Alignment.center,
+    this.useSkeleton = true,
+    this.cacheKey,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Adjust sizing for screenutil if enabled
+    final double? adjustedWidth = {{#if flags.usesScreenutil}}width?.w{{else}}width{{/if}};
+    final double? adjustedHeight = {{#if flags.usesScreenutil}}height?.h{{else}}height{{/if}};
+
+    Widget imageContent = CachedNetworkImage(
+      imageUrl: imageUrl,
+      cacheKey: cacheKey,
+      width: adjustedWidth,
+      height: adjustedHeight,
+      fit: fit,
+      color: color,
+      colorBlendMode: colorBlendMode,
+      alignment: alignment,
+      fadeInDuration: fadeInDuration ?? const Duration(milliseconds: 500),
+      placeholder: (context, url) => placeholder ?? _buildDefaultPlaceholder(context),
+      errorWidget: (context, url, error) => errorWidget ?? _buildDefaultErrorWidget(context),
+    );
+
+    if (borderRadius != null) {
+      imageContent = ClipRRect(
+        borderRadius: borderRadius!,
+        child: imageContent,
+      );
+    }
+
+    return imageContent;
+  }
+
+  Widget _buildDefaultPlaceholder(BuildContext context) {
+    if (useSkeleton) {
+      {{#if flags.usesSkeletonizer}}
+      return Skeletonizer(
+        enabled: true,
+        child: Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surfaceContainerHighest,
+            borderRadius: borderRadius,
+          ),
+        ),
+      );
+      {{else}}
+      return _buildLoadingIndicator(context);
+      {{/if}}
+    }
+    return _buildLoadingIndicator(context);
+  }
+
+  Widget _buildLoadingIndicator(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      color: context.theme.colorScheme.surfaceContainerHighest .withValues(alpha: 0.9),
+      child: const Center(
+        child: CircularProgressIndicator(strokeWidth: 2),
+      ),
+    );
+  }
+
+  Widget _buildDefaultErrorWidget(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      color: context.theme.colorScheme.errorContainer .withValues(alpha: 0.9),
+      child: Center(
+        child: {{#if flags.usesHugeicons}}
+          HugeIcon(
+            icon: HugeIcons.strokeRoundedImageNotFound02,
+            color: context.theme.colorScheme.error,
+            size: 24,
+          )
+        {{else if flags.usesIconsaxPlus}}
+          Icon(
+            IconsaxPlusBold.image,
+            color: context.theme.colorScheme.error,
+          )
+        {{else if flags.usesFlutterRemix}}
+          Icon(
+            FlutterRemix.image_line,
+            color: context.theme.colorScheme.error,
+          )
+        {{else}}
+          Icon(
+            Icons.broken_image_outlined,
+            color: context.theme.colorScheme.error,
+          )
+        {{/if}},
+      ),
+    );
+  }
+}

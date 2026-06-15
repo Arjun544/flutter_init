@@ -1,0 +1,13 @@
+{{#if flags.usesFlutterHooks}}
+export 'use_copy.dart';
+{{#if flags.usesSharePlus}}
+export 'use_share.dart';
+{{/if}}
+{{#if flags.usesPermissionHandler}}
+export 'use_permission.dart';
+{{/if}}
+{{#if flags.usesUrlLauncher}}
+export 'use_launch_url.dart';
+{{/if}}
+export 'use_timer.dart';
+{{/if}}
