@@ -67,7 +67,7 @@ export function HeroSection() {
 
         {/* Sleek Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 w-full sm:w-auto">
-          <Button asChild size="lg" className="h-14 px-8 text-md md:text-lg font-semibold tracking-wide rounded-2xl bg-zinc-950 text-white shadow-[0_8px_25px_-5px_rgba(0,0,0,0.3)] hover:bg-zinc-800 hover:scale-[1.02] hover:shadow-[0_15px_35px_-5px_rgba(0,0,0,0.4)] transition-all duration-300 sm:w-auto group border border-zinc-800">
+          <Button asChild size="lg" className="h-14 px-6 text-md md:text-md font-semibold tracking-wide rounded-2xl bg-zinc-950 text-white shadow-[0_8px_25px_-5px_rgba(0,0,0,0.3)] hover:bg-zinc-800 hover:scale-[1.02] hover:shadow-[0_15px_35px_-5px_rgba(0,0,0,0.4)] transition-all duration-300 sm:w-auto group border border-zinc-800">
             <Link href="/create">
               Start Generating
               <div className="ml-3 flex items-center justify-center w-6 h-6 rounded-full bg-zinc-800 group-hover:bg-zinc-700 transition-colors">

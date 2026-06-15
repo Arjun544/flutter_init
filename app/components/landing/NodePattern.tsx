@@ -12,7 +12,132 @@ import {
 } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import Image from "next/image";
+import { motion } from 'motion/react';
 import { useState } from 'react';
+
+interface NodeSwitchProps {
+  active: boolean;
+  onToggle: () => void;
+  top: string;
+  left: string;
+  bgClass: string;
+  Icon: any;
+  label: string;
+}
+
+const NodeSwitch = ({
+  active,
+  onToggle,
+  top,
+  left,
+  bgClass,
+  Icon,
+  label
+}: NodeSwitchProps) => {
+  return (
+    <div
+      className="absolute z-20 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group/node"
+      style={{ top, left }}
+      aria-label={label}
+      onClick={onToggle}
+    >
+      {/* Outer glow ring — visible on hover or when active */}
+      <div className={`absolute inset-0 rounded-[1.35rem] sm:rounded-[1.6rem] transition-all duration-500 pointer-events-none
+        ${active
+          ? 'opacity-100 blur-md scale-110 bg-primary/10'
+          : 'opacity-0 group-hover/node:opacity-60 group-hover/node:blur-sm group-hover/node:scale-105 bg-zinc-300/40'}
+      `} />
+
+      <div className={`
+        relative flex items-center py-2 px-3
+        rounded-[1rem] sm:rounded-[1.1rem]
+        border backdrop-blur-2xl
+        transition-all duration-300 ease-out
+        group-hover/node:scale-[1.035] group-hover/node:-translate-y-0.5
+        ${active
+          ? [
+              'bg-white/95',
+              'border-zinc-200/80',
+              'shadow-[0_2px_4px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)]',
+              'ring-1 ring-primary/8',
+            ].join(' ')
+          : [
+              'bg-white/75',
+              'border-white/50',
+              'shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_12px_rgba(0,0,0,0.05)]',
+              'hover:bg-white/95 hover:border-zinc-200/70',
+              'hover:shadow-[0_2px_6px_rgba(0,0,0,0.06),0_8px_20px_rgba(0,0,0,0.08)]',
+            ].join(' ')}
+      `}>
+        {/* Icon container */}
+        <div className="relative w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center shrink-0">
+          {/* Inactive state background & border & shadow */}
+          <motion.div
+            initial={false}
+            animate={{ opacity: active ? 0 : 1 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0 rounded-[0.6rem] sm:rounded-[0.65rem] bg-zinc-50 border border-zinc-200/80 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]"
+          />
+          {/* Active state background & border & shadow */}
+          <motion.div
+            initial={false}
+            animate={{ opacity: active ? 1 : 0 }}
+            transition={{ duration: 0.3 }}
+            className={`absolute inset-0 rounded-[0.6rem] sm:rounded-[0.65rem] border border-white/25 shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_2px_8px_rgba(0,0,0,0.15)] ${bgClass}`}
+          />
+
+          {/* Icon wrapper with subtle scale animation */}
+          <motion.div
+            animate={{
+              scale: active ? [1, 1.12, 1] : 1,
+            }}
+            transition={{
+              duration: 0.3,
+              ease: "easeInOut",
+            }}
+            className="relative z-10 flex items-center justify-center"
+          >
+            {label === 'Supabase' ? (
+              <Image src="/icons/supabase.svg" alt="Supabase" width={16} height={16}
+                className={`transition-all duration-300 ${active ? 'brightness-0 invert' : 'opacity-70'}`}
+              />
+            ) : label === 'Firebase' ? (
+              <Image src="/icons/firebase.svg" alt="Firebase" width={16} height={16}
+                className={`transition-all duration-300 ${active ? '' : 'opacity-70'}`}
+              />
+            ) : (
+              <HugeiconsIcon
+                icon={Icon}
+                size={15}
+                aria-hidden="true"
+                className={`transition-all duration-300 ${active ? 'text-white drop-shadow-sm' : 'text-zinc-400 group-hover/node:text-zinc-500'}`}
+              />
+            )}
+          </motion.div>
+        </div>
+
+        {/* Label */}
+        <span className={`
+          text-[11px] sm:text-[12px] font-semibold ml-2 mr-4
+          tracking-tight transition-all duration-300 whitespace-nowrap
+          ${active ? 'text-zinc-800' : 'text-zinc-400 group-hover/node:text-zinc-600'}
+        `}>
+          {label}
+        </span>
+
+        {/* Switch — stop propagation so click on switch doesn't double-fire */}
+        <div onClick={(e) => e.stopPropagation()} className="scale-75 origin-center shrink-0">
+          <Switch
+            checked={active}
+            onCheckedChange={onToggle}
+            aria-label={`Toggle ${label}`}
+            className={`cursor-pointer transition-all duration-300 ${active ? 'data-[state=checked]:bg-primary shadow-[0_0_0_2px_hsl(var(--primary)/0.15)]' : ''}`}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export function NodePattern() {
   const [nodes, setNodes] = useState({
@@ -28,67 +153,8 @@ export function NodePattern() {
     setNodes(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const NodeSwitch = ({
-    stateKey,
-    top, left,
-    bgClass,
-    Icon,
-    label
-  }: { stateKey: keyof typeof nodes, top: string, left: string, bgClass: string, Icon: any, label: string }) => {
-    const active = nodes[stateKey];
-    return (
-      <div
-        className="absolute z-20 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:scale-[1.03] transition-transform duration-300"
-        style={{ top, left }}
-        aria-label={label}
-        onClick={(e) => {
-          toggleNode(stateKey);
-        }}
-      >
-        <div className={`flex items-center p-1.5 sm:p-2 pr-3 sm:pr-4 rounded-[1.25rem] sm:rounded-2xl transition-all duration-300 border backdrop-blur-xl shadow-xl
-          ${active
-            ? 'bg-white border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-primary/5'
-            : 'bg-white/70 hover:bg-white/95 border-white/40 shadow-zinc-200/20'}
-        `}>
-          <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-[0.85rem] sm:rounded-xl flex items-center justify-center transition-all duration-300 border ${active ? bgClass + ' border-white/20 shadow-sm' : 'bg-zinc-100 border-zinc-200'}`}>
-
-            {label === 'Supabase' ? <Image
-              src="/icons/supabase.svg"
-              alt="Supabase"
-              width={24}
-              height={24}
-            /> : label === 'Firebase' ? <Image
-              src="/icons/firebase.svg"
-              alt="Firebase"
-              width={24}
-              height={24}
-            /> : <HugeiconsIcon
-              icon={Icon}
-              size={20}
-              aria-hidden="true"
-              className={`transition-colors duration-300 ${active ? 'text-white' : 'text-zinc-400'}`}
-            />}
-          </div>
-
-          <span className={`text-[13px] sm:text-[15px] font-bold ml-3 mr-8 transition-colors duration-300 ${active ? 'text-zinc-800' : 'text-zinc-500'}`}>
-            {label}
-          </span>
-
-          <div onClick={(e) => e.stopPropagation()}>
-            <Switch
-              checked={active}
-              onCheckedChange={() => toggleNode(stateKey)}
-              aria-label={label}
-              className={`cursor-pointer transition-colors duration-300 ${active ? 'data-[state=checked]:bg-primary' : ''}`}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <div className="relative w-full max-w-[1000px] mx-auto h-[350px] sm:h-[450px] mb-8 sm:mb-12 mt-8 z-20">
+    <div className="relative w-full max-w-[1000px] mx-auto h-[260px] sm:h-[340px] mb-6 sm:mb-10 mt-6 z-20">
       <svg
         viewBox="0 0 800 400"
         preserveAspectRatio="none"
@@ -204,12 +270,12 @@ export function NodePattern() {
           <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse" />
           <div className="absolute inset-0 bg-primary/10 blur-xl rounded-full scale-125" />
 
-          <div className="relative w-24 h-24 sm:w-28 sm:h-28 bg-linear-to-tr from-primary via-primary/90 to-primary/80 rounded-[2rem] sm:rounded-[3rem] shadow-[0_25px_50px_-12px_hsl(var(--primary)/0.5)] flex items-center justify-center transform hover:scale-105 transition-all duration-500 border border-white/30 group overflow-hidden">
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20 bg-linear-to-tr from-primary via-primary/90 to-primary/80 rounded-[1.25rem] sm:rounded-[1.75rem] shadow-[0_20px_40px_-8px_hsl(var(--primary)/0.5)] flex items-center justify-center transform hover:scale-105 transition-all duration-500 border border-white/30 group overflow-hidden">
             {/* Glossy overlay */}
             <div className="absolute inset-0 bg-linear-to-br from-white/20 to-transparent pointer-events-none" />
 
             <div className="relative animate-float">
-              <HugeiconsIcon icon={Folder01Icon} size={48} color='#ffffff' className="sm:size-[56px] drop-shadow-lg" />
+              <HugeiconsIcon icon={Folder01Icon} size={32} color='#ffffff' className="sm:size-[38px] drop-shadow-lg" />
             </div>
 
             {/* Shine effect on hover */}
@@ -233,42 +299,48 @@ export function NodePattern() {
       `}</style>
 
       <NodeSwitch
-        stateKey="goRouter"
+        active={nodes.goRouter}
+        onToggle={() => toggleNode('goRouter')}
         top="50%" left="0%"
         bgClass="bg-linear-to-tr from-rose-500 to-pink-400 shadow-rose-500/25"
         Icon={Route01Icon}
         label="GoRouter"
       />
       <NodeSwitch
-        stateKey="riverpod"
+        active={nodes.riverpod}
+        onToggle={() => toggleNode('riverpod')}
         top="25%" left="22.5%"
         bgClass="bg-linear-to-tr from-blue-600 to-blue-400 shadow-blue-500/25"
         Icon={DashboardSquare01Icon}
         label="Riverpod"
       />
       <NodeSwitch
-        stateKey="supabase"
+        active={nodes.supabase}
+        onToggle={() => toggleNode('supabase')}
         top="70%" left="22.5%"
         bgClass="bg-linear-to-tr from-emerald-200 to-green-100 shadow-emerald-400/25"
         Icon={Database01Icon}
         label="Supabase"
       />
       <NodeSwitch
-        stateKey="firebase"
+        active={nodes.firebase}
+        onToggle={() => toggleNode('firebase')}
         top="30%" left="77.5%"
         bgClass="bg-linear-to-tr from-orange-200 to-amber-100 shadow-orange-400/25"
         Icon={FireIcon}
         label="Firebase"
       />
       <NodeSwitch
-        stateKey="bloc"
+        active={nodes.bloc}
+        onToggle={() => toggleNode('bloc')}
         top="50%" left="100%"
         bgClass="bg-linear-to-tr from-indigo-500 to-purple-400 shadow-indigo-500/25"
         Icon={Package01Icon}
         label="Bloc"
       />
       <NodeSwitch
-        stateKey="dio"
+        active={nodes.dio}
+        onToggle={() => toggleNode('dio')}
         top="70%" left="76.25%"
         bgClass="bg-linear-to-tr from-cyan-500 to-sky-400 shadow-cyan-500/25"
         Icon={Unlink01Icon}

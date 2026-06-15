@@ -19,6 +19,7 @@ import {
   Highlight,
   HighlightItem,
 } from '@/components/animate-ui/primitives/effects/highlight'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 const NAV_LINKS = [
   { href: '#how-it-works', label: 'How it Works' },
@@ -34,6 +35,7 @@ const easeOut: [number, number, number, number] = [0.16, 1, 0.3, 1]
 export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const isMobile = useIsMobile()
 
   const { scrollY } = useScroll()
 
@@ -51,7 +53,7 @@ export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
   const navWidth = useTransform(
     scrollY,
     [0, SCROLL_RANGE],
-    ['100%', '52%'],
+    ['90%', '52%'],
     { clamp: true },
   )
 
@@ -116,7 +118,7 @@ export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
   return (
     <motion.header
       className="fixed inset-x-0 top-0 z-50"
-      style={{ paddingTop: headerPaddingTop }}
+      style={{ paddingTop: isMobile ? 0 : headerPaddingTop }}
     >
       {/*
        * The nav shrinks in width and gains a pill border-radius.
@@ -124,7 +126,10 @@ export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
        */}
       <motion.nav
         className="relative mx-auto flex h-16 items-center overflow-hidden"
-        style={{ width: navWidth, borderRadius: navBorderRadius }}
+        style={{
+          width: isMobile ? '100%' : navWidth,
+          borderRadius: isMobile ? 0 : navBorderRadius,
+        }}
       >
         {/* ── Glassmorphism backdrop layer ── */}
         <motion.div
@@ -151,7 +156,10 @@ export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
         {/* ── Inner content with animated padding ── */}
         <motion.div
           className="relative z-10 flex h-16 w-full items-center justify-between"
-          style={{ paddingLeft: navPaddingX, paddingRight: navPaddingX }}
+          style={{
+            paddingLeft: isMobile ? 24 : navPaddingX,
+            paddingRight: isMobile ? 24 : navPaddingX,
+          }}
         >
           <Link href="/" className="flex items-center">
             <Image src="/logo.svg" alt="FlutterInit" width={22} height={22} priority />
@@ -222,12 +230,7 @@ export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.35, ease: easeOut }}
-            className={cn(
-              'relative z-10 border border-zinc-200 bg-white px-6 py-4 md:hidden',
-              scrolled
-                ? 'mx-auto mt-2 w-[52%] min-w-[280px] rounded-2xl'
-                : 'border-x-0 border-t-0',
-            )}
+            className="relative z-10 border-b border-zinc-200 bg-white px-6 py-4 md:hidden"
           >
             <ul className="flex flex-col gap-4">
               {NAV_LINKS.map((link) => (

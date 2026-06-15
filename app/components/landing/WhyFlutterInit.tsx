@@ -1,6 +1,7 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge";
+import { KineticText } from "@/components/ui/kinetic-text";
 import {
   Card,
   CardContent,
@@ -142,7 +143,7 @@ export function WhyFlutterInit() {
         <div className="flex flex-col items-center gap-4 text-center">
           <Badge
             variant="outline"
-            className="rounded-full border-primary/10 bg-primary/5 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary"
+            className="rounded-full border-primary/10 bg-primary/5 px-3 py-3 text-[11px] font-bold uppercase tracking-wider text-primary"
           >
             <span
               aria-hidden="true"
@@ -152,9 +153,11 @@ export function WhyFlutterInit() {
           </Badge>
           <h2 className="text-4xl leading-[1.1] font-bold tracking-tight text-zinc-400 md:text-5xl lg:text-6xl">
             Why{" "}
-            <span className="font-extrabold tracking-wider text-primary">
-              FlutterInit
-            </span>{" "}
+            <KineticText
+              as="span"
+              text="FlutterInit"
+              className="pointer-events-auto font-extrabold tracking-wider text-primary"
+            />{" "}
             exists?
           </h2>
           <p className="max-w-2xl text-lg leading-relaxed font-medium text-zinc-500">
