@@ -1,5 +1,5 @@
+import { StatsShowcase, StatsShowcaseSkeleton, type StatCard } from "@/app/components/landing/StatsShowcase"
 import { createPublishableSupabaseClient } from "@/app/lib/supabase/server"
-import { StatsShowcase, StatsShowcaseSkeleton } from "@/app/components/landing/StatsShowcase"
 
 type StatsResponse = {
   total_generated?: number
@@ -58,51 +58,50 @@ export async function StatsSection() {
   const topBackendValue =
     totalGenerated > 0 && topBackend.count > 0 ? toTitleCase(topBackend.key) : "—"
 
-  const cards = [
+  const cards: StatCard[] = [
     {
-      eyebrow: "Volume",
-      label: "Projects Generated",
+      title: "Projects",
+      eyebrow: "Numbers of projects generated",
       value: totalGenerated > 0 ? totalGenerated.toLocaleString() : "—",
       numericValue: totalGenerated > 0 ? totalGenerated : undefined,
     },
     {
-      eyebrow: "State",
-      label: "Popular State Management",
-      value: toTitleCase(stats?.top_state_mgmt),
+      title: "State Management",
+      eyebrow: "Most Popular State Management",
+      value: stats?.top_state_mgmt ? toTitleCase(stats.top_state_mgmt) : "—",
     },
     {
+      title: "Architecture",
       eyebrow: "Pattern",
-      label: "Architecture",
-      value: toTitleCase(stats?.top_architecture),
+      value: stats?.top_architecture ? toTitleCase(stats.top_architecture) : "—",
     },
     {
-      eyebrow: "Backend",
-      label: "Backend",
-      value: topBackendValue,
-    },
-    {
-      eyebrow: "Supabase",
-      label: "Supabase",
-      value: toTitleCase(stats?.be_supabase?.toString()),
-      numericValue: stats?.be_supabase,
-    },
-    {
-      eyebrow: "Firebase",
-      label: "Firebase",
-      value: toTitleCase(stats?.be_firebase?.toString()),
+      title: "Firebase",
+      eyebrow: "Usage of Firebase",
+      value: stats?.be_firebase !== undefined ? `${stats.be_firebase}%` : "—",
       numericValue: stats?.be_firebase,
     },
     {
-      eyebrow: "Navigation",
-      label: "Popular Navigation",
-      value: toTitleCase(stats?.top_navigation),
+      title: "Supabase",
+      eyebrow: "Usage of Supabase",
+      value: stats?.be_supabase !== undefined ? `${stats.be_supabase}%` : "—",
+      numericValue: stats?.be_supabase,
     },
     {
-      eyebrow: "Theme",
-      label: "Theme",
+      title: topBackendValue,
+      eyebrow: "Most Used Backend",
+      value: topBackendValue,
+    },
+    {
+      title: "Navigation",
+      eyebrow: "Popular Navigation",
+      value: stats?.top_navigation ? toTitleCase(stats.top_navigation) : "—",
+    },
+    {
+      title: "Theme",
+      eyebrow: "Usage of dark theme",
       value: darkModeRatio !== undefined ? `${darkModeRatio}%` : "—",
       numericValue: darkModeRatio,
-      suffix: darkModeRatio !== undefined ? "%" : "",
     },
   ]
 
