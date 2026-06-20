@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { KineticText } from "@/components/ui/kinetic-text"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { Blur } from "@/components/animate-ui/primitives/effects/blur"
 
 import { BarBreakdown } from "./bento/stats/BarBreakdown"
 import { CountStat } from "./bento/stats/CountStat"
@@ -207,7 +208,7 @@ function StatBentoCard({ card, index }: { card: StatCard; index: number }) {
 // ─── section ─────────────────────────────────────────────────────────────────
 export function StatsShowcase({ cards }: { cards: StatCard[] }) {
   return (
-    <section className="relative w-full overflow-hidden bg-zinc-50/50 py-24">
+    <section id="showcase" className="relative w-full overflow-hidden bg-zinc-50/50 py-24">
       <div className="pointer-events-none absolute top-0 left-1/2 h-full w-full -translate-x-1/2 bg-[radial-gradient(circle_at_50%_0%,var(--color-primary)_0.03,transparent_50%)] opacity-5" />
 
       <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-12 px-6 md:px-12">
@@ -220,14 +221,16 @@ export function StatsShowcase({ cards }: { cards: StatCard[] }) {
             <span aria-hidden="true" className="mr-2 inline-flex size-1.5 rounded-full bg-primary animate-pulse" />
             Community Insights
           </Badge>
-          <h2 className="text-4xl leading-[1.1] font-bold tracking-tight text-zinc-400 md:text-5xl lg:text-6xl">
-            Built smarter with{" "}
-            <KineticText
-              as="span"
-              text="FlutterInit"
-              className="pointer-events-auto font-extrabold tracking-wider text-primary"
-            />
-          </h2>
+          <Blur inView={true}>
+            <h2 className="text-4xl leading-[1.1] font-bold tracking-tight text-zinc-400 md:text-5xl lg:text-6xl">
+              Built smarter with{" "}
+              <KineticText
+                as="span"
+                text="FlutterInit"
+                className="pointer-events-auto font-extrabold tracking-wider text-primary"
+              />
+            </h2>
+          </Blur>
           <p className="max-w-2xl text-lg leading-relaxed font-medium text-zinc-500">
             Real setup choices from real projects. See what teams pick most
             often before you generate your next Flutter foundation.

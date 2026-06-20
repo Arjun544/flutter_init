@@ -23,6 +23,7 @@ import { RapidPrototypingPreview } from "./bento/previews/RapidPrototypingPrevie
 import { GlobalReachPreview } from "./bento/previews/GlobalReachPreview"
 import { AIReadyPreview } from "./bento/previews/AIReadyPreview"
 import { useBentoHover } from "./bento/bento-hover-context"
+import { Blur } from "@/components/animate-ui/primitives/effects/blur"
 
 // ─── accent config ────────────────────────────────────────────────────────────
 const accents = {
@@ -156,7 +157,7 @@ function FeatureItem({
 // ─── section ─────────────────────────────────────────────────────────────────
 export function WhyFlutterInit() {
   return (
-    <section className="relative w-full overflow-hidden bg-zinc-50/50 py-24">
+    <section id="features" className="relative w-full overflow-hidden bg-zinc-50/50 py-24">
       <div className="pointer-events-none absolute top-0 left-1/2 h-full w-full -translate-x-1/2 bg-[radial-gradient(circle_at_50%_0%,var(--color-primary)_0.03,transparent_50%)] opacity-5" />
 
       <div className="relative z-10 mx-auto flex max-w-7xl flex-col gap-12 px-6 md:px-12">
@@ -169,15 +170,17 @@ export function WhyFlutterInit() {
             <span aria-hidden="true" className="mr-2 inline-flex size-1.5 rounded-full bg-primary animate-pulse" />
             Core Philosophy
           </Badge>
-          <h2 className="text-4xl leading-[1.1] font-bold tracking-tight text-zinc-400 md:text-5xl lg:text-6xl">
-            Why{" "}
-            <KineticText
-              as="span"
-              text="FlutterInit"
-              className="pointer-events-auto font-extrabold tracking-wider text-primary"
-            />{" "}
-            exists?
-          </h2>
+          <Blur inView={true}>
+            <h2 className="text-4xl leading-[1.1] font-bold tracking-tight text-zinc-400 md:text-5xl lg:text-6xl">
+              Why{" "}
+              <KineticText
+                as="span"
+                text="FlutterInit"
+                className="pointer-events-auto font-extrabold tracking-wider text-primary"
+              />{" "}
+              exists?
+            </h2>
+          </Blur>
           <p className="max-w-2xl text-lg leading-relaxed font-medium text-zinc-500">
             We believe Flutter development should be about innovation, not repetitive configuration.
             Stop wasting days on project setup and start building.

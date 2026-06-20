@@ -94,7 +94,6 @@ export function CliCommand({ className }: CliCommandProps) {
         size="xs"
         className="rounded-full text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100"
         aria-label={`Copy CLI command step ${step}`}
-        title={`Copy CLI command step ${step}`}
       />
     </div>
   );

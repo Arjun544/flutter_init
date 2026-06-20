@@ -81,11 +81,13 @@ export function HeroSection() {
           </Button>
         </div>
         {/* Branching Visual Nodes - Now taking visual priority at the top */}
-        <div className="hidden sm:block w-full">
-          <NodePattern />
-        </div>
-        <div className="block sm:hidden w-full">
-          <MobileNodePattern />
+        <div id="how-it-works" className="w-full">
+          <div className="hidden sm:block w-full">
+            <NodePattern />
+          </div>
+          <div className="block sm:hidden w-full">
+            <MobileNodePattern />
+          </div>
         </div>
 
       </div>
