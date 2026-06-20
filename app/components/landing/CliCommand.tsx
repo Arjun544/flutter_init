@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { CopyButton } from '@/components/animate-ui/components/buttons/copy';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface CliCommandProps {
   className?: string;
