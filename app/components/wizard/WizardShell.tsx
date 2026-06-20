@@ -1,6 +1,7 @@
 "use client"
 
 import { trackGeneration } from "@/app/lib/analytics/trackGeneration"
+import cliPackage from "@/cli/package.json"
 import { scaffoldConfigSchema, StepId, stepOrder } from "@/app/lib/config/schema"
 import { useWizard } from "@/app/lib/state/useWizardStore"
 import { Badge } from "@/components/ui/badge"
@@ -269,7 +270,7 @@ function WizardSidebar() {
                             priority
                         /></Link>
                     <Badge variant="outline" className="ml-auto bg-background/50 backdrop-blur-sm border-primary/20 text-primary hover:bg-transparent">
-                        1.0
+                        {cliPackage.version}
                     </Badge>
                 </div>
             </SidebarHeader>

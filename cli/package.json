@@ -1,6 +1,6 @@
 {
   "name": "create-flutterinit",
-  "version": "0.1.11",
+  "version": "1.0.0",
   "description": "Scaffold production-ready Flutter projects from your terminal",
   "bin": {
     "create-flutterinit": "dist/index.js"

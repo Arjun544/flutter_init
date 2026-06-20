@@ -13,6 +13,7 @@
 
   <p align="center">
     <img src="https://img.shields.io/badge/Build-Passing-2ecc71?style=flat-square&logo=github-actions&logoColor=white" alt="Build Status" />
+    <a href="https://www.npmjs.com/package/create-flutterinit"><img src="https://img.shields.io/npm/v/create-flutterinit?style=flat-square&logo=npm&logoColor=white" alt="NPM Version" /></a>
     <a href="https://github.com/Arjun544/flutter_init/stargazers"><img src="https://img.shields.io/github/stars/Arjun544/flutter_init?style=flat-square&color=2ecc71&logo=github&logoColor=white" alt="Stars" /></a>
     <a href="https://github.com/Arjun544/flutter_init/network/members"><img src="https://img.shields.io/github/forks/Arjun544/flutter_init?style=flat-square&color=3498db&logo=github&logoColor=white" alt="Forks" /></a>
     <a href="https://github.com/Arjun544/flutter_init/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-10b981?style=flat-square" alt="License" /></a>
