@@ -1,3 +1,3 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 import { main } from '../src/main'
 main()

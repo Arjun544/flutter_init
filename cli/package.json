@@ -1,9 +1,9 @@
 {
   "name": "create-flutterinit",
-  "version": "0.1.0",
+  "version": "0.1.11",
   "description": "Scaffold production-ready Flutter projects from your terminal",
   "bin": {
-    "create-flutterinit": "./bin/index.ts"
+    "create-flutterinit": "dist/index.js"
   },
   "scripts": {
     "dev": "bun run bin/index.ts",
@@ -13,8 +13,7 @@
   },
   "files": [
     "dist/",
-    "templates/",
-    "bin/"
+    "templates/"
   ],
   "dependencies": {
     "@clack/prompts": "^1.5.1",
