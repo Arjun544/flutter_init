@@ -1,0 +1,210 @@
+---
+title: "Introducing FlutterInit — Generate Production-Ready Flutter Projects in Seconds"
+description: "FlutterInit is now live. Generate a fully-structured Flutter project with your chosen architecture, state management, and backend — all from a web UI, no CLI required."
+kind: update
+category: announcements
+tags: [flutter, open-source, launch, productivity]
+publishedAt: "2026-06-12"
+author: arjun
+featured: true
+---
+
+After months of building in public, I'm excited to officially launch **FlutterInit** — a web-based Flutter project generator that scaffolds production-ready boilerplate so you can skip the tedious setup and start shipping features from day one.
+
+## The Problem
+
+Every Flutter project starts the same way. You create a new project, then spend the next few hours (or days) copy-pasting folder structures, wiring up your state management, setting up your database client, writing the same router configuration you've written a dozen times before, and configuring `analysis_options.yaml`.
+
+It's not hard. It's just *tedious*. And it adds up.
+
+## What FlutterInit Does
+
+FlutterInit lets you pick your stack from a simple web UI:
+
+- **Architecture**: Clean Architecture, MVVM, or Feature-First
+- **State Management**: Riverpod, Bloc, Provider, GetX, or Signals
+- **Backend**: Firebase, Supabase, Appwrite, or None
+- **Navigation**: go_router, auto_route, or None
+
+Hit **Generate**, and you get a ZIP file with a fully-structured Flutter project — correct folder hierarchy, pre-wired dependencies in `pubspec.yaml`, and working boilerplate that compiles on the first `flutter run`.
+
+## Built with Real-World Patterns
+
+The templates aren't invented. Every architecture pattern is based on production apps I've built and maintained. The file trees, the layer separation, the naming conventions — all of it reflects how real teams structure their Flutter codebases.
+
+The Riverpod + Clean Architecture + Firebase combination, for example, generates:
+
+<Files defaultOpen={["lib", "core", "features", "auth", "data", "domain", "presentation"]}>
+  <FolderItem value="lib">
+    <FolderTrigger>lib</FolderTrigger>
+    <FolderContent>
+      <SubFiles>
+        <FolderItem value="core">
+          <FolderTrigger>core</FolderTrigger>
+          <FolderContent>
+            <SubFiles>
+              <FolderItem value="di">
+                <FolderTrigger>di</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>providers.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="network">
+                <FolderTrigger>network</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>dio_client.dart</FileItem>
+                    <FileItem>network_info.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="errors">
+                <FolderTrigger>errors</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>failures.dart</FileItem>
+                    <FileItem>exceptions.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="utils">
+                <FolderTrigger>utils</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>either.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+            </SubFiles>
+          </FolderContent>
+        </FolderItem>
+        <FolderItem value="features">
+          <FolderTrigger>features</FolderTrigger>
+          <FolderContent>
+            <SubFiles>
+              <FolderItem value="auth">
+                <FolderTrigger>auth</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FolderItem value="data">
+                      <FolderTrigger>data</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FolderItem value="datasources">
+                            <FolderTrigger>datasources</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>firebase_auth_datasource.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="models">
+                            <FolderTrigger>models</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>user_model.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="repositories-data">
+                            <FolderTrigger>repositories</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>auth_repository_impl.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                    <FolderItem value="domain">
+                      <FolderTrigger>domain</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FolderItem value="entities">
+                            <FolderTrigger>entities</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>user_entity.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="repositories-domain">
+                            <FolderTrigger>repositories</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>auth_repository.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="usecases">
+                            <FolderTrigger>usecases</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>sign_in_usecase.dart</FileItem>
+                                <FileItem>sign_up_usecase.dart</FileItem>
+                                <FileItem>sign_out_usecase.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                    <FolderItem value="presentation">
+                      <FolderTrigger>presentation</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FolderItem value="providers">
+                            <FolderTrigger>providers</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>auth_provider.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="pages">
+                            <FolderTrigger>pages</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>sign_in_page.dart</FileItem>
+                                <FileItem>sign_up_page.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="widgets">
+                            <FolderTrigger>widgets</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>auth_form.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+            </SubFiles>
+          </FolderContent>
+        </FolderItem>
+        <FileItem>main.dart</FileItem>
+      </SubFiles>
+    </FolderContent>
+  </FolderItem>
+</Files>
+
+This is exactly what you'd find in a senior Flutter developer's boilerplate — not a tutorial project.
+
+## What's Next
+
+The generator is live and free. Over the coming weeks I'll be publishing **in-depth guides** for every stack combination — explaining not just *what* gets generated but *why* each pattern makes sense for different project types.
+
+You can follow along:
+
+- **GitHub**: [@Arjun544](https://github.com/Arjun544) — the entire generator is open source
+- **Twitter/X**: [@arjun_mahar1](https://x.com/arjun_mahar1) — building in public
+
+Try FlutterInit now at [flutterinit.dev](/) — it's free, open source, and takes about 10 seconds.

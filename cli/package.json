@@ -1,6 +1,6 @@
 {
   "name": "create-flutterinit",
-  "version": "0.1.11",
+  "version": "1.0.0",
   "description": "Scaffold production-ready Flutter projects from your terminal",
   "bin": {
     "create-flutterinit": "dist/index.js"
@@ -11,7 +11,9 @@
     "build": "bun build ./bin/index.ts --outdir ./dist --target node",
     "sync-templates": "bash ../scripts/sync-templates.sh"
   },
+  "main": "dist/index.js",
   "files": [
+    "bin/",
     "dist/",
     "templates/"
   ],

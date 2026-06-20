@@ -33,6 +33,19 @@ jobs:
       - name: Run Layer 1 tests (Unit + Integration)
         run: npm run test:layer1
 
+      - name: Validate guide trees (on guide/template changes)
+        if: |
+          contains(github.event.commits[0].modified, 'content/blog/guides') ||
+          contains(github.event.commits[0].modified, 'templates/')
+        run: |
+          npm run generate:guide-trees
+          if ! git diff --quiet content/blog/guides/.generated/; then
+            echo "❌ Stale .tree.json files detected. Run 'npm run generate:guide-trees' locally and commit the changes."
+            git diff content/blog/guides/.generated/
+            exit 1
+          fi
+          echo "✅ All guide trees are up to date."
+
       - name: Upload Failure Logs
         if: failure()
         uses: actions/upload-artifact@v4

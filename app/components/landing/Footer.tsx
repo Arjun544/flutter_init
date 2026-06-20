@@ -110,10 +110,18 @@ export function Footer() {
             </Link>
           </div>
 
+          <div className="flex items-center gap-4">
+            <Link
+              href="/blog"
+              className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors font-medium"
+            >
+              Blog
+            </Link>
 
-          <div className="flex items-center gap-2 text-[13px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Fully Open Source
+            <div className="flex items-center gap-2 text-[13px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Fully Open Source
+            </div>
           </div>
         </div>
       </div>

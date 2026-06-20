@@ -2,10 +2,18 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   compress: true,
+  // Enable MDX as a page extension so Next.js can route .mdx files directly
+  pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
+    ],
   },
   experimental: {
     optimizePackageImports: [
@@ -13,6 +21,7 @@ const nextConfig: NextConfig = {
       '@hugeicons/react',
       'framer-motion',
       'recharts',
+      'next-mdx-remote',
     ],
   },
   // Ensure we're using the most efficient bundling
