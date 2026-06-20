@@ -3,45 +3,13 @@
 import * as React from 'react';
 import { CopyButton } from '@/components/animate-ui/components/buttons/copy';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'motion/react';
 
 interface CliCommandProps {
   className?: string;
 }
 
 export function CliCommand({ className }: CliCommandProps) {
-  const [step, setStep] = React.useState<1 | 2>(1);
-  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
-
-  const commandText = step === 1 ? 'npm i create-flutterinit' : 'npx create-flutterinit';
-
-  const resetToStepOne = React.useCallback(() => {
-    setStep(1);
-  }, []);
-
-  const startResetTimer = React.useCallback(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    timerRef.current = setTimeout(resetToStepOne, 8000); // Reset to step 1 after 8 seconds
-  }, [resetToStepOne]);
-
-  React.useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, []);
-
-  const handleCopiedChange = React.useCallback((copied: boolean) => {
-    if (copied) {
-      if (step === 1) {
-        setStep(2);
-      }
-      startResetTimer();
-    }
-  }, [step, startResetTimer]);
+  const commandText = 'npx create-flutterinit';
 
   return (
     <div className={cn(
@@ -67,20 +35,11 @@ export function CliCommand({ className }: CliCommandProps) {
         CLI
       </span>
 
-      {/* Command Text with Animation */}
+      {/* Command Text */}
       <div className="relative flex items-center select-all">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.code
-            key={step}
-            initial={{ y: 8, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -8, opacity: 0 }}
-            transition={{ duration: 0.18, ease: 'easeInOut' }}
-            className="font-mono text-[13px] font-semibold text-zinc-800 tracking-tight leading-none pt-px pr-1 whitespace-nowrap block"
-          >
-            {commandText}
-          </motion.code>
-        </AnimatePresence>
+        <code className="font-mono text-[13px] font-semibold text-zinc-800 tracking-tight leading-none pt-px pr-1 whitespace-nowrap block">
+          {commandText}
+        </code>
       </div>
 
       {/* Separator */}
@@ -89,14 +48,14 @@ export function CliCommand({ className }: CliCommandProps) {
       {/* Copy Button */}
       <CopyButton
         content={commandText}
-        onCopiedChange={handleCopiedChange}
         variant="ghost"
         size="xs"
         className="rounded-full text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100"
-        aria-label={`Copy CLI command step ${step}`}
+        aria-label="Copy CLI command"
       />
     </div>
   );
 }
+
 
 

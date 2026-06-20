@@ -1,0 +1,175 @@
+---
+title: "FlutterInit CLI — Generate a Complete Flutter Project from Your Terminal"
+description: "The FlutterInit CLI lets you scaffold a production-ready Flutter project without opening a browser. One command, an interactive wizard, and your project is ready to run."
+kind: update
+category: announcements
+tags: [cli, flutter, tooling, productivity, open-source]
+publishedAt: "2026-06-20"
+author: arjun
+featured: true
+---
+
+If you prefer your terminal over a browser tab, the FlutterInit CLI was built for you.
+
+`create-flutterinit` is the command-line companion to the FlutterInit web generator. It gives you the same full-stack Flutter scaffolding experience — architecture, state management, backend, navigation, and a curated set of packages — entirely from your terminal, with zero browser required.
+
+## Getting Started in One Line
+
+Run a single command — npm will ask to install the package if it's not already present, then launch the wizard immediately:
+
+```bash
+npx create-flutterinit
+```
+
+First run will look like this:
+
+```
+Need to install the following packages:
+  create-flutterinit@0.1.11
+Ok to proceed? (y)
+```
+
+Hit **y**, and the CLI launches. No separate install step, no global setup.
+
+Or, if you prefer Bun (faster cold start):
+
+```bash
+bunx create-flutterinit
+```
+
+That's it. The CLI launches, checks your environment, and walks you through a clean interactive wizard.
+
+## What Happens When You Run It
+
+### Step 1 — Environment Preflight
+
+Before showing a single prompt, the CLI quietly checks your machine:
+
+- **Flutter SDK** — confirms `flutter` is on your PATH and reads the installed version. If Flutter isn't found, you get clear installation instructions and the process exits gracefully.
+- **Bun version** — checks if Bun is up-to-date (≥ 1.0.0).
+- **Flutter Doctor** — streams `flutter doctor` output so you can spot any toolchain issues before generation starts.
+
+If everything looks good, a ✔ confirmation step asks you to proceed.
+
+### Step 2 — The Interactive Wizard
+
+Once past preflight, you move through a series of prompts grouped into focused sections. Each section is headed by a clean printed block so you always know where you are.
+
+**Project Identity**
+
+```
+◆  Project name (lowercase letters, numbers, and underscores)
+│  my_app
+
+◆  Organisation name (reverse domain format — e.g. com.yourcompany)
+│  com.acme
+
+◆  Project description
+│  A new Flutter project
+```
+
+**Architecture**
+
+Choose how your folders and layers are organized:
+
+| Option | Best for |
+|---|---|
+| Clean Architecture | Large teams, long-lived apps |
+| MVVM | Riverpod or Provider users |
+| Feature-First | Medium-sized apps organized by feature |
+| MVC | Developers familiar with web patterns |
+| Layer-First | Smaller apps with a single shared layer |
+
+**State Management**
+
+Pick the state solution wired throughout your app — Riverpod, Bloc/Cubit, Provider, MobX, or GetX. Each option ships a pre-configured boilerplate that matches the chosen architecture.
+
+**Backend**
+
+Select your data layer integration:
+
+- **Firebase** — Auth, Firestore, Storage, FCM
+- **Supabase** — Postgres + realtime, open-source Firebase alternative
+- **Appwrite** — Self-hostable, full data ownership
+- **Custom Backend** — REST API wired via an `AppConfig` base client
+- **None** — No backend, add your own later
+
+**Navigation**
+
+- **GoRouter** — Official Flutter routing, URL-based and deep-link ready
+- **AutoRoute** — Code-generated typed routes, zero string-based navigation
+- **Navigator 2.0** — Vanilla Flutter, no extra dependency
+
+**Theme & Appearance**
+
+Set your theme mode (light, dark, or system-default) and provide a hex seed color. This color is used to generate your entire Material 3 `ColorScheme`, so your generated app comes with a fully coherent palette from day one.
+
+**Optional Utilities**
+
+The final prompt is a grouped multi-select across six categories. Popular packages are pre-selected by default — deselect anything you don't want:
+
+- **Icon Packs** — Iconsax Plus, Flutter Remix, Hugeicons
+- **Networking & Storage** — Dio, HTTP, Cached Network Image, Hive, SharedPreferences, Secure Storage
+- **Media & Assets** — Flutter SVG, Image Picker, Camera, File Picker, Native Splash
+- **Essential Utilities** — URL Launcher, Path Provider, Share Plus, Permission Handler, Device Info, Geolocator, Local Notifications, App Version Update
+- **Advanced Features** — Flutter Hooks, Skeletonizer, ScreenUtil, Dotenv, Logger, Localization, Material 3
+
+> One smart detail: if you select Camera, Image Picker, File Picker, Geolocator, or Local Notifications, the CLI automatically enables Permission Handler — because you'll need it.
+
+### Step 3 — Configuration Summary
+
+Before any files are written, the CLI prints a detailed summary of everything you chose:
+
+```
+┌─ Your FlutterInit Configuration ──────────────────┐
+│                                                    │
+│  Project       my_app                              │
+│  Org           com.acme                            │
+│  Description   A new Flutter project               │
+│                                                    │
+│  Architecture  Clean Architecture                  │
+│  State         Riverpod                            │
+│  Backend       Firebase                            │
+│  Navigation    GoRouter                            │
+│                                                    │
+│  Theme         Both (system default)               │
+│  Color         #027DFD                             │
+│  Utilities     Dio, SharedPreferences, ScreenUtil… │
+│  Native        None                                │
+│                                                    │
+│  Output        /Users/you/projects/my_app          │
+└────────────────────────────────────────────────────┘
+
+◆  Generate this project? › Yes
+```
+
+One final confirmation and generation begins.
+
+### Step 4 — Project Generation
+
+The generator runs a six-stage pipeline:
+
+1. **Target Guard** — if the output folder already exists and is non-empty, you're asked to confirm overwrite before anything is deleted.
+2. **Flutter Scaffolding** — runs `flutter create` with your project name and org, generating all platform runners (iOS, Android, Web, macOS, Windows, Linux).
+3. **Base Overlay** — writes global templates: `pubspec.yaml` (with all your selected packages), `main.dart`, analysis options, and design docs.
+4. **Directory Structure** — creates the folder hierarchy for your chosen architecture. Empty folders get a `.gitkeep` so they appear in version control.
+5. **Architecture Files** — overlays the architecture-specific boilerplate inside `lib/src/` — layers, providers, repositories, use cases, or view-models depending on your choice.
+6. **Integration Adapters** — mounts client drivers, data sources, and DI bindings for your backend (Firebase, Supabase, Appwrite) and routing (GoRouter, AutoRoute).
+
+A spinner runs during each stage so you always know what's happening. When it finishes, the terminal prints the success outro with instructions for your next steps.
+
+## The Output
+
+When the wizard completes, you have a directory named after your project that:
+
+- Passes `flutter run` on the first try
+- Has the correct folder structure for your chosen architecture, fully populated
+- Has a `pubspec.yaml` with every selected package already listed under `dependencies`
+- Has `main.dart` bootstrapped with your theme color, Material 3 config, and routing provider
+- Has environment, logging, and localization files pre-configured if you selected them
+
+No copy-pasting from documentation. No manual `pub add` loops. No "where does this file go?" decisions.
+
+## Prefer the Web UI?
+
+If you'd rather point-and-click than type, the [web generator](/create) does the same thing and gives you a ZIP download. Both produce identical output — use whichever fits your workflow.
