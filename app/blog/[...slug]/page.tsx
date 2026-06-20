@@ -222,24 +222,24 @@ export default async function BlogPostPage({
 
             {/* Guide CTA */}
             {isGuide && (
-              <div className="mt-12 overflow-hidden rounded-2xl border border-zinc-900 bg-zinc-950 px-8 py-8 text-center">
-                <p className="mb-1 text-[12px] font-semibold uppercase tracking-widest text-zinc-400">
+              <div className="mt-12 overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100/50 px-8 py-8 text-center hover:border-zinc-300 transition-all duration-400">
+                <p className="mb-1 text-[12px] font-semibold uppercase tracking-widest text-zinc-600">
                   Ready to build?
                 </p>
-                <h2 className="mb-3 text-2xl font-bold text-white">
+                <h2 className="mb-3 text-2xl font-bold text-zinc-900">
                   Generate this project in seconds
                 </h2>
                 <p className="mb-6 text-[14px] text-zinc-400 max-w-md mx-auto">
                   FlutterInit scaffolds the entire structure described in this guide — wired up,
                   typed, and ready for{' '}
-                  <code className="rounded bg-zinc-800 px-1.5 py-0.5 text-[12px] text-zinc-300">
+                  <code className="rounded bg-zinc-300 px-1.5 py-0.5 text-[12px] text-zinc-700">
                     flutter run
                   </code>
                   .
                 </p>
                 <Link
                   href="/create"
-                  className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-zinc-950 hover:bg-zinc-100 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-xl bg-zinc-950 px-6 py-3 text-sm font-bold text-white hover:bg-zinc-800 transition-colors"
                 >
                   Start Generating →
                 </Link>
