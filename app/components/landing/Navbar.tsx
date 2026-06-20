@@ -25,7 +25,7 @@ const NAV_LINKS = [
   { href: '#how-it-works', label: 'How it Works' },
   { href: '#features', label: 'Features' },
   { href: '#showcase', label: 'Showcase' },
-  { href: '#guides', label: 'Guides' },
+  { href: '/blog', label: 'Blog' },
 ]
 
 const SCROLL_RANGE = 500
@@ -155,23 +155,27 @@ export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
 
         {/* ── Inner content with animated padding ── */}
         <motion.div
-          className="relative z-10 flex h-16 w-full items-center justify-between"
+          className="relative z-10 flex h-16 w-full items-center"
           style={{
             paddingLeft: isMobile ? 24 : navPaddingX,
             paddingRight: isMobile ? 24 : navPaddingX,
           }}
         >
-          <Link href="/" className="flex items-center">
-            <Image src="/logo.svg" alt="FlutterInit" width={22} height={22} priority />
-          </Link>
+          {/* Left: Logo */}
+          <div className="flex flex-1 items-center">
+            <Link href="/" className="flex items-center">
+              <Image src="/logo.svg" alt="FlutterInit" width={22} height={22} priority />
+            </Link>
+          </div>
 
+          {/* Center: Nav links — always at the true mid-point of the symmetric padding */}
           <Highlight
             mode="parent"
             hover={true}
             click={false}
             controlledItems={true}
             className="rounded-full bg-zinc-200/50"
-            containerClassName="hidden items-center gap-1 md:flex"
+            containerClassName="hidden items-center gap-1 lg:flex"
           >
             {NAV_LINKS.map((link) => (
               <HighlightItem key={link.href} value={link.href} asChild>
@@ -185,7 +189,9 @@ export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
             ))}
           </Highlight>
 
-          <div className="hidden items-center gap-3 md:flex">
+          {/* Right: Actions */}
+          <div className="hidden flex-1 items-center justify-end gap-3 lg:flex">
+
             {githubStars ? (
               githubStars
             ) : (
@@ -210,7 +216,7 @@ export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
 
           <button
             type="button"
-            className="inline-flex size-10 items-center justify-center rounded-lg border border-zinc-200 md:hidden"
+            className="inline-flex size-10 items-center justify-center rounded-lg border border-zinc-200 lg:hidden"
             onClick={() => setMobileOpen((o) => !o)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           >
@@ -230,7 +236,7 @@ export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.35, ease: easeOut }}
-            className="relative z-10 border-b border-zinc-200 bg-white px-6 py-4 md:hidden"
+            className="relative z-10 border-b border-zinc-200 bg-white px-6 py-4 lg:hidden"
           >
             <ul className="flex flex-col gap-4">
               {NAV_LINKS.map((link) => (

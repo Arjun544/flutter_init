@@ -1,7 +1,6 @@
 <!--
-  PREMIUM OPEN SOURCE README
+  FlutterInit README
   Designed with Antigravity 🚀
-  Theme: Refined Digital Architecture
 -->
 
 <div align="center">
@@ -34,12 +33,18 @@
           <img src="https://img.shields.io/badge/📚_Documentation-34495e?style=for-the-badge&logoColor=white" height="40" alt="Read Docs" />
         </a>
       </td>
+      <td width="20"></td>
+      <td align="center">
+        <a href="https://flutterinit.com/blog">
+          <img src="https://img.shields.io/badge/✍️_Blog_&_Guides-0f172a?style=for-the-badge&logoColor=white" height="40" alt="Blog & Guides" />
+        </a>
+      </td>
     </tr>
   </table>
 
   <br />
 
-  <img src="assets/hero.png" width="100%" alt="FlutterInit Node Pattern Interface" style="border-radius: 20px;" />
+  <img src="assets/hero.png" width="100%" alt="FlutterInit Dashboard" style="border-radius: 20px;" />
 </div>
 
 ---
@@ -48,7 +53,7 @@
 
 ## 🏛️ What is FlutterInit?
 
-FlutterInit is a web-based scaffolding engine for Flutter. 
+FlutterInit is a web-based scaffolding engine for Flutter.
 
 You visit flutterinit.com, pick your architecture, state management, backend, and navigation style — and FlutterInit generates a production-ready Flutter project as a downloadable zip.
 
@@ -61,9 +66,9 @@ No templates to clone. No CLI to install. Open the dashboard, configure, downloa
 1. Open **[flutterinit.com](https://flutterinit.com)**
 2. Name your project and choose your options:
    - **Architecture:** Clean Architecture, MVVM, Feature-First
-   - **State Management:** Riverpod, Bloc, Provider, GetX, MobX
+   - **State Management:** Riverpod, Bloc, Provider, GetX, Signals
    - **Backend:** Firebase, Supabase, Appwrite, or none
-   - **Navigation:** GoRouter, AutoRoute, or imperative
+   - **Navigation:** go_router, auto_route, or none
    - **Design:** Material 3, dark mode, ScreenUtil
    - **Extras:** localization, logging, permissions, image picker, etc.
 3. Click **"Generate Project"**
@@ -121,16 +126,16 @@ No other tools required. FlutterInit runs in your browser.
 
 ## 🧩 Support Matrix
 
-You configure all of these options directly in the dashboard — no config files, no flags. The matrix below shows every supported option.
+You configure all of these options directly in the dashboard — no config files, no flags.
 
 | Category | Supported Options |
 | :--- | :--- |
 | **Architectures** | Clean Architecture, MVVM, Feature-First |
-| **State Management** | Riverpod, Bloc / Cubit, Provider, GetX, MobX |
+| **State Management** | Riverpod, Bloc / Cubit, Provider, GetX, Signals |
 | **Functional** | FPDart (Either, Option, Task), runTask Wrapper |
 | **Backend / DB** | Firebase, Supabase, Appwrite, Hive, Shared Preferences |
 | **Networking** | Dio (Interceptors), Http, Cached Network Image |
-| **Navigation** | GoRouter, AutoRoute |
+| **Navigation** | go_router, auto_route |
 | **Design / Motion** | Flutter Animate, Skeletonizer, ScreenUtil, Native Splash |
 | **Icons** | Iconsax Plus, Remix Icons, HugeIcons (Stroke/Solid) |
 | **Infrastructure** | DotEnv, Logger, Easy Localization, App Version Update |
@@ -150,19 +155,37 @@ These files give your AI editor full context about your architecture, state mana
 
 ---
 
+## ✍️ Blog & Guides
+
+FlutterInit ships a built-in blog at [flutterinit.com/blog](https://flutterinit.com/blog) — a file-based MDX publication powered by Next.js, with two content types:
+
+| Kind | Purpose |
+|------|---------|
+| **Updates** | Release notes, announcements, and changelogs |
+| **Guides** | Deep-dive technical guides for every supported stack combination |
+
+Every guide shows the exact `stackConfig` it covers (Architecture · State · Backend · Navigation), a "when to choose this stack" recommendation, an interactive file tree of the generated output, and a Table of Contents sidebar.
+
+Blog content lives under `content/blog/` as `.mdx` files. The file path is the URL slug — no CMS or database required.
+
+→ See the [Blog Implementation Guide](docs/blog.md) for authoring instructions, frontmatter schema, and MDX component reference.
+
+---
+
 ## 📚 Documentation
 
 New to FlutterInit? Start with the [Getting Started Guide](docs/getting-started.md).
 
-Explore our technical guides to understand the architecture and flags:
-
-*   **[Getting Started Guide](docs/getting-started.md)**: From download to first successful run.
-*   **[Configuration Reference](docs/configuration.md)**: Every project option explained in detail.
-*   **[Generated Output Reference](docs/generated-output.md)**: Understanding the "src-first" structure.
-*   **[Architecture Overview](docs/architecture.md)**: Under the hood of the Next.js/Handlebars engine.
-*   **[Handlebars Language Guide](docs/handlebars.md)**: Logic patterns for template contributors.
-*   **[Testing Guide](docs/testing.md)**: Our comprehensive 2-layer validation strategy and tiered CI/CD pipeline.
-*   **[Contribution Guide](CONTRIBUTING.md)**: How to add your own patterns.
+| Guide | Description |
+| :--- | :--- |
+| [Getting Started](docs/getting-started.md) | From download to first successful `flutter run` |
+| [Configuration Reference](docs/configuration.md) | Every project option explained in detail |
+| [Generated Output Reference](docs/generated-output.md) | Understanding the scaffolded folder structure |
+| [Architecture Overview](docs/architecture.md) | Under the hood of the Next.js / Handlebars engine |
+| [Handlebars Language Guide](docs/handlebars.md) | Logic patterns for template contributors |
+| [Testing Guide](docs/testing.md) | 2-layer validation strategy and tiered CI/CD pipeline |
+| [Blog Implementation Guide](docs/blog.md) | Writing posts/guides, frontmatter schema, MDX components |
+| [Contribution Guide](CONTRIBUTING.md) | How to add your own patterns |
 
 ---
 
@@ -190,9 +213,26 @@ bun install
 **Start the development server:**
 ```bash
 bun run dev
+# or
+npm run dev
 ```
 
 Open `http://localhost:3000` to use the local dashboard.
+
+**Run tests:**
+```bash
+# Unit + integration (Layer 1)
+npm run test:layer1
+
+# Dart validation on generated output (Layer 2)
+npm run test:layer2
+
+# Full pre-flight check
+npm run test:preflight
+
+# Generate guide file trees
+npm run generate:guide-trees
+```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Architecture Overview](docs/architecture.md) for how the Handlebars templating engine works.
 
@@ -202,11 +242,16 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Architecture Overview](docs/arch
 
 The engine powering FlutterInit:
 
-*   **Frontend**: [Next.js 14](https://nextjs.org/) (App Router) + [React 19](https://react.dev/)
-*   **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
-*   **Templating**: [Handlebars.js](https://handlebarsjs.com/) for dynamic Dart generation
-*   **Icons**: [HugeIcons](https://hugeicons.com/) & [Lucide](https://lucide.dev/)
-*   **Runtime**: [Bun](https://bun.sh/) (High-speed package management)
+| Layer | Technology |
+| :--- | :--- |
+| **Framework** | [Next.js 16](https://nextjs.org/) (App Router) + [React 19](https://react.dev/) |
+| **Styling** | [Tailwind CSS 4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) |
+| **Templating** | [Handlebars.js](https://handlebarsjs.com/) for dynamic Dart generation |
+| **Blog / Content** | [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote) + [Shiki](https://shiki.style/) + [gray-matter](https://github.com/jonschlinkert/gray-matter) |
+| **Animations** | [Motion](https://motion.dev/) (formerly Framer Motion) |
+| **Icons** | [HugeIcons](https://hugeicons.com/) & [Lucide](https://lucide.dev/) |
+| **Runtime** | [Bun](https://bun.sh/) (high-speed package management) |
+| **Testing** | [Vitest](https://vitest.dev/) |
 
 ---
 

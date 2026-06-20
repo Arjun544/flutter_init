@@ -1,0 +1,360 @@
+---
+title: "Riverpod + Clean Architecture + Firebase — The Complete Flutter Guide"
+description: "A deep-dive guide into the most battle-tested Flutter stack: Riverpod for state, Clean Architecture for structure, Firebase as your backend. Learn when to choose it, what gets generated, and how each layer connects."
+kind: guide
+category: state-management
+tags: [riverpod, clean-architecture, firebase, flutter, architecture]
+publishedAt: "2026-06-20"
+author: arjun
+stackConfig:
+  architecture: clean
+  stateManagement: riverpod
+  backend: firebase
+  navigation: go_router
+whenToChoose: "Choose this stack when you're building an app with a team of 2+ developers, need Firebase's real-time capabilities, and want your codebase to remain maintainable as features grow. The Clean Architecture layers add upfront complexity but pay dividends when you need to swap Firebase for Supabase, add offline support, or onboard a new developer."
+---
+
+## What This Stack Generates
+
+When you select **Riverpod + Clean Architecture + Firebase** in FlutterInit, you get a fully wired Flutter project with clear separation of concerns across three layers: **Data**, **Domain**, and **Presentation**.
+
+## Project Structure
+
+<Files defaultOpen={["lib", "core", "features", "auth", "data", "domain", "presentation"]}>
+  <FolderItem value="lib">
+    <FolderTrigger>lib</FolderTrigger>
+    <FolderContent>
+      <SubFiles>
+        <FolderItem value="core">
+          <FolderTrigger>core</FolderTrigger>
+          <FolderContent>
+            <SubFiles>
+              <FolderItem value="di">
+                <FolderTrigger>di</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>providers.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="network">
+                <FolderTrigger>network</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>dio_client.dart</FileItem>
+                    <FileItem>network_info.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="errors">
+                <FolderTrigger>errors</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>failures.dart</FileItem>
+                    <FileItem>exceptions.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="utils">
+                <FolderTrigger>utils</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>either.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+            </SubFiles>
+          </FolderContent>
+        </FolderItem>
+        <FolderItem value="features">
+          <FolderTrigger>features</FolderTrigger>
+          <FolderContent>
+            <SubFiles>
+              <FolderItem value="auth">
+                <FolderTrigger>auth</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FolderItem value="data">
+                      <FolderTrigger>data</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FolderItem value="datasources">
+                            <FolderTrigger>datasources</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>firebase_auth_datasource.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="models">
+                            <FolderTrigger>models</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>user_model.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="repositories-data">
+                            <FolderTrigger>repositories</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>auth_repository_impl.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                    <FolderItem value="domain">
+                      <FolderTrigger>domain</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FolderItem value="entities">
+                            <FolderTrigger>entities</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>user_entity.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="repositories-domain">
+                            <FolderTrigger>repositories</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>auth_repository.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="usecases">
+                            <FolderTrigger>usecases</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>sign_in_usecase.dart</FileItem>
+                                <FileItem>sign_up_usecase.dart</FileItem>
+                                <FileItem>sign_out_usecase.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                    <FolderItem value="presentation">
+                      <FolderTrigger>presentation</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FolderItem value="providers">
+                            <FolderTrigger>providers</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>auth_provider.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="pages">
+                            <FolderTrigger>pages</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>sign_in_page.dart</FileItem>
+                                <FileItem>sign_up_page.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="widgets">
+                            <FolderTrigger>widgets</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>auth_form.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+            </SubFiles>
+          </FolderContent>
+        </FolderItem>
+        <FileItem>main.dart</FileItem>
+      </SubFiles>
+    </FolderContent>
+  </FolderItem>
+</Files>
+
+## Understanding Each Layer
+
+### Domain — The Core Rules
+
+The domain layer is the heart of Clean Architecture. It contains:
+
+- **Entities**: Plain Dart objects with no framework dependencies
+- **Repository interfaces**: Abstract classes defining *what* the data layer must provide
+- **Use cases**: Single-responsibility classes encapsulating business logic
+
+```dart
+// domain/entities/user_entity.dart
+class UserEntity {
+  final String id;
+  final String email;
+  final String? displayName;
+
+  const UserEntity({
+    required this.id,
+    required this.email,
+    this.displayName,
+  });
+}
+
+// domain/repositories/auth_repository.dart
+abstract class AuthRepository {
+  Future<Either<Failure, UserEntity>> signIn({
+    required String email,
+    required String password,
+  });
+  Future<Either<Failure, void>> signOut();
+  Stream<UserEntity?> get authStateChanges;
+}
+```
+
+Notice that `AuthRepository` has **zero Firebase imports**. This is the key benefit — your domain layer is testable without any Firebase SDK.
+
+### Data — The Firebase Implementation
+
+The data layer implements the domain interfaces using real Firebase calls:
+
+```dart
+// data/repositories/auth_repository_impl.dart
+class AuthRepositoryImpl implements AuthRepository {
+  final FirebaseAuth _auth;
+
+  const AuthRepositoryImpl({required FirebaseAuth auth}) : _auth = auth;
+
+  @override
+  Future<Either<Failure, UserEntity>> signIn({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return Right(UserModel.fromFirebase(credential.user!).toEntity());
+    } on FirebaseAuthException catch (e) {
+      return Left(AuthFailure(message: e.message ?? 'Authentication failed'));
+    }
+  }
+}
+```
+
+### Presentation — Riverpod Providers
+
+With Riverpod, your UI state is managed by `StateNotifierProvider` or `AsyncNotifierProvider`:
+
+```dart
+// presentation/providers/auth_provider.dart
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return AuthRepositoryImpl(auth: FirebaseAuth.instance);
+});
+
+final authNotifierProvider =
+    StateNotifierProvider<AuthNotifier, AsyncValue<UserEntity?>>((ref) {
+  return AuthNotifier(ref.watch(authRepositoryProvider));
+});
+
+class AuthNotifier extends StateNotifier<AsyncValue<UserEntity?>> {
+  final AuthRepository _repository;
+
+  AuthNotifier(this._repository) : super(const AsyncValue.loading()) {
+    _init();
+  }
+
+  void _init() {
+    _repository.authStateChanges.listen((user) {
+      state = AsyncValue.data(user);
+    });
+  }
+
+  Future<void> signIn({required String email, required String password}) async {
+    state = const AsyncValue.loading();
+    final result = await _repository.signIn(email: email, password: password);
+    result.fold(
+      (failure) => state = AsyncValue.error(failure, StackTrace.current),
+      (user) => state = AsyncValue.data(user),
+    );
+  }
+}
+```
+
+## Navigation with go_router
+
+The generated project uses `go_router` with a `StreamProvider` to handle auth-state-based redirects:
+
+```dart
+final routerProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authNotifierProvider);
+
+  return GoRouter(
+    initialLocation: '/sign-in',
+    redirect: (context, state) {
+      final isAuthenticated = authState.valueOrNull != null;
+      final isOnAuth = state.uri.path.startsWith('/sign-in') ||
+          state.uri.path.startsWith('/sign-up');
+
+      if (isAuthenticated && isOnAuth) return '/home';
+      if (!isAuthenticated && !isOnAuth) return '/sign-in';
+      return null;
+    },
+    routes: [
+      GoRoute(path: '/sign-in', builder: (_, __) => const SignInPage()),
+      GoRoute(path: '/sign-up', builder: (_, __) => const SignUpPage()),
+      GoRoute(path: '/home', builder: (_, __) => const HomePage()),
+    ],
+  );
+});
+```
+
+## Adding a New Feature
+
+The best test of an architecture is how easy it is to extend. Here's how you'd add a `todos` feature:
+
+1. Create `features/todos/domain/entities/todo_entity.dart`
+2. Define `features/todos/domain/repositories/todo_repository.dart`
+3. Write use cases: `GetTodosUsecase`, `AddTodoUsecase`, `DeleteTodoUsecase`
+4. Implement with Firestore in `features/todos/data/`
+5. Connect with a `StateNotifierProvider` in `features/todos/presentation/providers/`
+
+Each step is isolated. A bug in the Firestore implementation never corrupts the domain logic. A UI change never touches the data layer.
+
+## Testing Strategy
+
+With this separation, testing becomes straightforward:
+
+```dart
+// Test use case with a mock repository
+void main() {
+  group('SignInUsecase', () {
+    late MockAuthRepository mockRepository;
+    late SignInUsecase usecase;
+
+    setUp(() {
+      mockRepository = MockAuthRepository();
+      usecase = SignInUsecase(repository: mockRepository);
+    });
+
+    test('returns UserEntity on success', () async {
+      when(() => mockRepository.signIn(email: any, password: any))
+          .thenAnswer((_) async => Right(testUser));
+
+      final result = await usecase(email: 'test@test.com', password: 'pass');
+
+      expect(result, Right(testUser));
+    });
+  });
+}
+```
+
+## Ready to Generate?
+
+This entire structure — with all the boilerplate wired up and `pubspec.yaml` pre-configured — is what FlutterInit generates for you in seconds.
