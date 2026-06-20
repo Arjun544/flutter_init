@@ -1,10 +1,10 @@
-import * as React from 'react';
 import * as motion from 'motion/react-client';
+import * as React from 'react';
 
 import {
   AvatarGroup as AvatarGroupPrimitive,
-  AvatarGroupTooltip as AvatarGroupTooltipPrimitive,
   AvatarGroupTooltipArrow as AvatarGroupTooltipArrowPrimitive,
+  AvatarGroupTooltip as AvatarGroupTooltipPrimitive,
   type AvatarGroupProps as AvatarGroupPropsPrimitive,
   type AvatarGroupTooltipProps as AvatarGroupTooltipPropsPrimitive,
 } from '@/components/animate-ui/primitives/animate/avatar-group';
@@ -68,5 +68,5 @@ export {
   AvatarGroup,
   AvatarGroupTooltip,
   type AvatarGroupProps,
-  type AvatarGroupTooltipProps,
+  type AvatarGroupTooltipProps
 };
