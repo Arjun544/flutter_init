@@ -4,17 +4,17 @@
 //               pub get → dart analyze → outro
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { cancel, confirm, isCancel, log, note, outro, spinner } from '@clack/prompts'
+import { cancel, confirm, isCancel, note, outro, spinner } from '@clack/prompts'
 import fs from 'fs'
 import path from 'path'
 import pc from 'picocolors'
 import type { FlutterInitConfig } from './config'
 import { configureNativeFiles } from './native'
-import { buildTemplateContext, renderTemplate, templateExists, TEMPLATE_ROOT } from './templates'
+import { buildTemplateContext, renderTemplate, TEMPLATE_ROOT } from './templates'
+import { trackCliGeneration } from './utils/analytics'
 import { exec } from './utils/exec'
 import { createGitkeep, isDirNonEmpty, removeDir, writeFile } from './utils/fs'
 import { brand, logError, logWarn } from './utils/logger'
-import { trackCliGeneration } from './utils/analytics'
 
 // ─── Architecture folder structures ───────────────────────────────────────────
 

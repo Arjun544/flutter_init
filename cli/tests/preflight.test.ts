@@ -3,7 +3,7 @@
 // Mocks execSync to verify correct behavior when Flutter is missing or present.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { describe, expect, it, mock, beforeEach } from 'bun:test'
+import { describe, expect, it } from 'bun:test'
 import { exec } from '../src/utils/exec'
 
 // ── exec() utility tests ───────────────────────────────────────────────────

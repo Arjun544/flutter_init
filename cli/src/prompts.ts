@@ -28,7 +28,7 @@ import {
   type StateManager,
   type ThemeMode,
 } from './config'
-import { printBanner, printStep } from './utils/logger'
+import { printStep } from './utils/logger'
 
 // ─── Cancel helper ────────────────────────────────────────────────────────────
 
@@ -455,10 +455,10 @@ export async function runPrompts(): Promise<FlutterInitConfig> {
   const selectedMisc = selectedMiscResult as string[]
 
   // ── Derive native feature flags ────────────────────────────────────────────
-  const usesCamera       = selectedMisc.includes('usesCamera')
-  const usesImagePicker  = selectedMisc.includes('usesImagePicker')
-  const usesFilePicker   = selectedMisc.includes('usesFilePicker')
-  const usesGeolocator   = selectedMisc.includes('usesGeolocator')
+  const usesCamera = selectedMisc.includes('usesCamera')
+  const usesImagePicker = selectedMisc.includes('usesImagePicker')
+  const usesFilePicker = selectedMisc.includes('usesFilePicker')
+  const usesGeolocator = selectedMisc.includes('usesGeolocator')
   const usesNotifications = selectedMisc.includes('usesNotifications')
 
   // Auto-enable permission_handler if any native feature requiring runtime permissions is selected

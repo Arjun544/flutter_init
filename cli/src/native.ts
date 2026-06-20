@@ -7,9 +7,9 @@
 // All steps are non-fatal: a failure logs instructions and continues.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { log } from '@clack/prompts'
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { log } from '@clack/prompts'
 import type { FlutterInitConfig } from './config'
 
 // ─── Entry point ──────────────────────────────────────────────────────────────

@@ -4,13 +4,13 @@
 // Integration tests (actual flutter create) require Flutter installed.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { describe, expect, it, beforeAll, afterAll } from 'bun:test'
+import { afterAll, describe, expect, it } from 'bun:test'
 import fs from 'fs'
-import path from 'path'
 import os from 'os'
-import { writeFile, createGitkeep, removeDir, isDirNonEmpty, copyDir } from '../src/utils/fs'
-import { renderTemplate, buildTemplateContext } from '../src/templates'
+import path from 'path'
 import type { FlutterInitConfig } from '../src/config'
+import { buildTemplateContext, renderTemplate } from '../src/templates'
+import { copyDir, createGitkeep, isDirNonEmpty, removeDir, writeFile } from '../src/utils/fs'
 
 // ── Test fixture config ────────────────────────────────────────────────────
 
@@ -66,6 +66,8 @@ const FIXTURE_CONFIG: FlutterInitConfig = {
   usesDotenv: true,
   usesLogger: true,
   useMaterial3: true,
+  usesCamera: false,
+  usesNotifications: false
 }
 
 // ── FS utility tests ───────────────────────────────────────────────────────

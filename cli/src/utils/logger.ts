@@ -3,9 +3,9 @@
 // ASCII banner in #027DFD blue, styled section headers, and consistent output.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import pc from 'picocolors'
 import { log } from '@clack/prompts'
 import process from 'node:process'
+import pc from 'picocolors'
 
 // FlutterInit brand blue: #027DFD → closest ANSI approximation via picocolors cyan/blue
 const brand = (str: string) => pc.bold(pc.blue(str))
@@ -110,4 +110,5 @@ export function logInfo(message: string): void {
   log.info(dim(message))
 }
 
-export { brand, dim, accent, success, warn, error }
+export { accent, brand, dim, error, success, warn }
+

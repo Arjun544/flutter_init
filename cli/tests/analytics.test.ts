@@ -1,6 +1,6 @@
-import { describe, expect, it, afterEach, beforeEach } from 'bun:test'
-import { trackCliGeneration, type TrackPayload } from '../src/utils/analytics'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import type { FlutterInitConfig } from '../src/config'
+import { trackCliGeneration, type TrackPayload } from '../src/utils/analytics'
 
 const BASE_CONFIG: FlutterInitConfig = {
   projectName: 'test_app',
@@ -159,7 +159,7 @@ describe('Telemetry Analytics Utility', () => {
 
   it('fails gracefully when fetch rejects (offline or server error)', async () => {
     fetchErrorToThrow = new Error('Network error')
-    
+
     // Should not throw or crash the CLI
     await expect(trackCliGeneration(BASE_CONFIG)).resolves.toBeUndefined()
   })

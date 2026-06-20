@@ -3,9 +3,9 @@
 // Thin entry point: runs preflight → prompts → generation in sequence.
 // ─────────────────────────────────────────────────────────────────────────────
 
+import { generateProject } from './generator'
 import { runPreflight } from './preflight'
 import { runPrompts } from './prompts'
-import { generateProject } from './generator'
 import { printBanner } from './utils/logger'
 
 export async function main(): Promise<void> {

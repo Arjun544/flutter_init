@@ -44,7 +44,7 @@ export interface FlutterInitConfig {
   usesFlutterSvg: boolean
   usesImagePicker: boolean
   usesFilePicker: boolean
-  usesCamera: boolean   
+  usesCamera: boolean
 
   // Essential Utilities
   usesUrlLauncher: boolean

@@ -3,9 +3,9 @@
 // Uses Bun's test runner. No file system access — all tests use mock configs.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { describe, it, expect } from 'bun:test'
-import { buildAndroidPermissions, buildIosPlistEntries } from '../src/native'
+import { describe, expect, it } from 'bun:test'
 import type { FlutterInitConfig } from '../src/config'
+import { buildAndroidPermissions, buildIosPlistEntries } from '../src/native'
 
 // ─── Base config fixture ──────────────────────────────────────────────────────
 

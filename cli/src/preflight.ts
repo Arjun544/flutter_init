@@ -4,9 +4,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { cancel, confirm, isCancel, log, spinner } from '@clack/prompts'
-import { exec, execVisible } from './utils/exec'
-import { logError, logInfo, logWarn, brand } from './utils/logger'
 import pc from 'picocolors'
+import { exec, execVisible } from './utils/exec'
+import { brand, logError, logInfo, logWarn } from './utils/logger'
 
 /**
  * Run all preflight checks in order.
