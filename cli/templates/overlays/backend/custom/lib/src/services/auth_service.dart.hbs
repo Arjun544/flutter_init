@@ -1,0 +1,158 @@
+import 'dart:async';
+import '../utils/utils.dart';
+import '../config/app_config.dart';
+{{#if flags.usesDio}}
+import 'package:dio/dio.dart';
+{{else if flags.usesHttp}}
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+{{/if}}
+
+class AuthService {
+  AuthService._();
+  static final AuthService instance = AuthService._();
+
+  {{#if flags.usesDio}}
+  Dio get _dio => AppConfig.dio;
+  {{else if flags.usesHttp}}
+  http.Client get _http => AppConfig.httpClient;
+  {{/if}}
+
+  // Custom Backend doesn't have a built-in auth state stream, so we manage our own
+  final StreamController<Map<String, dynamic>?> _authStateController =
+      StreamController<Map<String, dynamic>?>.broadcast();
+
+  /// Stream of auth state changes. Emits the current user map or null.
+  Stream<Map<String, dynamic>?> get authStateChanges => _authStateController.stream;
+
+  FutureEither<Map<String, dynamic>?> login({
+    required String email,
+    required String password,
+  }) async {
+    return runTask(() async {
+      {{#if flags.usesDio}}
+      final response = await _dio.post<Map<String, dynamic>>('/auth/login', data: {
+        'email': email,
+        'password': password,
+      });
+      final data = response.data!;
+      _authStateController.add(data);
+      return data;
+      {{else if flags.usesHttp}}
+      final http.Response response = await _http.post(
+        Uri.parse('${AppConfig.baseUrl}/auth/login'),
+        body: jsonEncode({'email': email, 'password': password}),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode != 200) throw Exception('Login failed');
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      _authStateController.add(data);
+      return data;
+      {{else}}
+      // Mock implementation if no networking flag is set
+      await Future.delayed(const Duration(seconds: 1));
+      if (email == 'admin@example.com' && password == 'admin123') {
+        final data = {
+          'id': '1',
+          'email': email,
+          'name': 'Admin User',
+        };
+        _authStateController.add(data);
+        return data;
+      }
+      throw Exception('Invalid credentials');
+      {{/if}}
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<Map<String, dynamic>?> signUp({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    return runTask(() async {
+      {{#if flags.usesDio}}
+      final response = await _dio.post<Map<String, dynamic>>('/auth/signup', data: {
+        'name': name,
+        'email': email,
+        'password': password,
+      });
+      final data = response.data!;
+      _authStateController.add(data);
+      return data;
+      {{else if flags.usesHttp}}
+      final http.Response response = await _http.post(
+        Uri.parse('${AppConfig.baseUrl}/auth/signup'),
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'password': password,
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode != 201) throw Exception('Signup failed');
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      _authStateController.add(data);
+      return data;
+      {{else}}
+      // Mock implementation if no networking flag is set
+      await Future.delayed(const Duration(seconds: 1));
+      final data = {
+        'id': '100',
+        'email': email,
+        'name': name,
+      };
+      _authStateController.add(data);
+      return data;
+      {{/if}}
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<void> forgotPassword({required String email}) async {
+    return runTask(() async {
+      {{#if flags.usesDio}}
+      await _dio.post<void>('/auth/forgot-password', data: {'email': email});
+      {{else if flags.usesHttp}}
+      final http.Response _ = await _http.post(
+        Uri.parse('${AppConfig.baseUrl}/auth/forgot-password'),
+        body: jsonEncode({'email': email}),
+        headers: {'Content-Type': 'application/json'},
+      );
+      {{else}}
+      await Future.delayed(const Duration(seconds: 1));
+      {{/if}}
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<void> logout() async {
+    return runTask(() async {
+      {{#if flags.usesDio}}
+      await _dio.post<void>('/auth/logout');
+      {{else if flags.usesHttp}}
+      final http.Response _ = await _http.post(Uri.parse('${AppConfig.baseUrl}/auth/logout'));
+      {{else}}
+      await Future.delayed(const Duration(seconds: 1));
+      {{/if}}
+      _authStateController.add(null);
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<Map<String, dynamic>?> getCurrentUser() async {
+    return runTask(() async {
+      {{#if flags.usesDio}}
+      final response = await _dio.get<Map<String, dynamic>>('/auth/me');
+      return response.data;
+      {{else if flags.usesHttp}}
+      final http.Response response = await _http.get(Uri.parse('${AppConfig.baseUrl}/auth/me'));
+      if (response.statusCode != 200) return null;
+      return jsonDecode(response.body) as Map<String, dynamic>;
+      {{else}}
+      return null;
+      {{/if}}
+    });
+  }
+
+  void dispose() {
+    _authStateController.close();
+  }
+}

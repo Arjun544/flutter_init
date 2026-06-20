@@ -1,0 +1,101 @@
+import 'dart:async';
+import '../utils/utils.dart';
+import '../config/app_config.dart';
+import 'package:appwrite/appwrite.dart';
+
+class AuthService {
+  AuthService._();
+  static final AuthService instance = AuthService._();
+
+  Account get _account => AppConfig.appwriteAccount;
+
+  // Appwrite doesn't have a built-in auth state stream, so we manage our own
+  final StreamController<Map<String, dynamic>?> _authStateController =
+      StreamController<Map<String, dynamic>?>.broadcast();
+
+  /// Stream of auth state changes. Emits the current user map or null.
+  Stream<Map<String, dynamic>?> get authStateChanges => _authStateController.stream;
+
+  FutureEither<Map<String, dynamic>?> login({
+    required String email,
+    required String password,
+  }) async {
+    return runTask(() async {
+      await _account.createEmailPasswordSession(
+        email: email, 
+        password: password
+      );
+      final user = await _account.get();
+      final userData = {
+        'id': user.$id,
+        'email': user.email,
+        'name': user.name,
+      };
+      _authStateController.add(userData);
+      return userData;
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<Map<String, dynamic>?> signUp({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    return runTask(() async {
+      final user = await _account.create(
+        userId: ID.unique(),
+        email: email, 
+        password: password,
+        name: name,
+      );
+      // login after signup to get session
+      await _account.createEmailPasswordSession(
+        email: email, 
+        password: password
+      );
+      final userData = {
+        'id': user.$id,
+        'email': user.email,
+        'name': user.name,
+      };
+      _authStateController.add(userData);
+      return userData;
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<void> forgotPassword({required String email}) async {
+    return runTask(() async {
+      // url for password recovery in your app
+      await _account.createRecovery(
+        email: email, 
+        url: 'https://example.com/recovery'
+      );
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<void> logout() async {
+    return runTask(() async {
+      await _account.deleteSession(sessionId: 'current');
+      _authStateController.add(null);
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<Map<String, dynamic>?> getCurrentUser() async {
+    return runTask(() async {
+      try {
+        final user = await _account.get();
+        return {
+          'id': user.$id,
+          'email': user.email,
+          'name': user.name,
+        };
+      } catch (e) {
+        return null; // session likely missing or invalid
+      }
+    });
+  }
+
+  void dispose() {
+    _authStateController.close();
+  }
+}

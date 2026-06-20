@@ -1,0 +1,110 @@
+export 'package:fpdart/fpdart.dart' hide State;
+export 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+{{#if flags.usesScreenutil}}
+export 'package:flutter_screenutil/flutter_screenutil.dart';
+{{/if}}
+{{#if flags.usesFlutterHooks}}
+export 'package:flutter_hooks/flutter_hooks.dart';
+{{/if}}
+export 'package:equatable/equatable.dart';
+{{#if flags.isRiverpod}}
+export 'package:flutter_riverpod/flutter_riverpod.dart';
+export 'package:flutter_riverpod/legacy.dart';
+{{#if flags.usesFlutterHooks}}
+export 'package:hooks_riverpod/hooks_riverpod.dart';
+export 'package:hooks_riverpod/legacy.dart';
+{{/if}}
+{{/if}}
+{{#if (or flags.isProvider flags.isMobX)}}
+export 'package:provider/provider.dart' hide Dispose;
+{{/if}}
+{{#if flags.isBloc}}
+export 'package:flutter_bloc/flutter_bloc.dart';
+{{/if}}
+{{#if (or flags.isGetX (eq flags.routerPackage "getx"))}}
+// For Navigation
+export 'package:get/get_navigation/get_navigation.dart' hide GetContextExtensions;
+// For State Management (.obs, GetxController, Obx)
+{{#if flags.isGetX}}
+export 'package:get/get_state_manager/get_state_manager.dart';
+// For Dependency Management (Get.put, Get.find)
+export 'package:get/get_instance/get_instance.dart';
+{{/if}}
+{{/if}}
+{{#if flags.isMobX}}
+export 'package:mobx/mobx.dart' hide version, StringExtension, Action, Listener, Listenable, Interceptor, Interceptors;
+export 'package:flutter_mobx/flutter_mobx.dart' hide version;
+{{/if}}
+{{#if (eq flags.routerPackage "go_router")}}
+export 'package:{{flags.routerPackage}}/{{flags.routerPackage}}.dart';
+{{else if (eq flags.routerPackage "auto_route")}}
+export 'package:auto_route/auto_route.dart' hide kCupertinoModalBarrierColor, CupertinoPageTransition, CupertinoFullscreenDialogTransition;
+{{/if}}
+{{#if flags.usesDio}}
+export 'package:dio/dio.dart';
+{{/if}}
+{{#if flags.usesHttp}}
+export 'package:http/http.dart'{{#if flags.usesDio}} hide MultipartFile, Response{{/if}};
+{{/if}}
+{{#if flags.usesCachedNetworkImage}}
+export 'package:cached_network_image/cached_network_image.dart';
+{{/if}}
+{{#if flags.usesFlutterSvg}}
+export 'package:flutter_svg/flutter_svg.dart';
+{{/if}}
+{{#if flags.usesIconsaxPlus}}
+export 'package:iconsax_plus/iconsax_plus.dart';
+{{/if}}
+{{#if flags.usesFlutterRemix}}
+export 'package:flutter_remix/flutter_remix.dart';
+{{/if}}
+{{#if flags.usesHugeicons}}
+export 'package:hugeicons/hugeicons.dart';
+{{/if}}
+{{#if flags.usesSkeletonizer}}
+export 'package:skeletonizer/skeletonizer.dart';
+{{/if}}
+export 'package:flutter_animate/flutter_animate.dart' hide ShimmerEffect;
+export 'package:smooth_page_indicator/smooth_page_indicator.dart' hide ScaleEffect, SlideEffect, SwapEffect;
+export 'package:flutter_dotenv/flutter_dotenv.dart';
+{{#if flags.usesHive}}
+export 'package:hive_ce_flutter/hive_ce_flutter.dart';
+{{/if}}
+{{#if flags.usesSharedPreferences}}
+export 'package:shared_preferences/shared_preferences.dart';
+{{/if}}
+{{#if flags.usesSecureStorage}}
+export 'package:flutter_secure_storage/flutter_secure_storage.dart';
+{{/if}}
+{{#if flags.usesLogger}}
+export 'package:logger/logger.dart';
+{{/if}}
+{{#if flags.usesImagePicker}}
+export 'package:image_picker/image_picker.dart';
+{{/if}}
+{{#if flags.usesFilePicker}}
+export 'package:file_picker/file_picker.dart';
+{{/if}}
+{{#if flags.usesPathProvider}}
+export 'package:path_provider/path_provider.dart';
+{{/if}}
+{{#if flags.usesUrlLauncher}}
+export 'package:url_launcher/url_launcher.dart';
+{{/if}}
+{{#if flags.usesSharePlus}}
+export 'package:share_plus/share_plus.dart';
+{{/if}}
+{{#if flags.usesPermissionHandler}}
+export 'package:permission_handler/permission_handler.dart';
+{{/if}}
+{{#if flags.usesGeolocator}}
+export 'package:geolocator/geolocator.dart' hide ServiceStatus;
+{{/if}}
+{{#if flags.usesDeviceInfoPlus}}
+export 'package:device_info_plus/device_info_plus.dart';
+{{/if}}
+{{#if flags.usesAppVersionUpdate}}
+export 'package:app_version_update/app_version_update.dart';
+{{/if}}
+
+

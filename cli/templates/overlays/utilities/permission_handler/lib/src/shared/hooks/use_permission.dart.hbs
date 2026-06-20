@@ -1,0 +1,44 @@
+{{#if flags.usesFlutterHooks}}
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../../services/permission_service.dart';
+
+/// A hook to manage permission lifecycle and status with loading state.
+(PermissionStatus, bool, Future<void> Function()) usePermission(Permission permission) {
+  final status = useState<PermissionStatus>(PermissionStatus.denied);
+  final isLoading = useState(false);
+
+  Future<void> check() async {
+    isLoading.value = true;
+    try {
+      final result = await PermissionService.instance.checkStatus(permission);
+      result.fold(
+        (f) => null,
+        (s) => status.value = s,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> request() async {
+    isLoading.value = true;
+    try {
+      final result = await PermissionService.instance.request(permission);
+      result.fold(
+        (f) => null,
+        (s) => status.value = s,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  useEffect(() {
+    check();
+    return null;
+  }, [permission]);
+
+  return (status.value, isLoading.value, request);
+}
+{{/if}}

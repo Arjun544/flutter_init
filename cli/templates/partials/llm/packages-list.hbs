@@ -1,0 +1,26 @@
+## Key packages
+
+{{#if (eq flags.routerPackage "go_router")}}- `go_router` — declarative routing{{/if}}
+{{#if (eq flags.routerPackage "auto_route")}}- `auto_route` — code-generated routing{{/if}}
+{{#if flags.isGetX}}- `get` — state & navigation{{/if}}
+{{#if flags.isRiverpod}}- `flutter_riverpod` — state management{{/if}}
+{{#if flags.isProvider}}- `provider` — state management{{/if}}
+{{#if flags.isBloc}}- `flutter_bloc` — state management{{/if}}
+{{#if flags.isMobX}}- `mobx`, `flutter_mobx` — state management{{/if}}
+{{#if flags.usesFirebase}}- `firebase_core`{{#if flags.usesFirebaseAuth}}, `firebase_auth`{{/if}}{{#if flags.usesFirebaseFirestore}}, `cloud_firestore`{{/if}}{{#if flags.usesFirebaseStorage}}, `firebase_storage`{{/if}}{{/if}}
+{{#if flags.usesSupabase}}- `supabase_flutter`{{/if}}
+{{#if flags.usesAppwrite}}- `appwrite`{{/if}}
+{{#if flags.usesDio}}- `dio`{{/if}}
+{{#if (and flags.usesHttp (not flags.usesDio))}}- `http`{{/if}}
+{{#if flags.usesHive}}- `hive`, `hive_flutter`{{/if}}
+{{#if flags.usesSharedPreferences}}- `shared_preferences`{{/if}}
+{{#if flags.usesSecureStorage}}- `flutter_secure_storage`{{/if}}
+{{#if flags.usesCachedNetworkImage}}- `cached_network_image`{{/if}}
+{{#if flags.usesGeolocator}}- `geolocator`{{/if}}
+{{#if flags.usesImagePicker}}- `image_picker`{{/if}}
+{{#if flags.usesFilePicker}}- `file_picker`{{/if}}
+{{#if flags.supportsLocalization}}- `easy_localization`{{/if}}
+{{#if flags.usesScreenutil}}- `flutter_screenutil`{{/if}}
+{{#if flags.usesFlutterHooks}}- `flutter_hooks`{{/if}}
+{{#if flags.usesDotenv}}- `flutter_dotenv`{{/if}}
+{{#if flags.usesSkeletonizer}}- `skeletonizer`{{/if}}

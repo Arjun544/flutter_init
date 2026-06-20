@@ -1,0 +1,78 @@
+import 'dart:async';
+import '../utils/utils.dart';
+
+class AuthService {
+  AuthService._();
+  static final AuthService instance = AuthService._();
+
+  // In-memory session for mock backend
+  Map<String, dynamic>? _currentUser;
+  final StreamController<Map<String, dynamic>?> _authStateController =
+      StreamController<Map<String, dynamic>?>.broadcast();
+
+  /// Stream of auth state changes. Emits the current user map or null.
+  Stream<Map<String, dynamic>?> get authStateChanges => _authStateController.stream;
+
+  FutureEither<Map<String, dynamic>?> login({
+    required String email,
+    required String password,
+  }) async {
+    return runTask(() async {
+      await Future<void>.delayed(const Duration(seconds: 2));
+      
+      // Mock validation
+      if (email.contains('error')) {
+        throw Exception('Mock authentication error');
+      }
+
+      _currentUser = {
+        'id': 'mock-id-123',
+        'email': email,
+        'name': 'Mock User',
+      };
+      _authStateController.add(_currentUser);
+      return _currentUser;
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<Map<String, dynamic>?> signUp({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    return runTask(() async {
+      await Future<void>.delayed(const Duration(seconds: 2));
+      _currentUser = {
+        'id': 'mock-id-${DateTime.now().millisecondsSinceEpoch}',
+        'email': email,
+        'name': name,
+      };
+      _authStateController.add(_currentUser);
+      return _currentUser;
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<void> forgotPassword({required String email}) async {
+    return runTask(() async {
+      await Future<void>.delayed(const Duration(seconds: 1));
+    }, requiresNetwork: true);
+  }
+
+  FutureEither<void> logout() async {
+    return runTask(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      _currentUser = null;
+      _authStateController.add(null);
+    });
+  }
+
+  FutureEither<Map<String, dynamic>?> getCurrentUser() async {
+    return runTask(() async {
+      return _currentUser;
+    });
+  }
+
+  void dispose() {
+    _authStateController.close();
+  }
+}

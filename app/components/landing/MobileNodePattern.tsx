@@ -11,8 +11,110 @@ import {
   WaveIcon
 } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
+import { motion } from 'motion/react';
 import { useState } from 'react';
 import Image from "next/image";
+
+interface NodeSwitchProps {
+  active: boolean;
+  onToggle: () => void;
+  top: string;
+  left: string;
+  bgClass: string;
+  Icon: any;
+  label: string;
+}
+
+const NodeSwitch = ({
+  active,
+  onToggle,
+  top,
+  left,
+  bgClass,
+  Icon,
+  label
+}: NodeSwitchProps) => {
+  return (
+    <div
+      className="absolute z-20 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:scale-[1.03] transition-transform duration-300 group/node"
+      style={{ top, left }}
+      onClick={onToggle}
+    >
+      <div className={`flex items-center py-2 px-3 rounded-2xl transition-all duration-300 border backdrop-blur-xl shadow-xl
+        ${active
+          ? 'bg-white border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-primary/5'
+          : 'bg-white/70 hover:bg-white/95 border-white/40 shadow-zinc-200/20'}
+      `}>
+        {/* Icon container */}
+        <div className="relative w-8 h-8 flex items-center justify-center shrink-0">
+          {/* Inactive state background & border */}
+          <motion.div
+            initial={false}
+            animate={{ opacity: active ? 0 : 1 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0 rounded-lg bg-zinc-100 border border-zinc-200"
+          />
+          {/* Active state background & border & shadow */}
+          <motion.div
+            initial={false}
+            animate={{ opacity: active ? 1 : 0 }}
+            transition={{ duration: 0.3 }}
+            className={`absolute inset-0 rounded-lg border border-white/20 shadow-sm ${bgClass}`}
+          />
+
+          {/* Icon wrapper with subtle scale animation */}
+          <motion.div
+            animate={{
+              scale: active ? [1, 1.12, 1] : 1,
+            }}
+            transition={{
+              duration: 0.3,
+              ease: "easeInOut",
+            }}
+            className="relative z-10 flex items-center justify-center"
+          >
+            {label === 'Supabase' ? (
+              <Image
+                src="/icons/supabase.svg"
+                alt="Supabase"
+                width={20}
+                height={20}
+                className={`transition-all duration-300 ${active ? 'brightness-0 invert' : 'opacity-70'}`}
+              />
+            ) : label === 'Firebase' ? (
+              <Image
+                src="/icons/firebase.svg"
+                alt="Firebase"
+                width={20}
+                height={20}
+                className={`transition-all duration-300 ${active ? '' : 'opacity-70'}`}
+              />
+            ) : (
+              <HugeiconsIcon
+                icon={Icon}
+                size={18}
+                className={`transition-all duration-300 ${active ? 'text-white drop-shadow-sm' : 'text-zinc-400 group-hover/node:text-zinc-500'}`}
+              />
+            )}
+          </motion.div>
+        </div>
+
+        <span className={`text-[13px] font-bold ml-3 mr-4 transition-all duration-300 ${active ? 'text-zinc-800' : 'text-zinc-500 group-hover/node:text-zinc-600'}`}>
+          {label}
+        </span>
+
+        <div onClick={(e) => e.stopPropagation()}>
+          <Switch
+            size='sm'
+            checked={active}
+            onCheckedChange={onToggle}
+            className={`cursor-pointer transition-colors duration-300 ${active ? 'data-[state=checked]:bg-primary' : ''}`}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export function MobileNodePattern() {
   const [nodes, setNodes] = useState({
@@ -26,58 +128,6 @@ export function MobileNodePattern() {
 
   const toggleNode = (key: keyof typeof nodes) => {
     setNodes(prev => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const NodeSwitch = ({
-    stateKey,
-    top, left,
-    bgClass,
-    Icon,
-    label
-  }: { stateKey: keyof typeof nodes, top: string, left: string, bgClass: string, Icon: any, label: string }) => {
-    const active = nodes[stateKey];
-    return (
-      <div
-        className="absolute z-20 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:scale-[1.03] transition-transform duration-300"
-        style={{ top, left }}
-        onClick={(e) => {
-          toggleNode(stateKey);
-        }}
-      >
-        <div className={`flex items-center p-2 pr-4 rounded-2xl transition-all duration-300 border backdrop-blur-xl shadow-xl
-          ${active
-            ? 'bg-white border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-primary/5'
-            : 'bg-white/70 hover:bg-white/95 border-white/40 shadow-zinc-200/20'}
-        `}>
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 border ${active ? bgClass + ' border-white/20 shadow-sm' : 'bg-zinc-100 border-zinc-200'}`}>
-            {label === 'Supabase' ? <Image
-              src="/icons/supabase.svg"
-              alt="Supabase"
-              width={24}
-              height={24}
-            /> : label === 'Firebase' ? <Image
-              src="/icons/firebase.svg"
-              alt="Firebase"
-              width={24}
-              height={24}
-            /> : <HugeiconsIcon icon={Icon} size={20} className={`transition-colors duration-300 ${active ? 'text-white' : 'text-zinc-400'}`} />}
-          </div>
-
-          <span className={`text-[13px] font-bold ml-3 mr-4 transition-colors duration-300 ${active ? 'text-zinc-800' : 'text-zinc-500'}`}>
-            {label}
-          </span>
-
-          <div onClick={(e) => e.stopPropagation()}>
-            <Switch
-              size='sm'
-              checked={active}
-              onCheckedChange={() => toggleNode(stateKey)}
-              className={`cursor-pointer transition-colors duration-300 ${active ? 'data-[state=checked]:bg-primary' : ''}`}
-            />
-          </div>
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -180,22 +230,25 @@ export function MobileNodePattern() {
 
       {/* Top Nodes */}
       <NodeSwitch
-        stateKey="riverpod"
+        active={nodes.riverpod}
+        onToggle={() => toggleNode('riverpod')}
         top="100px" left="80px"
         bgClass="bg-linear-to-tr from-blue-600 to-blue-400 shadow-blue-500/25"
         Icon={WaveIcon}
         label="Riverpod"
       />
       <NodeSwitch
-        stateKey="supabase"
+        active={nodes.supabase}
+        onToggle={() => toggleNode('supabase')}
         top="100px" left="270px"
         bgClass="bg-linear-to-tr from-emerald-500 to-green-400 shadow-emerald-500/25"
         Icon={Database01Icon}
         label="Supabase"
       />
       <NodeSwitch
-        stateKey="goRouter"
-        top="200px" left="170px"
+        active={nodes.goRouter}
+        onToggle={() => toggleNode('goRouter')}
+        top="200px" left="203px"
         bgClass="bg-linear-to-tr from-rose-500 to-pink-400 shadow-rose-500/25"
         Icon={Route01Icon}
         label="GoRouter"
@@ -203,21 +256,24 @@ export function MobileNodePattern() {
 
       {/* Bottom Nodes */}
       <NodeSwitch
-        stateKey="bloc"
-        top="450px" left="170px"
+        active={nodes.bloc}
+        onToggle={() => toggleNode('bloc')}
+        top="450px" left="200px"
         bgClass="bg-linear-to-tr from-indigo-500 to-purple-400 shadow-indigo-500/25"
         Icon={Package01Icon}
         label="Bloc"
       />
       <NodeSwitch
-        stateKey="firebase"
+        active={nodes.firebase}
+        onToggle={() => toggleNode('firebase')}
         top="550px" left="85px"
         bgClass="bg-linear-to-tr from-orange-500 to-amber-400 shadow-orange-500/25"
         Icon={FireIcon}
         label="Firebase"
       />
       <NodeSwitch
-        stateKey="dio"
+        active={nodes.dio}
+        onToggle={() => toggleNode('dio')}
         top="550px" left="280px"
         bgClass="bg-linear-to-tr from-cyan-500 to-sky-400 shadow-cyan-500/25"
         Icon={Unlink01Icon}

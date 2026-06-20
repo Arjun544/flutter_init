@@ -1,0 +1,252 @@
+{{#if (eq flags.routerPackage "go_router")}}
+import 'package:go_router/go_router.dart';
+import 'package:{{flags.appSnake}}/src/routing/global_navigator.dart';
+import 'package:{{flags.appSnake}}/src/routing/app_routes.dart';
+
+{{#if (eq architecture "layer-first")}}
+import 'package:{{flags.appSnake}}/src/presentation/screens/auth/login_screen.dart';
+import 'package:{{flags.appSnake}}/src/presentation/screens/auth/signup_screen.dart';
+import 'package:{{flags.appSnake}}/src/presentation/screens/auth/forgot_password_screen.dart';
+{{else if (eq architecture "mvc")}}
+import 'package:{{flags.appSnake}}/src/views/auth/login_screen.dart';
+import 'package:{{flags.appSnake}}/src/views/auth/signup_screen.dart';
+import 'package:{{flags.appSnake}}/src/views/auth/forgot_password_screen.dart';
+{{else if (eq architecture "mvvm")}}
+import 'package:{{flags.appSnake}}/src/ui/auth/login_screen.dart';
+import 'package:{{flags.appSnake}}/src/ui/auth/signup_screen.dart';
+import 'package:{{flags.appSnake}}/src/ui/auth/forgot_password_screen.dart';
+{{else}}
+import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/login_screen.dart';
+import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/signup_screen.dart';
+import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/forgot_password_screen.dart';
+{{/if}}
+
+{{#if (eq architecture "layer-first")}}
+import 'package:{{flags.appSnake}}/src/presentation/screens/home/home_page.dart';
+import 'package:{{flags.appSnake}}/src/presentation/screens/onboarding/onboarding_page.dart';
+
+{{else if (eq architecture "mvc")}}
+import 'package:{{flags.appSnake}}/src/views/home/home_page.dart';
+import 'package:{{flags.appSnake}}/src/views/onboarding/onboarding_page.dart';
+
+{{else if (eq architecture "mvvm")}}
+import 'package:{{flags.appSnake}}/src/ui/home/home_page.dart';
+import 'package:{{flags.appSnake}}/src/ui/onboarding/onboarding_page.dart';
+
+{{else}}
+import 'package:{{flags.appSnake}}/src/features/home/presentation/screens/home_page.dart';
+import 'package:{{flags.appSnake}}/src/features/onboarding/presentation/screens/onboarding_page.dart';
+
+{{/if}}
+
+final GoRouter appRouter = GoRouter(
+  navigatorKey: rootNavigatorKey,
+  initialLocation: AppRoutes.onboarding,
+  routes: <RouteBase>[
+    GoRoute(
+      path: AppRoutes.onboarding,
+      name: 'onboarding',
+      builder: (context, state) => const OnboardingPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.login,
+      name: 'login',
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.signup,
+      name: 'signup',
+      builder: (context, state) => const SignupScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.forgotPassword,
+      name: 'forgotPassword',
+      builder: (context, state) => const ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.home,
+      name: 'home',
+      builder: (context, state) => const HomePage(),
+    ),
+  ],
+);
+{{else if (eq flags.routerPackage "auto_route")}}
+import 'package:auto_route/auto_route.dart';
+import 'package:{{flags.appSnake}}/src/routing/global_navigator.dart';
+import 'package:{{flags.appSnake}}/src/routing/app_routes.dart';
+export 'app_router.gr.dart';
+import 'app_router.gr.dart';
+
+@AutoRouterConfig()
+class AppRouter extends RootStackRouter {
+  AppRouter() : super(navigatorKey: rootNavigatorKey);
+
+  @override
+  List<AutoRoute> get routes => [
+        AutoRoute(
+          page: OnboardingRoute.page,
+          path: AppRoutes.onboarding,
+          initial: true,
+        ),
+        AutoRoute(
+          page: LoginRoute.page,
+          path: AppRoutes.login,
+        ),
+        AutoRoute(
+          page: SignupRoute.page,
+          path: AppRoutes.signup,
+        ),
+        AutoRoute(
+          page: ForgotPasswordRoute.page,
+          path: AppRoutes.forgotPassword,
+        ),
+        AutoRoute(
+          page: HomeRoute.page,
+          path: AppRoutes.home,
+        ),
+      ];
+}
+{{else if (eq flags.routerPackage "getx")}}
+import 'package:{{flags.appSnake}}/src/imports/imports.dart';
+import 'package:{{flags.appSnake}}/src/routing/app_routes.dart';
+
+{{#if (eq architecture "layer-first")}}
+import 'package:{{flags.appSnake}}/src/presentation/screens/auth/login_screen.dart';
+import 'package:{{flags.appSnake}}/src/presentation/screens/auth/signup_screen.dart';
+import 'package:{{flags.appSnake}}/src/presentation/screens/auth/forgot_password_screen.dart';
+{{else if (eq architecture "mvc")}}
+import 'package:{{flags.appSnake}}/src/views/auth/login_screen.dart';
+import 'package:{{flags.appSnake}}/src/views/auth/signup_screen.dart';
+import 'package:{{flags.appSnake}}/src/views/auth/forgot_password_screen.dart';
+{{else if (eq architecture "mvvm")}}
+import 'package:{{flags.appSnake}}/src/ui/auth/login_screen.dart';
+import 'package:{{flags.appSnake}}/src/ui/auth/signup_screen.dart';
+import 'package:{{flags.appSnake}}/src/ui/auth/forgot_password_screen.dart';
+{{else}}
+import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/login_screen.dart';
+import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/signup_screen.dart';
+import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/forgot_password_screen.dart';
+{{/if}}
+
+{{#if (eq architecture "layer-first")}}
+import 'package:{{flags.appSnake}}/src/presentation/screens/home/home_page.dart';
+import 'package:{{flags.appSnake}}/src/presentation/screens/onboarding/onboarding_page.dart';
+
+{{else if (eq architecture "mvc")}}
+import 'package:{{flags.appSnake}}/src/views/home/home_page.dart';
+import 'package:{{flags.appSnake}}/src/views/onboarding/onboarding_page.dart';
+
+{{else if (eq architecture "mvvm")}}
+import 'package:{{flags.appSnake}}/src/ui/home/home_page.dart';
+import 'package:{{flags.appSnake}}/src/ui/onboarding/onboarding_page.dart';
+
+{{else}}
+import 'package:{{flags.appSnake}}/src/features/home/presentation/screens/home_page.dart';
+import 'package:{{flags.appSnake}}/src/features/onboarding/presentation/screens/onboarding_page.dart';
+
+{{/if}}
+
+class AppRouter {
+  static List<GetPage> get getPages => [
+    GetPage(
+      name: AppRoutes.onboarding,
+      page: () => const OnboardingPage(),
+    ),
+    GetPage(
+      name: AppRoutes.login,
+      page: () => const LoginScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.signup,
+      page: () => const SignupScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.forgotPassword,
+      page: () => const ForgotPasswordScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.home,
+      page: () => const HomePage(),
+    ),
+  ];
+}
+{{else}}
+import 'package:flutter/material.dart';
+{{#if flags.isCupertino}}
+import 'package:flutter/cupertino.dart';
+{{/if}}
+import 'package:{{flags.appSnake}}/src/routing/app_routes.dart';
+
+{{#if (eq architecture "layer-first")}}
+import 'package:{{flags.appSnake}}/src/presentation/screens/auth/login_screen.dart';
+import 'package:{{flags.appSnake}}/src/presentation/screens/auth/signup_screen.dart';
+import 'package:{{flags.appSnake}}/src/presentation/screens/auth/forgot_password_screen.dart';
+{{else if (eq architecture "mvc")}}
+import 'package:{{flags.appSnake}}/src/views/auth/login_screen.dart';
+import 'package:{{flags.appSnake}}/src/views/auth/signup_screen.dart';
+import 'package:{{flags.appSnake}}/src/views/auth/forgot_password_screen.dart';
+{{else if (eq architecture "mvvm")}}
+import 'package:{{flags.appSnake}}/src/ui/auth/login_screen.dart';
+import 'package:{{flags.appSnake}}/src/ui/auth/signup_screen.dart';
+import 'package:{{flags.appSnake}}/src/ui/auth/forgot_password_screen.dart';
+{{else}}
+import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/login_screen.dart';
+import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/signup_screen.dart';
+import 'package:{{flags.appSnake}}/src/features/auth/presentation/screens/forgot_password_screen.dart';
+{{/if}}
+
+{{#if (eq architecture "layer-first")}}
+import 'package:{{flags.appSnake}}/src/presentation/screens/home/home_page.dart';
+import 'package:{{flags.appSnake}}/src/presentation/screens/onboarding/onboarding_page.dart';
+
+{{else if (eq architecture "mvc")}}
+import 'package:{{flags.appSnake}}/src/views/home/home_page.dart';
+import 'package:{{flags.appSnake}}/src/views/onboarding/onboarding_page.dart';
+
+{{else if (eq architecture "mvvm")}}
+import 'package:{{flags.appSnake}}/src/ui/home/home_page.dart';
+import 'package:{{flags.appSnake}}/src/ui/onboarding/onboarding_page.dart';
+
+{{else}}
+import 'package:{{flags.appSnake}}/src/features/home/presentation/screens/home_page.dart';
+import 'package:{{flags.appSnake}}/src/features/onboarding/presentation/screens/onboarding_page.dart';
+
+{{/if}}
+
+class AppRouter {
+  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case AppRoutes.onboarding:
+        return {{#if flags.isCupertino}}CupertinoPageRoute{{else}}MaterialPageRoute{{/if}}(
+          builder: (_) => const OnboardingPage(),
+          settings: settings,
+        );
+      case AppRoutes.login:
+        return {{#if flags.isCupertino}}CupertinoPageRoute{{else}}MaterialPageRoute{{/if}}(
+          builder: (_) => const LoginScreen(),
+          settings: settings,
+        );
+      case AppRoutes.signup:
+        return {{#if flags.isCupertino}}CupertinoPageRoute{{else}}MaterialPageRoute{{/if}}(
+          builder: (_) => const SignupScreen(),
+          settings: settings,
+        );
+      case AppRoutes.forgotPassword:
+        return {{#if flags.isCupertino}}CupertinoPageRoute{{else}}MaterialPageRoute{{/if}}(
+          builder: (_) => const ForgotPasswordScreen(),
+          settings: settings,
+        );
+      case AppRoutes.home:
+        return {{#if flags.isCupertino}}CupertinoPageRoute{{else}}MaterialPageRoute{{/if}}(
+          builder: (_) => const HomePage(),
+          settings: settings,
+        );
+      default:
+        return {{#if flags.isCupertino}}CupertinoPageRoute{{else}}MaterialPageRoute{{/if}}(
+          builder: (_) => const HomePage(),
+          settings: settings,
+        );
+    }
+  }
+}
+{{/if}}

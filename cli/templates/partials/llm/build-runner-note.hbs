@@ -1,0 +1,15 @@
+{{#if (or flags.isMobX (eq flags.routerPackage "auto_route") flags.usesHive flags.usesFirebase)}}
+### Code generation
+
+This stack uses `build_runner` ({{#if flags.usesHive}}Hive, {{/if}}{{#if flags.isMobX}}MobX, {{/if}}{{#if (eq flags.routerPackage "auto_route")}}Auto Route, {{/if}}{{#if flags.usesFirebase}}Firebase, {{/if}}etc.):
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
+
+Re-run after changing generated routes, MobX stores, Hive adapters, or Firebase-related generated code.
+{{else}}
+### Code generation
+
+No `build_runner` step is required for the selected stack.
+{{/if}}

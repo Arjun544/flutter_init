@@ -1,0 +1,38 @@
+## How to add a new feature
+
+{{#if (eq architecture "clean")}}
+1. Create domain entity and repository contract under `lib/src/features/<feature>/domain/`.
+2. Add use case(s) in `domain/usecases/` (single responsibility).
+3. Add data model, datasource, and repository implementation under `data/`.
+4. Wire state ({{stateManagement}}) under `presentation/`.
+5. Build screens and widgets under `presentation/`.
+6. Register the route in `lib/src/routing/app_router.dart`.
+7. Export new public API only through existing barrel files if needed.
+{{/if}}
+
+{{#if (eq architecture "feature-first")}}
+1. Create `lib/src/features/<feature>/` with model, service, state, and view folders as needed.
+2. Keep all feature code inside that folder — use `shared/` only for truly global UI/utils.
+3. Register the route in `lib/src/routing/app_router.dart`.
+{{/if}}
+
+{{#if (eq architecture "mvc")}}
+1. Add models under `lib/src/models/` (or feature subfolder if you introduce one).
+2. Add or extend services in `lib/src/services/`.
+3. Add a controller under `lib/src/controllers/<feature>/`.
+4. Add views under `lib/src/views/<feature>/`.
+5. Register the route in `lib/src/routing/app_router.dart`.
+{{/if}}
+
+{{#if (eq architecture "mvvm")}}
+1. Add data models and repository under `lib/src/data/`.
+2. Add UI, view model / provider / bloc under `lib/src/ui/<feature>/`.
+3. Register the route in `lib/src/routing/app_router.dart`.
+{{/if}}
+
+{{#if (eq architecture "layer-first")}}
+1. Add domain entity and repository contract under `lib/src/domain/`.
+2. Implement datasource/model/repository under `lib/src/data/`.
+3. Add presentation (screens + state) under `lib/src/presentation/`.
+4. Register the route in `lib/src/routing/app_router.dart`.
+{{/if}}

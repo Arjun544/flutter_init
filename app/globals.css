@@ -117,6 +117,10 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
   * {
     @apply border-border outline-ring/50;
   }

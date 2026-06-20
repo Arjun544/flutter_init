@@ -1,0 +1,41 @@
+{{#if flags.usesFlutterHooks}}
+import '../../imports/imports.dart';
+
+/// A hook to handle copying text to clipboard with state feedback.
+(Future<void> Function(String), bool) useCopy() {
+  final hasCopied = useState(false);
+
+  Future<void> copyToClipboard(String text) async {
+    try {
+      hasCopied.value = true;
+      await Clipboard.setData(ClipboardData(text: text));
+      
+      showGlobalToast(
+        message: 'Copied successfully',
+        status: 'success',
+      );
+
+      await Future.delayed(
+        const Duration(seconds: 2),
+        () => hasCopied.value = false,
+      );
+    } catch (e) {
+      AppLogger.error('Error copying to clipboard: $e');
+      hasCopied.value = false;
+      
+      showGlobalToast(
+        message: 'Failed to copy',
+        status: 'error',
+      );
+    }
+  }
+
+  useEffect(() {
+    return () {
+      hasCopied.value = false;
+    };
+  }, []);
+
+  return (copyToClipboard, hasCopied.value);
+}
+{{/if}}

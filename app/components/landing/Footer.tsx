@@ -32,7 +32,7 @@ export function Footer() {
   };
 
   return (
-    <footer className="w-full bg-white border-t border-zinc-200 pt-12 pb-8 overflow-hidden relative">
+    <footer id="guides" className="w-full bg-white border-t border-zinc-200 pt-12 pb-8 overflow-hidden relative">
       {/* Background decoration */}
       <div className="absolute bottom-0 left-0 w-full h-[100px] bg-linear-to-t from-zinc-50 to-transparent pointer-events-none" />
 

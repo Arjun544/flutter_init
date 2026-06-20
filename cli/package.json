@@ -1,0 +1,45 @@
+{
+  "name": "create-flutterinit",
+  "version": "0.1.11",
+  "description": "Scaffold production-ready Flutter projects from your terminal",
+  "bin": {
+    "create-flutterinit": "dist/index.js"
+  },
+  "scripts": {
+    "dev": "bun run bin/index.ts",
+    "test": "bun test",
+    "build": "bun build ./bin/index.ts --outdir ./dist --target node",
+    "sync-templates": "bash ../scripts/sync-templates.sh"
+  },
+  "files": [
+    "dist/",
+    "templates/"
+  ],
+  "dependencies": {
+    "@clack/prompts": "^1.5.1",
+    "handlebars": "latest",
+    "picocolors": "latest"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/handlebars": "latest",
+    "typescript": "latest"
+  },
+  "keywords": [
+    "flutter",
+    "scaffold",
+    "cli",
+    "boilerplate",
+    "clean-architecture",
+    "riverpod",
+    "bloc",
+    "flutterinit"
+  ],
+  "author": "Arjun Mahar <https://github.com/Arjun544>",
+  "license": "MIT",
+  "homepage": "https://flutterinit.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Arjun544/flutter_init"
+  }
+}

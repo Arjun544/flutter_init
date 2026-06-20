@@ -1,0 +1,52 @@
+{{#if flags.usesFlutterHooks}}
+import 'dart:io'; 
+import '../../imports/imports.dart';
+
+/// A hook to handle URL launching with state feedback.
+(bool, Future<void> Function(String)) useLaunchUrl({LaunchMode? mode}) {
+  final isLoading = useState(false);
+
+  Future<void> launch(String url) async {
+    isLoading.value = true;
+    try {
+      final formattedUrl = _formatUrl(url);
+      final uri = Uri.parse(formattedUrl);
+
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(
+          uri,
+          mode: mode ?? LaunchMode.externalApplication,
+        );
+      } else {
+        AppLogger.error('Could not launch url: $formattedUrl');
+        showGlobalToast(
+          message: 'Could not launch url',
+          status: 'error',
+        );
+      }
+    } catch (e) {
+      AppLogger.error('Error launching URL: $e');
+      showGlobalToast(
+        message: 'Could not launch url',
+        status: 'error',
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  return (isLoading.value, launch);
+}
+
+String _formatUrl(String url) {
+  if (url.isValidUrl && !url.contains('://')) {
+    return 'https://$url';
+  }
+  if (url.isValidPhoneNumber) {
+    return Platform.isAndroid
+        ? 'whatsapp://send?phone=$url'
+        : 'https://wa.me/$url';
+  }
+  return url;
+}
+{{/if}}
