@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   title: "FlutterInit",
   description: "Scaffold your entire Flutter app with your preferred state management, routing, and utilities.",
   // Do NOT set alternates.canonical here — it leaks to every route and
-  // collapses blog posts to the homepage in Google. Set per-page instead.
+  // collapses blogs posts to the homepage in Google. Set per-page instead.
   keywords: ["FlutterInit", "Flutter Project Generator", "Flutter", "Scaffolding", "Boilerplate", "Clean Architecture", "MVVM", "Project Generator", "Dart", "Development Tools"],
   authors: [{ name: "Arjun Mahar", url: "https://github.com/Arjun544" }],
   openGraph: {

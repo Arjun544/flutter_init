@@ -139,7 +139,6 @@ export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
             borderRadius: 'inherit',
             backgroundColor,
             backdropFilter,
-            // @ts-ignore
             WebkitBackdropFilter: backdropFilter,
             borderColor,
             boxShadow,

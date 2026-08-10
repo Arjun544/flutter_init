@@ -1,55 +1,63 @@
-# Blog Implementation Guide
+# Blogs Implementation Guide
 
-> A complete reference for the FlutterInit blog system — file-based MDX content, Next.js App Router pages, and all supporting components.
+> A complete reference for the FlutterInit blogs system — file-based MDX content, Next.js App Router pages, and all supporting components.
 
 ---
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Content Layer](#content-layer)
-  - [Directory Structure](#directory-structure)
-  - [Frontmatter Schema](#frontmatter-schema)
-  - [Writing a Post](#writing-a-post)
-  - [Writing a Guide](#writing-a-guide)
-- [Data Layer (`lib/blog`)](#data-layer-libblog)
-  - [Types](#types)
-  - [Authors](#authors)
-  - [getAllPosts](#getallposts)
-  - [getPostBySlug](#getpostbyslug)
-  - [getRelatedPosts](#getrelatedposts)
-- [App Layer (`app/blogs`)](#app-layer-appblog)
-  - [Layout](#layout)
-  - [Blog Index Page](#blog-index-page)
-  - [Post Detail Page](#post-detail-page)
-  - [ToC Extraction](#toc-extraction)
-- [Blog Components](#blog-components)
-  - [FeaturedPost](#featuredpost)
-  - [PostCard](#postcard)
-  - [AuthorByline](#authorbyline)
-  - [TagPill](#tagpill)
-  - [GuideConfigBlock](#guideconfigblock)
-  - [TableOfContents](#tableofcontents)
-  - [RelatedPosts](#relatedposts)
-  - [MDXComponents](#mdxcomponents)
-- [MDX Authoring Reference](#mdx-authoring-reference)
-  - [Code Blocks](#code-blocks)
-  - [Callouts](#callouts)
-  - [File Trees](#file-trees)
-  - [Images](#images)
-  - [Tables](#tables)
-- [Adding a New Author](#adding-a-new-author)
-- [Adding New Stack Options](#adding-new-stack-options)
-- [Pagination](#pagination)
-- [SEO & Open Graph](#seo--open-graph)
-- [Revalidation Strategy](#revalidation-strategy)
+- [Blogs Implementation Guide](#blogs-implementation-guide)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Architecture](#architecture)
+  - [Content Layer](#content-layer)
+    - [Directory Structure](#directory-structure)
+    - [Frontmatter Schema](#frontmatter-schema)
+      - [Common fields (all posts)](#common-fields-all-posts)
+      - [Guide-only fields](#guide-only-fields)
+      - [`StackConfig` shape](#stackconfig-shape)
+    - [Writing a Post](#writing-a-post)
+    - [Writing a Guide](#writing-a-guide)
+  - [Data Layer (`lib/blog`)](#data-layer-libblog)
+    - [Types](#types)
+    - [Authors](#authors)
+    - [getAllPosts](#getallposts)
+    - [getPostBySlug](#getpostbyslug)
+    - [getRelatedPosts](#getrelatedposts)
+  - [App Layer (`app/blogs`)](#app-layer-appblogs)
+    - [Layout](#layout)
+    - [Blog Index Page](#blog-index-page)
+    - [Post Detail Page](#post-detail-page)
+    - [ToC Extraction](#toc-extraction)
+  - [Blog Components](#blog-components)
+    - [FeaturedPost](#featuredpost)
+    - [PostCard](#postcard)
+    - [AuthorByline](#authorbyline)
+    - [TagPill](#tagpill)
+    - [GuideConfigBlock](#guideconfigblock)
+    - [TableOfContents](#tableofcontents)
+    - [RelatedPosts](#relatedposts)
+    - [MDXComponents](#mdxcomponents)
+  - [MDX Authoring Reference](#mdx-authoring-reference)
+    - [Code Blocks](#code-blocks)
+    - [Callouts](#callouts)
+    - [File Trees](#file-trees)
+    - [Images](#images)
+    - [Tables](#tables)
+  - [Adding a New Author](#adding-a-new-author)
+  - [Adding New Stack Options](#adding-new-stack-options)
+  - [Pagination](#pagination)
+  - [SEO \& Open Graph](#seo--open-graph)
+    - [Blog Index](#blog-index)
+    - [Individual Posts](#individual-posts)
+    - [Layout Title Template](#layout-title-template)
+  - [Revalidation Strategy](#revalidation-strategy)
 
 ---
 
 ## Overview
 
-The blog is a **file-based MDX** system built on Next.js App Router. There is no CMS or database — every post is a `.mdx` file under `content/blog/`. The file path directly determines the URL slug.
+The blogs is a **file-based MDX** system built on Next.js App Router. There is no CMS or database — every post is a `.mdx` file under `content/blog/`. The file path directly determines the URL slug.
 
 Two post kinds exist:
 
@@ -72,7 +80,7 @@ lib/blog/                ← server-side data utilities
   getRelatedPosts.ts     ← finds posts with shared tags/category
 app/blogs/
   layout.tsx             ← shared metadata template
-  page.tsx               ← blog index (paginated list + featured)
+  page.tsx               ← blogs index (paginated list + featured)
   [...slug]/page.tsx     ← individual post page
   components/            ← all blog-specific React components
 ```
@@ -562,7 +570,7 @@ The same pattern applies to `architecture`, `backend`, and `navigation`.
 
 ## Pagination
 
-The blog index supports `?page=N` query params. Configuration:
+The blogs index supports `?page=N` query params. Configuration:
 
 ```ts
 // app/blogs/page.tsx
