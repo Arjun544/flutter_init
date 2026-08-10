@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: {
     template: '%s | FlutterInit Blog',
-    default: 'Blog | FlutterInit',
+    default: 'Blogs | FlutterInit',
   },
   description: 'Updates, guides, and deep-dives on Flutter architecture, state management, and backend integrations.',
 }

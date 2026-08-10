@@ -41,7 +41,7 @@
 
         <a href="https://flutterinit.com/blog">
  main
-          <img src="https://img.shields.io/badge/✍️_Blog_&_Guides-0f172a?style=for-the-badge&logoColor=white" height="40" alt="Blog & Guides" />
+          <img src="https://img.shields.io/badge/✍️_Blog_&_Guides-0f172a?style=for-the-badge&logoColor=white" height="40" alt="Blogs & Guides" />
         </a>
       </td>
     </tr>
@@ -160,13 +160,10 @@ These files give your AI editor full context about your architecture, state mana
 
 ---
 
-## ✍️ Blog & Guides
+## ✍️ Blogs & Guides
 
 add_cli
-FlutterInit ships a built-in blog at [flutterinit.com/blogs](https://flutterinit.com/blogs) — a file-based MDX publication powered by Next.js, with two content types:
-
-FlutterInit ships a built-in blog at [flutterinit.com/blog](https://flutterinit.com/blog) — a file-based MDX publication powered by Next.js, with two content types:
- main
+FlutterInit ships a built-in blogs at [flutterinit.com/blogs](https://flutterinit.com/blogs) — a file-based MDX publication powered by Next.js, with two content types:
 
 | Kind | Purpose |
 |------|---------|
@@ -175,9 +172,9 @@ FlutterInit ships a built-in blog at [flutterinit.com/blog](https://flutterinit.
 
 Every guide shows the exact `stackConfig` it covers (Architecture · State · Backend · Navigation), a "when to choose this stack" recommendation, an interactive file tree of the generated output, and a Table of Contents sidebar.
 
-Blog content lives under `content/blog/` as `.mdx` files. The file path is the URL slug — no CMS or database required.
+Blogs content lives under `content/blog/` as `.mdx` files. The file path is the URL slug — no CMS or database required.
 
-→ See the [Blog Implementation Guide](docs/blog.md) for authoring instructions, frontmatter schema, and MDX component reference.
+→ See the [Blogs Implementation Guide](docs/blogs.md) for authoring instructions, frontmatter schema, and MDX component reference.
 
 ---
 
@@ -193,7 +190,7 @@ New to FlutterInit? Start with the [Getting Started Guide](docs/getting-started.
 | [Architecture Overview](docs/architecture.md) | Under the hood of the Next.js / Handlebars engine |
 | [Handlebars Language Guide](docs/handlebars.md) | Logic patterns for template contributors |
 | [Testing Guide](docs/testing.md) | 2-layer validation strategy and tiered CI/CD pipeline |
-| [Blog Implementation Guide](docs/blog.md) | Writing posts/guides, frontmatter schema, MDX components |
+| [Blogs Implementation Guide](docs/blogs.md) | Writing posts/guides, frontmatter schema, MDX components |
 | [Contribution Guide](CONTRIBUTING.md) | How to add your own patterns |
 
 ---
@@ -256,7 +253,7 @@ The engine powering FlutterInit:
 | **Framework** | [Next.js 16](https://nextjs.org/) (App Router) + [React 19](https://react.dev/) |
 | **Styling** | [Tailwind CSS 4](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) |
 | **Templating** | [Handlebars.js](https://handlebarsjs.com/) for dynamic Dart generation |
-| **Blog / Content** | [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote) + [Shiki](https://shiki.style/) + [gray-matter](https://github.com/jonschlinkert/gray-matter) |
+| **Blogs / Content** | [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote) + [Shiki](https://shiki.style/) + [gray-matter](https://github.com/jonschlinkert/gray-matter) |
 | **Animations** | [Motion](https://motion.dev/) (formerly Framer Motion) |
 | **Icons** | [HugeIcons](https://hugeicons.com/) & [Lucide](https://lucide.dev/) |
 | **Runtime** | [Bun](https://bun.sh/) (high-speed package management) |

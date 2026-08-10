@@ -31,7 +31,7 @@ function computeReadingTime(content: string): number {
   return Math.max(1, Math.round(words / 200))
 }
 
-/** Derive slug array from file path relative to content/blog */
+/** Derive slug array from file path relative to content/blogs */
 function deriveSlug(filePath: string): string[] {
   const relative = path.relative(CONTENT_ROOT, filePath)
   // Remove .mdx extension and split by path separator

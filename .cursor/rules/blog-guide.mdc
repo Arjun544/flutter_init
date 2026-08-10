@@ -1,12 +1,12 @@
 ---
-description: Writing guides for the FlutterInit blog (Guides category)
+description: Writing guides for the FlutterInit blogs (Guides category)
 globs: content/blog/guides/**/*.mdx
 alwaysApply: false
 ---
 
-# FlutterInit Blog — Cursor Writing Guide
+# FlutterInit Blogs — Cursor Writing Guide
 
-Use this file whenever the task is "write a blog post" for flutterinit.com/blog. This is a standing instruction, not a one-off prompt — read it fully before drafting anything.
+Use this file whenever the task is "write a blogs post" for flutterinit.com/blogs. This is a standing instruction, not a one-off prompt — read it fully before drafting anything.
 
 ## Skills to invoke, in order
 

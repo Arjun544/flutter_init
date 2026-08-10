@@ -18,14 +18,14 @@ import {
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: 'Blog | FlutterInit',
+  title: 'Blogs | FlutterInit',
   description:
     'Updates, guides, and deep-dives on Flutter architecture, state management, and backend integrations — from the creator of FlutterInit.',
   alternates: {
     canonical: 'https://flutterinit.com/blogs',
   },
   openGraph: {
-    title: 'Blog | FlutterInit',
+    title: 'Blogs | FlutterInit',
     description:
       'Updates, guides, and deep-dives on Flutter architecture, state management, and backend integrations.',
     type: 'website',
@@ -193,7 +193,7 @@ export default async function BlogPage({
         {/* ── Page title ── */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">
-            Blog
+            Blogs
           </h1>
           <p className="mt-2 text-[15px] text-zinc-500">
             Updates, guides, and deep-dives on Flutter development.
