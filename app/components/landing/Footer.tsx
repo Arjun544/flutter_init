@@ -114,8 +114,6 @@ export function Footer() {
           <div className="flex items-center gap-4">
             <Link
               href="/blogs"
-
-              href="/blog"
               className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors font-medium"
             >
               Blog

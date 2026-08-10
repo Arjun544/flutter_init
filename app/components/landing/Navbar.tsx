@@ -25,9 +25,7 @@ const NAV_LINKS = [
   { href: '#how-it-works', label: 'How it Works' },
   { href: '#features', label: 'Features' },
   { href: '#showcase', label: 'Showcase' },
-  { href: '/blogs', label: 'Blog' },
-
-  { href: '/blog', label: 'Blog' },
+  { href: '/blogs', label: 'Blogs' },
 ]
 
 const SCROLL_RANGE = 500
