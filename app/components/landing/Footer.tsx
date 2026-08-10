@@ -26,7 +26,8 @@ export function Footer() {
       setCopied(true);
       toast.success("Email copied to clipboard!");
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
+    } catch (error) {
+      console.error("Failed to copy email", error);
       toast.error("Failed to copy email");
     }
   };
@@ -34,7 +35,7 @@ export function Footer() {
   return (
     <footer id="guides" className="w-full bg-white border-t border-zinc-200 pt-12 pb-8 overflow-hidden relative">
       {/* Background decoration */}
-      <div className="absolute bottom-0 left-0 w-full h-[100px] bg-linear-to-t from-zinc-50 to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-full h-25 bg-linear-to-t from-zinc-50 to-transparent pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         <div className="flex gap-12 mb-10 items-center justify-between">
@@ -112,6 +113,8 @@ export function Footer() {
 
           <div className="flex items-center gap-4">
             <Link
+              href="/blogs"
+
               href="/blog"
               className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors font-medium"
             >
@@ -127,7 +130,7 @@ export function Footer() {
       </div>
 
       {/* Subtle bottom glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[500px] h-[100px] bg-primary/5 blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-125 h-25 bg-primary/5 blur-[100px] pointer-events-none" />
     </footer>
   );
 }

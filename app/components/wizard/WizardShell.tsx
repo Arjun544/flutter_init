@@ -4,6 +4,7 @@ import { trackGeneration } from "@/app/lib/analytics/trackGeneration"
 import cliPackage from "@/cli/package.json"
 import { scaffoldConfigSchema, StepId, stepOrder } from "@/app/lib/config/schema"
 import { useWizard } from "@/app/lib/state/useWizardStore"
+import { buildGenerateForm } from "@/app/components/wizard/code-editor/buildGenerateForm"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -24,7 +25,7 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
-import { ArrowLeft02Icon, ArrowRight02Icon, Tick01Icon } from "@hugeicons/core-free-icons"
+import { ArrowLeft02Icon, ArrowRight02Icon, SourceCodeIcon, Tick01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import Image from "next/image"
 import * as React from "react"
@@ -100,15 +101,7 @@ export function WizardShell() {
 
             // Use multipart/form-data so binary font blobs can be sent alongside
             // the JSON config without serialization issues.
-            const form = new FormData()
-            form.append("config", JSON.stringify(config))
-
-            // Attach each font file the user dropped (keyed by its fileName)
-            for (const [fileName, file] of fontFiles) {
-                // Use the original File object; fileName is used as the field name
-                // so the server can correlate it with config.theme.customFonts[].fileName
-                form.append("font", file, fileName)
-            }
+            const form = buildGenerateForm(config, fontFiles)
 
             // Do NOT set Content-Type — browser sets it automatically with the
             // correct multipart boundary.
@@ -200,6 +193,24 @@ export function WizardShell() {
                     <div className="flex items-center gap-3">
                         <Button
                             variant="outline"
+                            asChild
+                            disabled={!isValid || isGenerating}
+                            className="h-10 px-4 border-border/40 bg-background/50 shadow-sm cursor-pointer"
+                        >
+                            <Link
+                              href={isValid ? "/create/code" : "#"}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-disabled={!isValid || isGenerating}
+                              className={cn((!isValid || isGenerating) && "pointer-events-none opacity-50")}
+                            >
+                              <HugeiconsIcon icon={SourceCodeIcon} className="size-4 mr-1.5" />
+                              <span className="hidden sm:inline">Preview code</span>
+                              <span className="sm:hidden">Code</span>
+                            </Link>
+                        </Button>
+                        <Button
+                            variant="outline"
                             onClick={handleBack}
                             disabled={stepIndex === 0 || isGenerating}
                             className="h-10 px-4 border-border/40 bg-background/50 shadow-sm cursor-pointer"
@@ -212,7 +223,7 @@ export function WizardShell() {
                             onClick={handleNext}
                             disabled={isGenerating || (step === "generate" && !isValid)}
                             className={cn(
-                                "h-10 px-5 shadow-sm cursor-pointer min-w-[100px]",
+                                "h-10 px-5 shadow-sm cursor-pointer min-w-25",
                                 stepIndex === stepOrder.length - 1 && "bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 font-semibold text-primary-foreground"
                             )}
                         >

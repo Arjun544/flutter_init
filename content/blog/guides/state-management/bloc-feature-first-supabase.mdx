@@ -1,0 +1,172 @@
+---
+title: "Bloc + Feature-First + Supabase — The Complete Flutter Guide"
+description: "Bloc for events/states, Feature-First folders, Supabase auth — what FlutterInit generates and when this stack beats Clean + Firebase."
+kind: guide
+category: state-management
+tags: [bloc, feature-first, supabase, flutter, architecture]
+publishedAt: "2026-07-08"
+author: arjun
+stackConfig:
+  architecture: feature-first
+  stateManagement: bloc
+  backend: supabase
+  navigation: go_router
+whenToChoose: "Choose this when you want predictable Bloc flows, features that own their folders, and Postgres-backed auth via Supabase — without waiting to invent the wiring yourself."
+---
+
+Bloc + Feature-First + Supabase is the stack for teams that like explicit events and states, organize code by feature, and want Supabase instead of Firebase. FlutterInit generates `lib/src/features/...` with auth Bloc/Cubit-style wiring, a Supabase `AuthService`, and go_router — then documents it in AGENTS.md so agents keep the pattern.
+
+## What This Stack Generates
+
+- **Feature-First tree** under `lib/src/features/{auth,home,onboarding}`
+- **Auth** with domain repository + data impl + presentation Bloc (`auth_bloc.dart`, `session_bloc.dart`)
+- **Supabase** init via dotenv (`SUPABASE_URL`, `SUPABASE_ANON_KEY`) and email/password auth
+- **go_router** routes for onboarding, login, signup, forgot password, home
+- **AI context**: AGENTS.md, CLAUDE.md, DESIGN.md, Cursor rules
+
+Honest note: in FlutterInit today, Feature-First and Clean share the same feature folder shape. The difference is how you think about growth and what the agent docs emphasize — not a totally different physical layout.
+
+## Project Structure
+
+<Files defaultOpen={["lib", "features", "auth", "presentation"]}>
+  <FolderItem value="lib">
+    <FolderTrigger>lib</FolderTrigger>
+    <FolderContent>
+      <SubFiles>
+        <FolderItem value="src">
+          <FolderTrigger>src</FolderTrigger>
+          <FolderContent>
+            <SubFiles>
+              <FolderItem value="features">
+                <FolderTrigger>features</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FolderItem value="auth">
+                      <FolderTrigger>auth</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FolderItem value="data">
+                            <FolderTrigger>data</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FolderItem value="models">
+                                  <FolderTrigger>models</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>user_model.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                                <FolderItem value="repositories">
+                                  <FolderTrigger>repositories</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>auth_repository_impl.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="domain">
+                            <FolderTrigger>domain</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FolderItem value="entities">
+                                  <FolderTrigger>entities</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>user.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                                <FolderItem value="repositories">
+                                  <FolderTrigger>repositories</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>auth_repository.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="presentation">
+                            <FolderTrigger>presentation</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FolderItem value="providers">
+                                  <FolderTrigger>providers</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>auth_bloc.dart</FileItem>
+                                      <FileItem>session_bloc.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                                <FolderItem value="screens">
+                                  <FolderTrigger>screens</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>login_screen.dart</FileItem>
+                                      <FileItem>signup_screen.dart</FileItem>
+                                      <FileItem>forgot_password_screen.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                    <FileItem>home/…</FileItem>
+                    <FileItem>onboarding/…</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FileItem>routing/app_router.dart</FileItem>
+              <FileItem>services/auth_service.dart</FileItem>
+              <FileItem>config/app_config.dart</FileItem>
+            </SubFiles>
+          </FolderContent>
+        </FolderItem>
+      </SubFiles>
+    </FolderContent>
+  </FolderItem>
+</Files>
+
+## Bloc in the presentation layer
+
+Generated auth logic follows events → states. Screens dispatch login/signup; the Bloc talks to `AuthRepository`, which talks to Supabase through `AuthService`.
+
+```dart
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  final AuthRepository _repository;
+
+  AuthBloc({required AuthRepository repository})
+      : _repository = repository,
+        super(const AuthState.initial()) {
+    on<AuthLoginRequested>(_onLogin);
+    // signup, forgot password, …
+  }
+}
+```
+
+UI uses `BlocBuilder` / `BlocListener` — not random `setState` for auth.
+
+## Supabase auth wiring
+
+`AuthService` uses `AppConfig.supabase` and `signInWithPassword` / `signUp` / `onAuthStateChange`, wrapped in `runTask` → `Either`. You still add your Supabase project keys in `.env` (see SETUP.md).
+
+## When to choose this vs alternatives
+
+| Prefer | Instead |
+|--------|---------|
+| This stack | Predictable Bloc + Supabase + feature folders |
+| [Riverpod + Clean + Firebase](/blogs/guides/state-management/riverpod-clean-firebase) | Firebase ecosystem + Riverpod |
+| [MVVM + Provider + Appwrite](/blogs/guides/state-management/mvvm-provider-appwrite) | Less ceremony, Appwrite |
+
+Also read [Supabase + Riverpod](/blogs/guides/backend/supabase-riverpod-realtime) for backend-focused detail.
+
+Generate **Bloc + Feature-First + Supabase** on [/create](/create).

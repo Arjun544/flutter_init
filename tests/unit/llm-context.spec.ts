@@ -21,12 +21,13 @@ function buildLlmConfig(overrides: Partial<ScaffoldConfig> = {}): ScaffoldConfig
 }
 
 describe("LLM context files", () => {
-    it("emits AGENTS.md, DESIGN.md, and Cursor rule on every generation", async () => {
+    it("emits AGENTS.md, CLAUDE.md, DESIGN.md, and Cursor rule on every generation", async () => {
         const files = await generateToMap(buildLlmConfig())
         assertRequiredFilesExist(files)
         assertNoUnresolvedTokens(files)
 
         expect(getFile(files, "AGENTS.md")).toBeDefined()
+        expect(getFile(files, "CLAUDE.md")).toBeDefined()
         expect(getFile(files, "DESIGN.md")).toBeDefined()
         expect(getFile(files, ".cursor/rules/flutter-project.mdc")).toBeDefined()
     })

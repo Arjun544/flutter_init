@@ -1,0 +1,66 @@
+---
+title: "Dio + Interceptors: The Networking Layer FlutterInit Generates"
+description: "Enable Dio in FlutterInit and you get AppConfig.dio with logging interceptors plus a DioService wrapped in runTask / Either — opt-in, not silent magic."
+kind: guide
+category: networking
+tags: [dio, interceptors, networking, flutter, flutterinit]
+publishedAt: "2026-08-10"
+author: arjun
+whenToChoose: "Turn on Dio when you need a shared HTTP client with timeouts, JSON headers, request logging, and Either-style error handling across features."
+---
+
+Dio is **opt-in** in FlutterInit (`usesDio` defaults to false). When you enable it, the scaffold wires a shared client in `AppConfig`, attaches a logging `InterceptorsWrapper`, and adds `DioService` with get/post/put/patch/delete helpers that return `FutureEither`.
+
+## What AppConfig sets up
+
+```dart
+dio = Dio(
+  BaseOptions(
+    baseUrl: _getBaseUrl(),
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(seconds: 30),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+  ),
+);
+
+dio.interceptors.add(
+  InterceptorsWrapper(
+    onRequest: (options, handler) {
+      AppLogger.info('… REQUEST[${options.method}] => PATH: ${options.path}');
+      return handler.next(options);
+    },
+    onResponse: (response, handler) { /* log status */ return handler.next(response); },
+    onError: (DioException e, handler) { /* log error */ return handler.next(e); },
+  ),
+);
+```
+
+That’s your hook point for auth headers later — add another interceptor; don’t fork a second `Dio()` in a random feature.
+
+## What DioService does
+
+`lib/src/services/dio_service.dart` exposes a singleton that delegates to `AppConfig.dio` inside `runTask(..., requiresNetwork: true)`. Call sites get a consistent `Either` failure path instead of raw exceptions bubbling into widgets.
+
+AGENTS.md networking rules tell agents to use this service — not ad-hoc `http.get` from a screen.
+
+## What you still write
+
+- Auth tokens on requests (interceptor or per-call headers)
+- Base URL strategy for flavors / envs
+- Feature repositories that map JSON → domain models
+
+The scaffold removes client boilerplate. It doesn’t invent your API.
+
+## Dio vs http package
+
+FlutterInit can also emit a lighter `http` client when you choose http and not Dio. Prefer Dio when you want interceptors, richer options, and the generated `DioService` surface.
+
+## Related
+
+- [Deterministic Generation vs AI Boilerplate](/blogs/guides/ai-context/deterministic-vs-ai-boilerplate)
+- Combo guides under [/blogs](/blogs) that use custom backends alongside REST
+
+Enable Dio on [/create](/create) under networking options, then open `app_config.dart` and `dio_service.dart`.

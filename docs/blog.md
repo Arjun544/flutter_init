@@ -19,7 +19,7 @@
   - [getAllPosts](#getallposts)
   - [getPostBySlug](#getpostbyslug)
   - [getRelatedPosts](#getrelatedposts)
-- [App Layer (`app/blog`)](#app-layer-appblog)
+- [App Layer (`app/blogs`)](#app-layer-appblog)
   - [Layout](#layout)
   - [Blog Index Page](#blog-index-page)
   - [Post Detail Page](#post-detail-page)
@@ -70,7 +70,7 @@ lib/blog/                ← server-side data utilities
   getAllPosts.ts          ← reads + parses all MDX files
   getPostBySlug.ts       ← fetches a single post by slug
   getRelatedPosts.ts     ← finds posts with shared tags/category
-app/blog/
+app/blogs/
   layout.tsx             ← shared metadata template
   page.tsx               ← blog index (paginated list + featured)
   [...slug]/page.tsx     ← individual post page
@@ -88,10 +88,10 @@ Posts live under `content/blog/`. The **sub-path relative to that root** becomes
 ```
 content/blog/
 ├── updates/
-│   └── welcome-to-flutterinit.mdx     → /blog/updates/welcome-to-flutterinit
+│   └── welcome-to-flutterinit.mdx     → /blogs/updates/welcome-to-flutterinit
 └── guides/
     └── state-management/
-        └── riverpod-clean-firebase.mdx → /blog/guides/state-management/riverpod-clean-firebase
+        └── riverpod-clean-firebase.mdx → /blogs/guides/state-management/riverpod-clean-firebase
 ```
 
 You can nest as deep as you like — all `.mdx` files are discovered recursively.
@@ -267,15 +267,15 @@ const post = await getPostBySlug(['guides', 'state-management', 'riverpod-clean-
 
 ---
 
-## App Layer (`app/blog`)
+## App Layer (`app/blogs`)
 
 ### Layout
 
-[`app/blog/layout.tsx`](../app/blog/layout.tsx) — sets a metadata title template so every page gets a `"Post Title | FlutterInit Blog"` title automatically.
+[`app/blogs/layout.tsx`](../app/blogs/layout.tsx) — sets a metadata title template so every page gets a `"Post Title | FlutterInit Blog"` title automatically.
 
 ### Blog Index Page
 
-[`app/blog/page.tsx`](../app/blog/page.tsx)
+[`app/blogs/page.tsx`](../app/blogs/page.tsx)
 
 - Accepts a `?page=N` query param for pagination
 - Shows the first (featured) post in a `<FeaturedPost>` hero
@@ -285,7 +285,7 @@ const post = await getPostBySlug(['guides', 'state-management', 'riverpod-clean-
 
 ### Post Detail Page
 
-[`app/blog/[...slug]/page.tsx`](../app/blog/[...slug]/page.tsx)
+[`app/blogs/[...slug]/page.tsx`](../app/blogs/[...slug]/page.tsx)
 
 Key responsibilities:
 
@@ -307,18 +307,18 @@ The `extractTocItems(content: string)` function in the post page extracts `##` a
 
 ## Blog Components
 
-All components live in [`app/blog/components/`](../app/blog/components/).
+All components live in [`app/blogs/components/`](../app/blogs/components/).
 
 ### FeaturedPost
 
-**File:** [`FeaturedPost.tsx`](../app/blog/components/FeaturedPost.tsx)  
+**File:** [`FeaturedPost.tsx`](../app/blogs/components/FeaturedPost.tsx)  
 **Props:** `{ post: Post }`
 
 Renders a large two-column card (image left, content right on `lg:` screens). If no `coverImage` is provided, shows a gradient placeholder with a Hugeicons icon (`BookOpen02Icon` for guides, `Megaphone01Icon` for updates). Displays a "Featured" badge if `post.featured` is true.
 
 ### PostCard
 
-**File:** [`PostCard.tsx`](../app/blog/components/PostCard.tsx)  
+**File:** [`PostCard.tsx`](../app/blogs/components/PostCard.tsx)  
 **Props:** `{ post: Post }`  
 **Client Component** (`'use client'`)
 
@@ -326,14 +326,14 @@ Compact card used in the grid. Shows cover image (or icon placeholder), `TagPill
 
 ### AuthorByline
 
-**File:** [`AuthorByline.tsx`](../app/blog/components/AuthorByline.tsx)  
+**File:** [`AuthorByline.tsx`](../app/blogs/components/AuthorByline.tsx)  
 **Props:** `{ post: Pick<Post, 'author' | 'publishedAt' | 'readingTime' | 'updatedAt'> }`
 
 Displays the author avatar, name, Twitter handle (linked), publish date, reading time, and optional "Updated" date. Looks up the author in the `AUTHORS` registry — falls back gracefully if the key is missing.
 
 ### TagPill
 
-**File:** [`TagPill.tsx`](../app/blog/components/TagPill.tsx)  
+**File:** [`TagPill.tsx`](../app/blogs/components/TagPill.tsx)  
 **Props:** `{ kind: Kind; category: string; tags?: string[]; className?: string }`
 
 Small coloured badge. `kind` determines the colour:
@@ -342,7 +342,7 @@ Small coloured badge. `kind` determines the colour:
 
 ### GuideConfigBlock
 
-**File:** [`GuideConfigBlock.tsx`](../app/blog/components/GuideConfigBlock.tsx)  
+**File:** [`GuideConfigBlock.tsx`](../app/blogs/components/GuideConfigBlock.tsx)  
 **Props:** `{ stackConfig: StackConfig }`
 
 Renders a 4-column grid banner showing the stack configuration for a guide (Architecture, State Management, Backend, Navigation). Each cell uses a Hugeicons icon and a coloured badge. Only shown when `post.kind === 'guide' && post.stackConfig`.
@@ -359,7 +359,7 @@ To add a new stack option (e.g. a new backend), update both `StackConfig` in `ty
 
 ### TableOfContents
 
-**File:** [`TableOfContents.tsx`](../app/blog/components/TableOfContents.tsx)  
+**File:** [`TableOfContents.tsx`](../app/blogs/components/TableOfContents.tsx)  
 **Props:** `{ items: TocItem[] }`  
 **Client Component** (`'use client'`)
 
@@ -383,14 +383,14 @@ The sidebar is hidden below `xl` breakpoint.
 
 ### RelatedPosts
 
-**File:** [`RelatedPosts.tsx`](../app/blog/components/RelatedPosts.tsx)  
+**File:** [`RelatedPosts.tsx`](../app/blogs/components/RelatedPosts.tsx)  
 **Props:** `{ posts: Post[] }`
 
 Renders up to 3 related post cards (uses `PostCard`) in a horizontal row below the article.
 
 ### MDXComponents
 
-**File:** [`MDXComponents.tsx`](../app/blog/components/MDXComponents.tsx)
+**File:** [`MDXComponents.tsx`](../app/blogs/components/MDXComponents.tsx)
 
 The component map passed to `<MDXRemote components={mdxComponents}>`. Overrides the following HTML elements:
 
@@ -546,7 +546,7 @@ To add a new `stateManagement` value (e.g. `mobx`):
 stateManagement: 'riverpod' | 'bloc' | 'provider' | 'getx' | 'signals' | 'mobx'
 ```
 
-2. **`app/blog/components/GuideConfigBlock.tsx`** — add the display label:
+2. **`app/blogs/components/GuideConfigBlock.tsx`** — add the display label:
 ```ts
 const STATE_LABELS: Record<StackConfig['stateManagement'], string> = {
   ...
@@ -565,7 +565,7 @@ The same pattern applies to `architecture`, `backend`, and `navigation`.
 The blog index supports `?page=N` query params. Configuration:
 
 ```ts
-// app/blog/page.tsx
+// app/blogs/page.tsx
 const POSTS_PER_PAGE = 24
 ```
 
@@ -577,11 +577,11 @@ The featured post (index 0 in the sorted list) is always excluded from the pagin
 
 ### Blog Index
 
-Set in `app/blog/page.tsx` via the exported `metadata` object. Static title and description.
+Set in `app/blogs/page.tsx` via the exported `metadata` object. Static title and description.
 
 ### Individual Posts
 
-`generateMetadata` in `app/blog/[...slug]/page.tsx` generates:
+`generateMetadata` in `app/blogs/[...slug]/page.tsx` generates:
 
 - `title`: post title
 - `description`: post description
@@ -592,7 +592,7 @@ Set in `app/blog/page.tsx` via the exported `metadata` object. Static title and 
 
 ### Layout Title Template
 
-`app/blog/layout.tsx` sets `title.template: '%s | FlutterInit Blog'` so all child pages automatically get the ` | FlutterInit Blog` suffix without repeating it.
+`app/blogs/layout.tsx` sets `title.template: '%s | FlutterInit Blog'` so all child pages automatically get the ` | FlutterInit Blog` suffix without repeating it.
 
 ---
 
@@ -608,4 +608,4 @@ This means Next.js will cache the page and regenerate it in the background at mo
 
 For immediate updates in development, content is always fresh because the dev server does not cache.
 
-To force an immediate revalidation in production, call the Next.js `revalidatePath('/blog')` API from a webhook or the server dashboard.
+To force an immediate revalidation in production, call the Next.js `revalidatePath('/blogs')` API from a webhook or the server dashboard.

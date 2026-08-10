@@ -1,0 +1,44 @@
+---
+title: "Appwrite vs Firebase vs Supabase — Choosing a Backend for Your Flutter App"
+description: "Firebase, Supabase, and Appwrite all work with FlutterInit. Compare auth, database, self-hosting, and when each fits a Flutter team."
+kind: guide
+category: backend
+tags: [appwrite, firebase, supabase, flutter, comparison]
+publishedAt: "2026-07-26"
+author: arjun
+---
+
+FlutterInit supports **Firebase**, **Supabase**, and **Appwrite** as first-class backend overlays. The right pick depends on hosting, database preference, and ecosystem — not which logo looks nicest in a slide deck.
+
+## Comparison (Flutter-focused)
+
+| | Firebase | Supabase | Appwrite |
+|--|----------|----------|----------|
+| Auth in FlutterInit | Email/password + Firebase SDK stream | Email/password + `onAuthStateChange` | Email sessions; manual auth stream in our service |
+| Primary DB story | Firestore / RTDB | Postgres | Appwrite Databases |
+| Self-host | No (Google cloud) | Yes (self-host option) | Yes (strong self-host story) |
+| Ecosystem | Analytics, Crashlytics, FCM, deep Google tie-in | SQL, RLS, storage, edge functions | Open-source BaaS suite |
+| Best when | You want Google mobile platform glue | You want SQL + realtime on Postgres | You want open-source / self-host control |
+
+## How FlutterInit treats them equally (almost)
+
+Each backend gets:
+
+- AppConfig initialization
+- An `AuthService` implementation
+- Dotenv keys documented in SETUP.md
+- The same repository → presentation path in your chosen architecture
+
+They are **not** feature-identical products. Don’t expect Firestore APIs from Supabase.
+
+## Pick one
+
+- **Firebase** — mobile Google stack; see [Firebase Auth wiring](/blogs/guides/backend/firebase-auth-wired-up)
+- **Supabase** — SQL + Riverpod; see [Supabase + Riverpod](/blogs/guides/backend/supabase-riverpod-realtime)
+- **Appwrite** — self-host / OSS; see [MVVM + Provider + Appwrite](/blogs/guides/state-management/mvvm-provider-appwrite) or [Bloc + Clean + Appwrite](/blogs/guides/state-management/bloc-clean-appwrite)
+
+## Switching later
+
+Domain repositories make swaps cheaper. Still budget real work for data models and security rules — FlutterInit won’t migrate your production data.
+
+Choose a backend on [/create](/create) and generate auth before you write feature screens.

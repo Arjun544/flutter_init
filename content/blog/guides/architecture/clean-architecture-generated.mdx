@@ -1,0 +1,47 @@
+---
+title: "Clean Architecture in Flutter: What It Actually Looks Like in a Generated Project"
+description: "Clean Architecture in FlutterInit means lib/src/features with data, domain, and presentation — not a textbook diagram. Here’s the real tree."
+kind: guide
+category: architecture
+tags: [clean-architecture, flutter, architecture, flutterinit]
+publishedAt: "2026-07-10"
+author: arjun
+stackConfig:
+  architecture: clean
+  stateManagement: riverpod
+  backend: firebase
+  navigation: go_router
+whenToChoose: "Use Clean when you want repository interfaces in domain, Firebase (or other backends) isolated in data, and UI that only talks to presentation state."
+---
+
+Clean Architecture in a FlutterInit project is concrete: `lib/src/features/auth/domain` holds entities and repository interfaces; `data` holds models and implementations; `presentation` holds Riverpod/Bloc/Provider/MobX and screens. No enterprise PDF required.
+
+## The real folder tree
+
+For Clean (and Feature-First), auth looks like:
+
+- `domain/entities/user.dart`
+- `domain/repositories/auth_repository.dart`
+- `data/models/user_model.dart`
+- `data/repositories/auth_repository_impl.dart`
+- `presentation/providers/…` (state library of your choice)
+- `presentation/screens/login_screen.dart` (etc.)
+
+Home and onboarding ship as presentation screens first — expand domain/data when those features grow.
+
+## Domain stays backend-agnostic
+
+`AuthRepository` doesn’t import Firebase or Supabase. The impl and `AuthService` do. That’s the swap point when you change backends later.
+
+## Presentation is where state libraries live
+
+Pick Riverpod, Bloc, Provider, or MobX in the wizard. Files land under `presentation/providers` with the right pattern (`StateNotifier`, `Bloc`, `ChangeNotifier`, MobX store).
+
+## What Clean is not (here)
+
+- Not a separate `usecases/` folder in every template (don’t invent one unless you add it)
+- Not different from Feature-First’s physical paths in current templates — naming and docs carry intent
+
+Full stack walkthrough: [Riverpod + Clean + Firebase](/blogs/guides/state-management/riverpod-clean-firebase). Compare packaging: [Feature-First vs Clean](/blogs/guides/architecture/feature-first-vs-clean).
+
+Generate Clean on [/create](/create).

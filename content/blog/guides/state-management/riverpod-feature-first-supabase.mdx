@@ -1,0 +1,85 @@
+---
+title: "Riverpod + Feature-First + Supabase — Scaling Past Clean Architecture"
+description: "Riverpod + Feature-First + Supabase keeps feature folders and Supabase auth without paying Clean Architecture ceremony you may not need yet."
+kind: guide
+category: state-management
+tags: [riverpod, feature-first, supabase, flutter, architecture]
+publishedAt: "2026-07-22"
+author: arjun
+stackConfig:
+  architecture: feature-first
+  stateManagement: riverpod
+  backend: supabase
+  navigation: go_router
+whenToChoose: "Choose this when you already like Riverpod, want Supabase, and prefer feature folders — but Clean’s extra ceremony isn’t buying you anything yet."
+---
+
+Riverpod + Feature-First + Supabase is how you scale past a single-file mess without adopting every Clean Architecture artifact on day one. FlutterInit still gives you `lib/src/features/auth/{data,domain,presentation}` — same physical shape as Clean in our templates — with Riverpod `StateNotifier` auth controllers and Supabase wiring.
+
+## How this differs from Riverpod + Clean + Firebase
+
+Read the [Clean + Firebase guide](/blogs/guides/state-management/riverpod-clean-firebase) for the Firebase + Riverpod deep dive. This combo swaps:
+
+- **Firebase → Supabase** (Postgres, `SUPABASE_URL` / `SUPABASE_ANON_KEY`, `onAuthStateChange`)
+- **Clean label → Feature-First** (same feature folders today; different product default and AGENTS.md framing)
+
+If you’re choosing Feature-First vs Clean as a *team* decision, see [Feature-First vs Clean](/blogs/guides/architecture/feature-first-vs-clean).
+
+## What This Stack Generates
+
+- Feature modules: auth, home, onboarding
+- Riverpod `authRepositoryProvider` + `authControllerProvider` (`StateNotifier<bool>` loading pattern in generated auth logic)
+- Supabase `AuthService` with login/signup/logout/stream
+- go_router + LLM context files
+
+## Project Structure
+
+Same Feature-First tree as the Bloc guide: `features/auth/data|domain|presentation`, with Riverpod files under `presentation/providers` instead of Bloc.
+
+## Riverpod auth controller (generated pattern)
+
+```dart
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return AuthRepositoryImpl();
+});
+
+final authControllerProvider =
+    StateNotifierProvider<AuthController, bool>((ref) {
+  return AuthController(repository: ref.read(authRepositoryProvider));
+});
+
+class AuthController extends StateNotifier<bool> {
+  final AuthRepository _repository;
+  AuthController({required AuthRepository repository})
+      : _repository = repository,
+        super(false);
+
+  void login({
+    required BuildContext context,
+    required String email,
+    required String password,
+  }) async {
+    state = true;
+    final result = await _repository.login(email: email, password: password);
+    state = false;
+    result.fold(
+      (failure) { /* toast */ },
+      (user) { rootContext!.go(AppRoutes.home); },
+    );
+  }
+}
+```
+
+Screens `ref.watch` loading state; repositories stay free of widgets.
+
+## When to choose this vs Clean + Firebase
+
+| Signal | Pick |
+|--------|------|
+| Already on Supabase / Postgres | This stack |
+| Need Firebase Analytics/Crashlytics ecosystem | Clean + Firebase guide |
+| Multiple platforms sharing one mental model | Either — enforce via AGENTS.md |
+
+More Supabase detail: [Supabase + Riverpod](/blogs/guides/backend/supabase-riverpod-realtime).
+
+Generate it on [/create](/create).

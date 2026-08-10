@@ -11,7 +11,8 @@ import {
   FlashIcon,
   Globe02Icon,
   Layers01Icon,
-  Shield01Icon
+  Shield01Icon,
+  SourceCodeIcon,
 } from "@hugeicons/core-free-icons"
 import { FeatureCard } from "./bento/FeatureCard"
 import { ArchitecturePreview } from "./bento/previews/ArchitecturePreview"
@@ -22,7 +23,7 @@ import { TechStackPreview } from "./bento/previews/TechStackPreview"
 import { RapidPrototypingPreview } from "./bento/previews/RapidPrototypingPreview"
 import { GlobalReachPreview } from "./bento/previews/GlobalReachPreview"
 import { AIReadyPreview } from "./bento/previews/AIReadyPreview"
-import { useBentoHover } from "./bento/bento-hover-context"
+import { CodePreviewPreview } from "./bento/previews/CodePreviewPreview"
 import { Blur } from "@/components/animate-ui/primitives/effects/blur"
 
 // ─── accent config ────────────────────────────────────────────────────────────
@@ -35,6 +36,7 @@ const accents = {
   rose:    { iconColor: "text-rose-500",    glow: "from-rose-500/10 to-transparent",    chip: "bg-rose-500/8 border-rose-500/15"    },
   cyan:    { iconColor: "text-cyan-500",    glow: "from-cyan-500/10 to-transparent",    chip: "bg-cyan-500/8 border-cyan-500/15"    },
   violet:  { iconColor: "text-violet-500",  glow: "from-violet-500/10 to-transparent",  chip: "bg-violet-500/8 border-violet-500/15"  },
+  teal:    { iconColor: "text-teal-500",    glow: "from-teal-500/10 to-transparent",    chip: "bg-teal-500/8 border-teal-500/15"    },
 } as const
 
 // ─── card meta ────────────────────────────────────────────────────────────────
@@ -95,9 +97,9 @@ const FEATURES = [
     icon: Clock01Icon,
     accent: accents.rose,
     label: "Productivity",
-    gridClass: "md:col-span-2 md:row-span-1",
+    gridClass: "md:col-span-3 md:row-span-1",
     Preview: RapidPrototypingPreview,
-    wide: false,
+    wide: true,
   },
   {
     title: "Global Reach",
@@ -105,9 +107,9 @@ const FEATURES = [
     icon: Globe02Icon,
     accent: accents.cyan,
     label: "Localization",
-    gridClass: "md:col-span-2 md:row-span-1",
+    gridClass: "md:col-span-3 md:row-span-1",
     Preview: GlobalReachPreview,
-    wide: false,
+    wide: true,
   },
   {
     title: "AI-Ready Context",
@@ -115,9 +117,19 @@ const FEATURES = [
     icon: AiBrain01Icon,
     accent: accents.violet,
     label: "AI Assistants",
-    gridClass: "md:col-span-2 md:row-span-1",
+    gridClass: "md:col-span-3 md:row-span-1",
     Preview: AIReadyPreview,
-    wide: false,
+    wide: true,
+  },
+  {
+    title: "Live Code Preview",
+    description: "Inspect the generated scaffold before you download.",
+    icon: SourceCodeIcon,
+    accent: accents.teal,
+    label: "Transparency",
+    gridClass: "md:col-span-3 md:row-span-1",
+    Preview: CodePreviewPreview,
+    wide: true,
   },
 ] as const
 

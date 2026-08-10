@@ -1,0 +1,78 @@
+---
+description: Writing guides for the FlutterInit blog (Guides category)
+globs: content/blog/guides/**/*.mdx
+alwaysApply: false
+---
+
+# FlutterInit Blog — Cursor Writing Guide
+
+Use this file whenever the task is "write a blog post" for flutterinit.com/blog. This is a standing instruction, not a one-off prompt — read it fully before drafting anything.
+
+## Skills to invoke, in order
+
+1. **content-strategy** — before writing, confirm the topic fits an existing content pillar (see Pillars below) and isn't a near-duplicate of a published post. Check `/blog` for existing titles first.
+2. **ai-seo** — apply during outlining. Structure the post so it can be lifted as a direct answer by AI Overviews / Perplexity / ChatGPT: a clear question-shaped H1 or H2, a 2-3 sentence answer immediately below it before the deep-dive.
+3. **programmatic-seo** — apply when the post is one of a combo-matrix series (e.g. state-management × architecture × backend guides). Keep structure identical across the series so it reads as a system, not templated filler.
+4. **seo-audit** — apply after drafting. Check: one H1, logical H2/H3 nesting, meta description present, internal links to the dashboard and related posts, no orphaned post (link to it from at least one other page).
+5. **competitor-alternatives** — only invoke if the post explicitly compares FlutterInit to another tool (very_good_cli, Mason, Flutter's own `flutter create`, starter templates). Keep it factual and specific, never a hit piece.
+6. **edit-article** — final pass on every post. Cut to founder voice: short sentences, plain English, no AI-sounding filler ("In today's fast-paced world," "It's important to note," "Let's dive in"). If a sentence could appear in any generic dev-tools blog, cut or rewrite it.
+
+Do not skip step 6. This is the single highest-leverage step — Arjun rejects drafts that read as generic AI marketing copy.
+
+## Category: Guides
+
+Every post you write under this instruction goes in the **Guides** category (matches the existing `/blog/guides/...` URL structure, e.g. `/blog/guides/state-management/riverpod-clean-firebase`).
+
+Guides are technical deep-dives, not announcements. Rule of thumb: if it doesn't teach a Flutter developer something they can apply in their own project, it's not a guide — it's an update, and update posts are out of scope for this file.
+
+## Voice & style rules (non-negotiable)
+
+- Short, punchy sentences. Plain English over jargon where a plain word works.
+- No throat-clearing intros. Open with the problem or the answer, not "In this guide we will explore."
+- No fluff transitions ("Moreover," "Furthermore," "In conclusion").
+- Every architectural or technical claim must be technically accurate — verify against FlutterInit's actual generation logic (Handlebars templates) rather than assuming. If unsure how FlutterInit actually generates something, say so or check the repo before publishing.
+- Prefer concrete code snippets and real generated file structures over abstract explanation.
+- Write like a founder who built the thing, not a content marketer describing it.
+
+## Post structure template
+
+Use this as the shape, not a rigid form — adapt per topic:
+
+1. **Frontmatter**: title, description (150–160 chars, written for the ai-seo skill's answer-engine framing), category: guides, subcategory (e.g. state-management, architecture, backend), publish date, author (Arjun Mahar), read time estimate.
+2. **Direct-answer opener**: 2–3 sentences answering the core question the title implies. This is what gets lifted into AI answers — make it stand alone.
+3. **Why this combo/topic matters**: the real trade-off or pain point, not generic praise.
+4. **The deep-dive**: architecture explanation, code structure, what FlutterInit actually generates for this configuration, and why each layer is built that way.
+5. **When to choose this vs. alternatives**: brief, honest trade-offs — not everything is right for every project.
+6. **What you get from FlutterInit**: concrete — file tree, a code snippet, or a CLAUDE.md/AGENTS.md excerpt showing the AI context layer in action. Tie back to the product without a hard sell.
+7. **CTA**: single line linking to the dashboard (`/create`) with a specific pre-filled config if possible (query-param prefill), not a generic "get started."
+
+## SEO checklist (apply seo-audit before marking done)
+
+- [ ] One H1 matching the title intent
+- [ ] Meta description under 160 chars, front-loaded with the answer
+- [ ] At least 2 internal links (to another guide + to `/create`)
+- [ ] Code blocks properly fenced with language tags
+- [ ] No canonical override in the page itself — canonical is handled at root per FlutterInit's Next.js config (do not re-introduce the root-layout canonical bug)
+- [ ] Alt text on any images/diagrams
+- [ ] Schema markup considered for how-to or comparison posts (invoke schema-markup skill if not already installed)
+
+## Content pillars (confirm new topics map to one of these)
+
+- **State management deep-dives**: Riverpod, Bloc/Cubit, Provider, MobX — each paired with an architecture and backend, matching the programmatic-seo combo-matrix approach.
+- **Architecture guides**: Clean Architecture, MVVM, Feature-First — what each looks like in a real generated project.
+- **Backend integration guides**: Firebase, Supabase, Appwrite — setup, auth flow, what FlutterInit wires up automatically.
+- **AI-context-layer guides**: how CLAUDE.md/AGENTS.md/DESIGN.md work, why deterministic generation beats AI-generated boilerplate, how to get more out of Cursor/Claude Code with a FlutterInit project.
+- **Comparison/alternative posts**: FlutterInit vs manual setup, vs starter templates, vs other CLIs — factual, specific, only when there's a real distinction to make.
+
+## Suggested next Guides posts (pick from this list unless told otherwise)
+
+1. "Bloc + Feature-First + Supabase — The Complete Flutter Guide" (continues the combo-matrix series already started with Riverpod + Clean + Firebase)
+2. "MVVM + Provider + Appwrite — When Simplicity Beats Scale"
+3. "Why We Generate CLAUDE.md and AGENTS.md With Every Project" (AI-context-layer pillar — this is FlutterInit's actual moat, underrepresented in current content)
+4. "GoRouter vs AutoRoute in a Clean Architecture Flutter App"
+5. "What flutter create Doesn't Give You (And What FlutterInit Adds)" — comparison post, invoke competitor-alternatives, keep factual
+6. "Dio + Interceptors: The Networking Layer FlutterInit Generates by Default"
+
+## Output format
+
+Write posts as MDX files in-repo (per existing project convention), matching the frontmatter schema of the two live posts under `/blog/guides/`. Do not propose a CMS. Save drafts for Arjun's review before treating any post as final — do not auto-publish.

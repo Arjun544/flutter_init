@@ -1,0 +1,45 @@
+---
+title: "Firebase Auth in FlutterInit: What Gets Wired Up Automatically"
+description: "FlutterInit wires Firebase Auth email/password, AppConfig init, AuthService, and repository hooks — you still add google-services and API keys."
+kind: guide
+category: backend
+tags: [firebase, auth, flutter, flutterinit]
+publishedAt: "2026-07-12"
+author: arjun
+stackConfig:
+  architecture: clean
+  stateManagement: riverpod
+  backend: firebase
+  navigation: go_router
+whenToChoose: "Choose Firebase when you want Google’s auth + ecosystem (Analytics, Crashlytics, FCM) and FlutterInit’s email-password scaffold as the starting point."
+---
+
+Select Firebase as the backend and FlutterInit doesn’t stop at a `firebase_auth` dependency. It initializes Firebase in app startup/config, swaps in a real `AuthService`, and connects repositories so login/signup/forgot-password screens already call something real.
+
+## What gets wired
+
+1. **Dependencies** — `firebase_core`, `firebase_auth` (and related bits per template)
+2. **AppConfig / main** — Firebase initialization path for your platforms
+3. **AuthService** — email/password login, signup, reset, logout, auth state
+4. **Repository → presentation** — Clean/Feature-First/MVVM state objects call the repo, not the SDK from widgets
+5. **SETUP.md** — where to drop `google-services.json` / `GoogleService-Info.plist`
+
+You still create a Firebase project and add platform config files. The scaffold doesn’t magically know your project ID.
+
+## What AuthService looks like (pattern)
+
+Firebase auth methods run inside `runTask` and return `Either`-style results — same shape as Supabase/Appwrite services — so swapping backends later doesn’t rewrite every screen.
+
+## What you add next
+
+- Google / Apple sign-in providers
+- Phone auth
+- Security rules / Firestore data (auth alone isn’t your database)
+
+## Related stacks
+
+- Full Clean walkthrough: [Riverpod + Clean + Firebase](/blogs/guides/state-management/riverpod-clean-firebase)
+- Beginner MVVM path: [Provider + MVVM + Firebase](/blogs/guides/state-management/provider-mvvm-firebase)
+- Compare backends: [Appwrite vs Firebase vs Supabase](/blogs/guides/backend/appwrite-vs-firebase-vs-supabase)
+
+Generate Firebase auth on [/create](/create), then follow SETUP.md before `flutter run`.

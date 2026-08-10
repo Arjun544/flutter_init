@@ -2,7 +2,7 @@ export type Kind = 'update' | 'guide'
 
 export interface StackConfig {
   architecture: 'clean' | 'mvvm' | 'feature-first'
-  stateManagement: 'riverpod' | 'bloc' | 'provider' | 'getx' | 'signals'
+  stateManagement: 'riverpod' | 'bloc' | 'provider' | 'getx' | 'signals' | 'mobx'
   backend: 'firebase' | 'supabase' | 'appwrite' | 'none'
   navigation: 'go_router' | 'auto_route' | 'none'
 }

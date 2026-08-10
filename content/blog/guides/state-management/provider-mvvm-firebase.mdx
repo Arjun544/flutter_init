@@ -1,0 +1,277 @@
+---
+title: "Provider + MVVM + Firebase — The Beginner-Friendly Stack"
+description: "Provider + MVVM + Firebase: ChangeNotifier ViewModels, data/ui folders, and Firebase email-password auth for beginners and small teams."
+kind: guide
+category: state-management
+tags: [provider, mvvm, firebase, flutter, beginners]
+publishedAt: "2026-07-29"
+author: arjun
+stackConfig:
+  architecture: mvvm
+  stateManagement: provider
+  backend: firebase
+  navigation: go_router
+whenToChoose: "Choose this stack when you're learning Flutter, shipping with a small team, or want less ceremony than Clean Architecture. Provider's ChangeNotifier model is easy to teach, MVVM's data/ui split is enough structure for most apps under ~20 screens, and Firebase Auth email-password gets you signed-in users without standing up a backend."
+---
+
+Provider + MVVM + Firebase is the beginner-friendly Flutter stack: `ChangeNotifier` ViewModels, a flat `data` / `ui` split, and Firebase email-password auth. You get structure without Clean Architecture's three-layer tax. FlutterInit wires the folders, `provider` package, `go_router` redirects, and Firebase Auth for you.
+
+## What This Stack Generates
+
+Select **Provider + MVVM + Firebase** and you get:
+
+- **MVVM layout** — `lib/src/data` for models/repos, `lib/src/ui` for screens and providers
+- **Provider** — `AuthProvider` / `SessionProvider` as `ChangeNotifier`s
+- **Firebase** — `firebase_core` + `firebase_auth`, email-password login/signup, `google-services.json` / `GoogleService-Info.plist` setup in `SETUP.md`
+- **go_router** — auth-aware redirects between login and home
+
+No use-case classes. No domain entities folder. The repository interface lives next to its Firebase-backed impl under `data/`.
+
+## Project Structure
+
+<Files defaultOpen={["lib", "src", "data", "ui", "auth", "providers"]}>
+  <FolderItem value="lib">
+    <FolderTrigger>lib</FolderTrigger>
+    <FolderContent>
+      <SubFiles>
+        <FolderItem value="src">
+          <FolderTrigger>src</FolderTrigger>
+          <FolderContent>
+            <SubFiles>
+              <FolderItem value="config">
+                <FolderTrigger>config</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>app_config.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="services">
+                <FolderTrigger>services</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>auth_service.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="data">
+                <FolderTrigger>data</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FolderItem value="models">
+                      <FolderTrigger>models</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FileItem>user_model.dart</FileItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                    <FolderItem value="repositories">
+                      <FolderTrigger>repositories</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FileItem>auth_repository.dart</FileItem>
+                          <FileItem>auth_repository_impl.dart</FileItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="ui">
+                <FolderTrigger>ui</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FolderItem value="auth">
+                      <FolderTrigger>auth</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FolderItem value="providers">
+                            <FolderTrigger>providers</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>auth_provider.dart</FileItem>
+                                <FileItem>session_provider.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FileItem>login_screen.dart</FileItem>
+                          <FileItem>signup_screen.dart</FileItem>
+                          <FileItem>forgot_password_screen.dart</FileItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                    <FolderItem value="home">
+                      <FolderTrigger>home</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FileItem>home_page.dart</FileItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+            </SubFiles>
+          </FolderContent>
+        </FolderItem>
+        <FileItem>main.dart</FileItem>
+      </SubFiles>
+    </FolderContent>
+  </FolderItem>
+</Files>
+
+## Understanding Each Layer
+
+### Data — Models and Repositories
+
+MVVM here is two folders, not three Clean layers. `data/` owns the user model, the repository contract, and the Firebase-backed implementation.
+
+```dart
+// data/repositories/auth_repository.dart
+abstract class AuthRepository {
+  Stream<AppUser?> get onAuthStateChanged;
+
+  FutureEither<AppUser> login({
+    required String email,
+    required String password,
+  });
+
+  FutureEither<AppUser> signUp({
+    required String name,
+    required String email,
+    required String password,
+  });
+
+  FutureEither<void> logout();
+}
+```
+
+The impl talks to `AuthService`, which wraps Firebase Auth — screens never import `firebase_auth` directly.
+
+```dart
+// data/repositories/auth_repository_impl.dart
+class AuthRepositoryImpl implements AuthRepository {
+  final AuthService _authService = AuthService.instance;
+
+  @override
+  FutureEither<AppUser> login({
+    required String email,
+    required String password,
+  }) async {
+    final result = await _authService.login(
+      email: email,
+      password: password,
+    );
+
+    return result.flatMap((userData) {
+      if (userData == null) {
+        return left(const ServerFailure('Login failed'));
+      }
+      return right(AppUser(
+        id: userData['id'],
+        email: userData['email'] ?? email,
+        name: userData['name'],
+        photoUrl: userData['photoUrl'],
+      ));
+    });
+  }
+}
+```
+
+### Firebase Auth — Email and Password
+
+`AuthService` is the thin SDK edge. Email-password is the default pattern FlutterInit wires:
+
+```dart
+// services/auth_service.dart
+FutureEither<Map<String, dynamic>?> login({
+  required String email,
+  required String password,
+}) async {
+  return runTask(() async {
+    final credentials = await _firebaseAuth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    final user = credentials.user;
+    if (user == null) return null;
+    return {
+      'id': user.uid,
+      'email': user.email ?? '',
+      'name': user.displayName ?? '',
+      'photoUrl': user.photoURL,
+    };
+  }, requiresNetwork: true);
+}
+```
+
+You still drop in `google-services.json` (Android) and `GoogleService-Info.plist` (iOS) per `SETUP.md`. Firebase initializes once in `AppConfig.init()`.
+
+### UI — Provider as the ViewModel
+
+In this stack, the "ViewModel" is a `ChangeNotifier` registered with the `provider` package. Login calls go through `AuthProvider`; session listening lives in `SessionProvider`.
+
+```dart
+// ui/auth/providers/auth_provider.dart
+class AuthProvider extends ChangeNotifier {
+  final AuthRepository _repository;
+
+  AuthProvider({required AuthRepository repository}) : _repository = repository;
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  void login({
+    required BuildContext context,
+    required String email,
+    required String password,
+  }) async {
+    _setLoading(true);
+    final result = await _repository.login(email: email, password: password);
+    _setLoading(false);
+
+    result.fold(
+      (failure) {
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
+      },
+      (_) {
+        if (context.mounted) context.go(AppRoutes.home);
+      },
+    );
+  }
+}
+```
+
+In the screen: `context.watch<AuthProvider>()` in `build`, `context.read<AuthProvider>()` in button callbacks. That's the whole mental model.
+
+## Navigation with go_router
+
+Auth redirects watch the session stream. Unauthenticated users land on login; authenticated users skip auth screens and go home. Same pattern as the other FlutterInit stacks — only the state glue changes.
+
+## When to Choose This vs Alternatives
+
+**Pick Provider + MVVM + Firebase when:**
+
+- You're a beginner or onboarding juniors — `ChangeNotifier` is the easiest Flutter state story to teach
+- The app is small-to-medium and you don't need feature-sliced Clean folders yet
+- You want Firebase Auth without inventing your own backend
+
+**Skip it when:**
+
+- You need strict domain isolation for a large team — use [Clean Architecture](/blogs/guides/architecture/clean-architecture-generated) instead
+- You want compile-safe providers and test overrides — look at [Riverpod + Clean + Firebase](/blogs/guides/state-management/riverpod-clean-firebase)
+- You need event/state predictability for enterprise flows — Bloc fits better
+
+For a deeper MVVM walkthrough, see the [practical MVVM guide](/blogs/guides/architecture/mvvm-practical-guide). For Firebase Auth setup details, see [Firebase Auth wired up](/blogs/guides/backend/firebase-auth-wired-up).
+
+## Ready to Generate?
+
+Open the [dashboard](/create), pick **MVVM + Provider + Firebase + go_router**, and download a project with this exact shape — folders, auth flow, and `pubspec.yaml` already wired.

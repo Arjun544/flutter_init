@@ -1,0 +1,323 @@
+---
+title: "Bloc + Clean Architecture + Appwrite — The Enterprise Flutter Stack"
+description: "Bloc + Clean Architecture + Appwrite delivers predictable events/states, Clean layers, and a backend you can self-host. The enterprise Flutter stack, explained."
+kind: guide
+category: state-management
+tags: [bloc, clean-architecture, appwrite, flutter, enterprise]
+publishedAt: "2026-08-12"
+author: arjun
+stackConfig:
+  architecture: clean
+  stateManagement: bloc
+  backend: appwrite
+  navigation: go_router
+whenToChoose: "Choose this stack when you need event/state predictability for large teams, Clean Architecture boundaries that survive feature growth, and a backend you can self-host. Bloc's explicit events make auth and domain flows auditable; Appwrite gives you Auth/DB/Storage with an open-source, self-host option when Firebase's cloud-only model is a non-starter."
+---
+
+Bloc + Clean Architecture + Appwrite is the enterprise Flutter stack: explicit events and states, Clean `data` / `domain` / `presentation` folders, and an Appwrite backend you can run on cloud or self-host. Predictable state transitions plus vendor-flexible infra. FlutterInit generates the blocs, repository boundaries, and Appwrite client (`endpoint` + `project id`) so the team starts from a shared shape.
+
+## What This Stack Generates
+
+Select **Bloc + Clean Architecture + Appwrite** and you get:
+
+- **Clean feature folders** — `lib/src/features/auth/{data,domain,presentation}/`
+- **Bloc** — `AuthBloc` / `SessionBloc` with `LoginRequested`-style events and loading states
+- **Appwrite** — `appwrite` package, `Client` + `Account`, email-password sessions via `createEmailPasswordSession`
+- **go_router** — auth redirects driven by session state
+
+Compared to Firebase stacks: no Google Services files. You configure `APPWRITE_ENDPOINT` and `APPWRITE_PROJECT_ID` instead — and you can point that endpoint at Appwrite Cloud or your own server.
+
+## Project Structure
+
+<Files defaultOpen={["lib", "src", "features", "auth", "data", "domain", "presentation", "providers"]}>
+  <FolderItem value="lib">
+    <FolderTrigger>lib</FolderTrigger>
+    <FolderContent>
+      <SubFiles>
+        <FolderItem value="src">
+          <FolderTrigger>src</FolderTrigger>
+          <FolderContent>
+            <SubFiles>
+              <FolderItem value="config">
+                <FolderTrigger>config</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>app_config.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="services">
+                <FolderTrigger>services</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>auth_service.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="features">
+                <FolderTrigger>features</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FolderItem value="auth">
+                      <FolderTrigger>auth</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FolderItem value="data">
+                            <FolderTrigger>data</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FolderItem value="models">
+                                  <FolderTrigger>models</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>user_model.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                                <FolderItem value="repositories">
+                                  <FolderTrigger>repositories</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>auth_repository_impl.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="domain">
+                            <FolderTrigger>domain</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FolderItem value="entities">
+                                  <FolderTrigger>entities</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>user.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                                <FolderItem value="repositories">
+                                  <FolderTrigger>repositories</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>auth_repository.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="presentation">
+                            <FolderTrigger>presentation</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FolderItem value="providers">
+                                  <FolderTrigger>providers</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>auth_bloc.dart</FileItem>
+                                      <FileItem>session_bloc.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                                <FolderItem value="screens">
+                                  <FolderTrigger>screens</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>login_screen.dart</FileItem>
+                                      <FileItem>signup_screen.dart</FileItem>
+                                      <FileItem>forgot_password_screen.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+            </SubFiles>
+          </FolderContent>
+        </FolderItem>
+        <FileItem>main.dart</FileItem>
+      </SubFiles>
+    </FolderContent>
+  </FolderItem>
+</Files>
+
+## Why Bloc Fits Enterprise Teams
+
+Bloc forces every state change through an event. That sounds ceremonial until you're debugging a login race in a six-person team.
+
+- **Events** — what happened (`LoginRequested`, `SignUpRequested`)
+- **States** — what the UI shows (`isLoading`, success/error handled via side effects)
+- **Handlers** — pure-ish async methods that emit new states
+
+No silent `notifyListeners()` from a random widget. You can log every event in CI and replay flows in tests.
+
+```dart
+// presentation/providers/auth_bloc.dart
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  final AuthRepository _repository;
+
+  AuthBloc({required AuthRepository repository})
+      : _repository = repository,
+        super(const AuthState.initial()) {
+    on<LoginRequested>(_onLoginRequested);
+    on<SignUpRequested>(_onSignUpRequested);
+    on<ForgotPasswordRequested>(_onForgotPasswordRequested);
+  }
+
+  Future<void> _onLoginRequested(
+    LoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+
+    final result = await _repository.login(
+      email: event.email,
+      password: event.password,
+    );
+
+    result.fold(
+      (failure) {
+        emit(state.copyWith(isLoading: false));
+        if (event.context.mounted) {
+          showToast(event.context, message: failure.message, status: 'error');
+        }
+      },
+      (_) {
+        emit(state.copyWith(isLoading: false));
+        if (event.context.mounted) {
+          event.context.go(AppRoutes.home);
+        }
+      },
+    );
+  }
+}
+
+abstract class AuthEvent extends Equatable {
+  const AuthEvent();
+  @override
+  List<Object> get props => [];
+}
+
+class LoginRequested extends AuthEvent {
+  final BuildContext context;
+  final String email;
+  final String password;
+  const LoginRequested({
+    required this.context,
+    required this.email,
+    required this.password,
+  });
+}
+
+class AuthState extends Equatable {
+  final bool isLoading;
+  const AuthState({required this.isLoading});
+  const AuthState.initial() : isLoading = false;
+
+  AuthState copyWith({bool? isLoading}) {
+    return AuthState(isLoading: isLoading ?? this.isLoading);
+  }
+
+  @override
+  List<Object?> get props => [isLoading];
+}
+```
+
+UI dispatches events. It doesn't call repositories. That's the boundary enterprise code reviews care about.
+
+## Clean Layers Keep Appwrite Swappable
+
+Domain never imports `package:appwrite`. The repository interface is the contract; data owns the SDK.
+
+```dart
+// domain/repositories/auth_repository.dart
+abstract class AuthRepository {
+  Stream<AppUser?> get onAuthStateChanged;
+
+  FutureEither<AppUser> login({
+    required String email,
+    required String password,
+  });
+
+  FutureEither<AppUser> signUp({
+    required String name,
+    required String email,
+    required String password,
+  });
+
+  FutureEither<void> logout();
+}
+```
+
+`AuthRepositoryImpl` maps Appwrite responses into `AppUser`. Swap the service later — domain and blocs stay put.
+
+## Appwrite — Endpoint + Project ID (Self-Host Friendly)
+
+FlutterInit initializes the Appwrite client from env:
+
+```dart
+// config/app_config.dart
+appwriteClient = Client()
+  ..setEndpoint(
+    dotenv.get('APPWRITE_ENDPOINT', fallback: 'https://cloud.appwrite.io/v1'),
+  )
+  ..setProject(
+    dotenv.get('APPWRITE_PROJECT_ID', fallback: 'your-project-id'),
+  )
+  ..setSelfSigned(status: true);
+
+appwriteAccount = Account(appwriteClient);
+```
+
+Auth uses Account sessions:
+
+```dart
+// services/auth_service.dart
+FutureEither<Map<String, dynamic>?> login({
+  required String email,
+  required String password,
+}) async {
+  return runTask(() async {
+    await _account.createEmailPasswordSession(
+      email: email,
+      password: password,
+    );
+    final user = await _account.get();
+    return {
+      'id': user.$id,
+      'email': user.email,
+      'name': user.name,
+    };
+  }, requiresNetwork: true);
+}
+```
+
+**Why enterprises care:** point `APPWRITE_ENDPOINT` at Appwrite Cloud today, or at a self-hosted instance behind your VPC tomorrow. Same Flutter code. Firebase doesn't give you that lever.
+
+For a fuller backend comparison, see [Appwrite vs Firebase vs Supabase](/blogs/guides/backend/appwrite-vs-firebase-vs-supabase).
+
+## When to Choose This vs Alternatives
+
+**Pick Bloc + Clean + Appwrite when:**
+
+- Multiple developers touch auth and domain flows — events make intent reviewable
+- Compliance or ops wants self-hosting (or the option to move there)
+- You're already standardized on Bloc elsewhere in the org
+
+**Skip it when:**
+
+- The team is small and wants less ceremony — [Provider + MVVM + Firebase](/blogs/guides/state-management/provider-mvvm-firebase) is faster to teach
+- You specifically want Supabase's Postgres + RLS story — see [Bloc + Feature-First + Supabase](/blogs/guides/state-management/bloc-feature-first-supabase)
+- You don't need Clean's folder tax yet — Feature-First + Bloc is enough structure for many mid-size apps
+
+## Ready to Generate?
+
+Open the [dashboard](/create), choose **Clean + Bloc + Appwrite + go_router**, set `APPWRITE_ENDPOINT` and `APPWRITE_PROJECT_ID`, and ship from a stack your team can audit and self-host.

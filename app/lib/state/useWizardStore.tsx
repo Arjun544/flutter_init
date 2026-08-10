@@ -10,8 +10,13 @@ import {
     scaffoldConfigSchema,
     stepOrder,
 } from "@/app/lib/config/schema"
-
-const STORAGE_KEY = "flutter_scaffold_config_v1"
+import {
+    WIZARD_CONFIG_STORAGE_KEY,
+    WIZARD_CONFIG_SYNC_CHANNEL,
+    configsEqual,
+    persistWizardConfig,
+    type WizardConfigSyncMessage,
+} from "@/app/lib/state/configSync"
 
 type WizardContextValue = {
     config: ScaffoldConfig
@@ -53,17 +58,47 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     const [step, setStepInternal] = React.useState<StepId>(stepOrder[0])
     const [isHydrated, setIsHydrated] = React.useState(false)
     const [selectedItem, setSelectedItem] = React.useState<string | null>(null)
-    // Non-persisted: stores binary File objects keyed by fileName
     const [fontFiles, setFontFiles] = React.useState<Map<string, File>>(new Map())
+    const applyingRemoteRef = React.useRef(false)
+
+    const applyRemoteConfig = React.useCallback(
+        (candidate: unknown, source: "storage" | "broadcast") => {
+            const next = safeParseConfig(candidate)
+            setConfig((prev) => {
+                // localStorage is always written with customFonts wiped. Applying
+                // that via the storage event would clear live font metadata in
+                // the tab that still holds File blobs (and in Preview code after
+                // a metadata broadcast). BroadcastChannel carries the real config.
+                const shouldPreserveFonts =
+                    source === "storage" &&
+                    (prev.theme.customFonts?.length ?? 0) > 0 &&
+                    (next.theme.customFonts?.length ?? 0) === 0
+
+                const merged = shouldPreserveFonts
+                    ? {
+                          ...next,
+                          theme: {
+                              ...next.theme,
+                              customFonts: prev.theme.customFonts,
+                          },
+                      }
+                    : next
+
+                if (configsEqual(prev, merged)) return prev
+                applyingRemoteRef.current = true
+                return merged
+            })
+        },
+        []
+    )
 
     React.useEffect(() => {
         if (typeof window === "undefined") return
 
         try {
-            const cached = window.localStorage.getItem(STORAGE_KEY)
+            const cached = window.localStorage.getItem(WIZARD_CONFIG_STORAGE_KEY)
             if (cached) {
-                const parsed = safeParseConfig(JSON.parse(cached))
-                setConfig(parsed)
+                setConfig(safeParseConfig(JSON.parse(cached)))
             }
         } catch {
             // ignore corrupted cache and fallback to defaults
@@ -75,28 +110,61 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     React.useEffect(() => {
         if (!isHydrated) return
         try {
-            // Do not persist custom fonts. They must be re-uploaded on refresh.
-            const configToSave = {
-                ...config,
-                theme: {
-                    ...config.theme,
-                    customFonts: [],
-                },
+            if (applyingRemoteRef.current) {
+                applyingRemoteRef.current = false
+                window.localStorage.setItem(
+                    WIZARD_CONFIG_STORAGE_KEY,
+                    JSON.stringify({
+                        ...config,
+                        theme: { ...config.theme, customFonts: [] },
+                    })
+                )
+            } else {
+                persistWizardConfig(config)
             }
-            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(configToSave))
-            
-            // Sync with dev script if in development
+
             if (process.env.NODE_ENV === "development") {
                 fetch("/api/dev/sync-config", {
                     method: "POST",
                     body: JSON.stringify(config),
-                    headers: { "Content-Type": "application/json" }
-                }).catch(() => { /* Silent failure - script might not be running or API failed */ })
+                    headers: { "Content-Type": "application/json" },
+                }).catch(() => {
+                    /* Silent failure */
+                })
             }
         } catch {
-            // ignore write errors (storage full or unavailable)
+            // ignore write errors
         }
     }, [config, isHydrated])
+
+    React.useEffect(() => {
+        if (!isHydrated || typeof window === "undefined") return
+
+        const onStorage = (event: StorageEvent) => {
+            if (event.key !== WIZARD_CONFIG_STORAGE_KEY || !event.newValue) return
+            try {
+                applyRemoteConfig(JSON.parse(event.newValue), "storage")
+            } catch {
+                // ignore
+            }
+        }
+
+        window.addEventListener("storage", onStorage)
+
+        let channel: BroadcastChannel | null = null
+        if (typeof BroadcastChannel !== "undefined") {
+            channel = new BroadcastChannel(WIZARD_CONFIG_SYNC_CHANNEL)
+            channel.onmessage = (event: MessageEvent<WizardConfigSyncMessage>) => {
+                if (event.data?.type !== "config") return
+                applyRemoteConfig(event.data.config, "broadcast")
+            }
+        }
+
+        return () => {
+            window.removeEventListener("storage", onStorage)
+            channel?.close()
+        }
+    }, [applyRemoteConfig, isHydrated])
 
     const updateConfig = React.useCallback(
         (
@@ -109,9 +177,9 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
                     typeof updater === "function"
                         ? updater(prev)
                         : {
-                            ...prev,
-                            ...updater,
-                        }
+                              ...prev,
+                              ...updater,
+                          }
 
                 return { ...prev, ...next }
             })
@@ -121,7 +189,7 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
 
     const setStep = React.useCallback((nextStep: StepId) => {
         setStepInternal(clampStep(nextStep))
-        setSelectedItem(null) // Reset selection when step changes
+        setSelectedItem(null)
     }, [])
 
     const next = React.useCallback(() => {
@@ -141,18 +209,16 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     const reset = React.useCallback(() => {
         setConfig(defaultConfig)
         setStepInternal(stepOrder[0])
-        setFontFiles(new Map()) // clear non-persisted font blobs too
+        setFontFiles(new Map())
         try {
-            window.localStorage.removeItem(STORAGE_KEY)
+            window.localStorage.removeItem(WIZARD_CONFIG_STORAGE_KEY)
         } catch {
             // ignore
         }
     }, [])
 
     const addFontFile = React.useCallback((file: File, meta: CustomFontEntry) => {
-        // Store the binary blob
         setFontFiles((prev) => new Map(prev).set(meta.fileName, file))
-        // Store metadata in config
         setConfig((prev) => {
             const existing = prev.theme.customFonts ?? []
             const filtered = existing.filter((f) => f.fileName !== meta.fileName)
@@ -211,11 +277,26 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
             removeFontFile,
             clearFontFiles,
         }),
-        [config, isHydrated, next, prev, setStep, step, stepIndex, updateConfig, selectedItem, setSelectedItem, fontFiles, addFontFile, removeFontFile, clearFontFiles]
+        [
+            config,
+            isHydrated,
+            next,
+            prev,
+            setStep,
+            step,
+            stepIndex,
+            updateConfig,
+            selectedItem,
+            setSelectedItem,
+            fontFiles,
+            addFontFile,
+            removeFontFile,
+            clearFontFiles,
+        ]
     )
 
     return (
-        <WizardContext.Provider value= { value } > { children } </WizardContext.Provider>
+        <WizardContext.Provider value={value}>{children}</WizardContext.Provider>
     )
 }
 

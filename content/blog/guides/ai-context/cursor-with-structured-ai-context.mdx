@@ -1,0 +1,71 @@
+---
+title: "How to Get More Out of Cursor When Your Flutter Project Has Structured AI Context"
+description: "FlutterInit projects ship Cursor rules plus AGENTS.md and DESIGN.md. Here’s how to use that context so agents extend your stack instead of rewriting it."
+kind: guide
+category: ai-context
+tags: [cursor, ai-context, agents-md, flutter, flutterinit]
+publishedAt: "2026-08-08"
+author: arjun
+---
+
+Cursor works best when the repo already knows its own rules. A FlutterInit project drops `.cursor/rules/flutter-project.mdc` (always apply) plus `AGENTS.md` and `DESIGN.md`. Your job is to *point* the agent at work, not re-explain Riverpod vs Bloc every chat.
+
+## What Cursor already knows
+
+The generated Cursor rule includes:
+
+- Stack summary (architecture, state, navigation, backend)
+- Architecture and state-management rules
+- Navigation and networking conventions
+- Pointers to AGENTS.md, DESIGN.md, and SETUP.md for deep work
+
+You don’t need to paste “we use Feature-First and go_router” into every prompt. Start with the feature.
+
+## Prompts that work on a FlutterInit repo
+
+**Good:** “Add a `todos` feature following AGENTS.md. Domain entity, repository interface, data impl, Riverpod notifier, screen, and a go_router route.”
+
+**Bad:** “Build a todo app with state management and Firebase however you want.”
+
+The first prompt respects zones. The second invites a parallel architecture.
+
+## Use DESIGN.md for UI work
+
+Before restyling screens, tell Cursor to read `DESIGN.md`. It documents:
+
+- Theme preset and Material 3 / Cupertino notes
+- `context.colors` / `context.appColors` (no hardcoding hex)
+- Typography roles
+- `AppSpacing`, `AppBorders`, `AppShadows`, `AppDurations`
+
+Agents that skip DESIGN.md invent one-off paddings and colors. Agents that read it reuse tokens.
+
+## Safe zones vs caution zones
+
+AGENTS.md splits the tree:
+
+- **Safe:** feature folders, shared widgets, tests
+- **Caution:** `app_router.dart`, `main.dart`, `app_config.dart`, theme, pubspec
+- **Don’t touch:** native folders, secret `.env` values
+
+Ask for changes in safe zones first. When you must touch routing or config, say so explicitly and ask for a minimal diff.
+
+## Verification loop
+
+After an agent change, run what AGENTS.md already recommends:
+
+```bash
+flutter pub get
+flutter analyze
+flutter test
+```
+
+If the stack uses AutoRoute or MobX codegen, run `build_runner` as documented in the generated notes.
+
+## Pair with Claude Code
+
+Same project can use Cursor *and* Claude Code. FlutterInit emits both `.cursor/rules` and `CLAUDE.md` so you’re not maintaining two hand-written briefs.
+
+More on that in [Why We Generate CLAUDE.md and AGENTS.md](/blogs/guides/ai-context/why-claude-and-agents-md). For the generation philosophy, see [Deterministic Generation vs AI Boilerplate](/blogs/guides/ai-context/deterministic-vs-ai-boilerplate).
+
+Scaffold a stack on [/create](/create), then open Cursor on the unzipped project and try one feature add — you’ll feel the difference.

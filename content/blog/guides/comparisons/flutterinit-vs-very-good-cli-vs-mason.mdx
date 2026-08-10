@@ -1,0 +1,54 @@
+---
+title: "FlutterInit vs very_good_cli vs Mason — Choosing a Flutter Scaffolding Tool"
+description: "FlutterInit vs very_good_cli vs Mason: when to use each Flutter scaffolding tool — honest trade-offs for teams picking a starter."
+kind: guide
+category: comparisons
+tags: [very-good-cli, mason, flutterinit, scaffolding, comparison, flutter]
+publishedAt: "2026-08-20"
+author: arjun
+---
+
+If you’re evaluating Flutter scaffolds, you’ll hit **Very Good CLI**, **Mason**, and tools like FlutterInit. They solve overlapping problems differently. This is a decision guide, not a dunk.
+
+## Quick positioning
+
+| Tool | Best at | Trade-off |
+|------|---------|-----------|
+| **very_good_cli** | Opinionated VGV-style projects, strong defaults, team conventions from Very Good Ventures | Less of a multi-backend “pick your stack” wizard; you’re buying into their architecture flavor |
+| **Mason** | Reusable bricks — generate *anything* you template; great for org-wide generators | You maintain the bricks; empty Mason isn’t a product starter by itself |
+| **FlutterInit** | Interactive stack matrix (architecture × state × backend × nav), optional Dio, AI context files (AGENTS/CLAUDE/DESIGN/Cursor) | Younger ecosystem; templates are our opinions, not a blank brick framework |
+
+## Where very_good_cli shines
+
+Very Good CLI is battle-tested in consulting and open-source VGV projects. If your team already standardizes on their patterns, use it. You get cohesion and docs in that ecosystem.
+
+Choose it when **one** strong architecture culture matters more than swapping Firebase for Appwrite in a UI.
+
+## Where Mason shines
+
+Mason is a generator runtime. Bricks can emit Flutter apps, feature slices, or CI files. Large orgs love it because bricks live in *their* git.
+
+Choose Mason when you need **custom** generators beyond any SaaS wizard — and you have time to maintain bricks.
+
+## Where FlutterInit shines
+
+- Dashboard + CLI for the same template set
+- Explicit combos: e.g. Bloc + Feature-First + Supabase
+- Backend auth overlays for Firebase, Supabase, Appwrite
+- Generated **AI context layer** so Cursor/Claude Code inherit the stack
+- Live code preview before download (product surface, not just CLI)
+
+Choose FlutterInit when you want **fast stack selection** plus agent-ready docs without writing bricks first.
+
+## Honest limitations
+
+- FlutterInit is not a general brick marketplace like Mason.
+- very_good_cli may fit better if you’re already in the VGV world.
+- All three beat copy-pasting GitHub starters with stale deps — if you keep them updated.
+
+## Related
+
+- [What flutter create Doesn't Give You](/blogs/guides/comparisons/flutter-create-vs-flutterinit)
+- [Deterministic Generation vs AI Boilerplate](/blogs/guides/ai-context/deterministic-vs-ai-boilerplate)
+
+Try a FlutterInit stack on [/create](/create). If Mason bricks or very_good_cli already define your company standard, stick with what your team ships — consistency beats novelty.
