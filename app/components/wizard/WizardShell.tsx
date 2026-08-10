@@ -195,18 +195,18 @@ export function WizardShell() {
                             variant="outline"
                             asChild
                             disabled={!isValid || isGenerating}
-                            className="h-10 px-4 border-border/40 bg-background/50 shadow-sm cursor-pointer"
+                            className="h-10 px-4 border-border/40 bg-background/50 shadow-xs cursor-pointer"
                         >
                             <Link
-                              href={isValid ? "/create/code" : "#"}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              aria-disabled={!isValid || isGenerating}
-                              className={cn((!isValid || isGenerating) && "pointer-events-none opacity-50")}
+                                href={isValid ? "/create/code" : "#"}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-disabled={!isValid || isGenerating}
+                                className={cn((!isValid || isGenerating) && "pointer-events-none opacity-50")}
                             >
-                              <HugeiconsIcon icon={SourceCodeIcon} className="size-4 mr-1.5" />
-                              <span className="hidden sm:inline">Preview code</span>
-                              <span className="sm:hidden">Code</span>
+                                <HugeiconsIcon icon={SourceCodeIcon} className="size-4 mr-1.5" />
+                                <span className="hidden sm:inline">Preview code</span>
+                                <span className="sm:hidden">Code</span>
                             </Link>
                         </Button>
                         <Button

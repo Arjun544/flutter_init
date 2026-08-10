@@ -1,31 +1,29 @@
 'use client'
 
-import { useState } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { Menu04Icon, Cancel01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
-import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useScroll,
-  useTransform,
-  type MotionValue,
-} from 'motion/react'
 import {
   Highlight,
   HighlightItem,
 } from '@/components/animate-ui/primitives/effects/highlight'
+import { Button } from '@/components/ui/button'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { Cancel01Icon, Menu04Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from '@hugeicons/react'
+import {
+  AnimatePresence,
+  motion,
+  useScroll,
+  useTransform,
+  type MotionValue,
+} from 'motion/react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useState } from 'react'
 
 const NAV_LINKS = [
   { href: '#how-it-works', label: 'How it Works' },
   { href: '#features', label: 'Features' },
   { href: '#showcase', label: 'Showcase' },
-  { href: '/blogs', label: 'Blogs' },
+  { href: '#blogs', label: 'Blogs' },
 ]
 
 const SCROLL_RANGE = 500
@@ -34,15 +32,9 @@ const easeOut: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
 export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
   const isMobile = useIsMobile()
 
   const { scrollY } = useScroll()
-
-  // Track scrolled boolean for mobile menu shape
-  useMotionValueEvent(scrollY, 'change', (y) => {
-    setScrolled(y > SCROLL_RANGE * 0.5)
-  })
 
   // ── Derived motion values ───────────────────────────────────────
 
@@ -63,8 +55,8 @@ export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
   /** Inner horizontal padding: 120px → 20px */
   const navPaddingX = useTransform(scrollY, [0, SCROLL_RANGE], [120, 35], { clamp: true })
 
-  /** Gap between nav links: 32px → 16px (kept for mobile menu spacing) */
-  const linkGap = useTransform(scrollY, [0, SCROLL_RANGE], [32, 16], { clamp: true })
+  /** Right padding after nav links: 0 → 16px when collapsed */
+  const linkPaddingRight = useTransform(scrollY, [0, SCROLL_RANGE], [0, 30], { clamp: true })
 
   /** Bottom border line opacity: 0 → 0 (hidden always, separator removed) */
   const lineOpacity = useTransform(scrollY, [0, SCROLL_RANGE * 0.5], [0, 0], { clamp: true })
@@ -168,25 +160,30 @@ export function Navbar({ githubStars }: { githubStars?: React.ReactNode }) {
           </div>
 
           {/* Center: Nav links — always at the true mid-point of the symmetric padding */}
-          <Highlight
-            mode="parent"
-            hover={true}
-            click={false}
-            controlledItems={true}
-            className="rounded-full bg-zinc-200/50"
-            containerClassName="hidden items-center gap-1 lg:flex"
+          <motion.div
+            className="hidden lg:block"
+            style={{ paddingRight: isMobile ? 0 : linkPaddingRight }}
           >
-            {NAV_LINKS.map((link) => (
-              <HighlightItem key={link.href} value={link.href} asChild>
-                <a
-                  href={link.href}
-                  className="relative z-10 px-3 py-1.5 text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors duration-200"
-                >
-                  {link.label}
-                </a>
-              </HighlightItem>
-            ))}
-          </Highlight>
+            <Highlight
+              mode="parent"
+              hover={true}
+              click={false}
+              controlledItems={true}
+              className="rounded-full bg-zinc-200/50"
+              containerClassName="flex items-center gap-1"
+            >
+              {NAV_LINKS.map((link) => (
+                <HighlightItem key={link.href} value={link.href} asChild>
+                  <a
+                    href={link.href}
+                    className="relative z-10 px-3 py-1.5 text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors duration-200"
+                  >
+                    {link.label}
+                  </a>
+                </HighlightItem>
+              ))}
+            </Highlight>
+          </motion.div>
 
           {/* Right: Actions */}
           <div className="hidden flex-1 items-center justify-end gap-3 lg:flex">

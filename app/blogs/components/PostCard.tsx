@@ -8,6 +8,7 @@ import { AUTHORS } from '@/lib/blog/authors'
 import type { Post } from '@/lib/blog/types'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { BookOpen02Icon, Megaphone01Icon } from '@hugeicons/core-free-icons'
+import { cn } from '@/lib/utils'
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -19,20 +20,37 @@ function formatDate(iso: string) {
 
 interface PostCardProps {
   post: Post
+  /** Stretch to parent height (e.g. equal split in a stacked column). */
+  fillHeight?: boolean
+  /** Hide tags, author, and date — title + description only. */
+  hideMeta?: boolean
 }
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({
+  post,
+  fillHeight = false,
+  hideMeta = false,
+}: PostCardProps) {
   const author = AUTHORS[post.author] ?? { name: post.author, avatar: '' }
   const href = `/blogs/${post.slug.join('/')}`
 
   return (
     <motion.article
       transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-xs hover:shadow-md hover:border-zinc-300 transition-all duration-400"
+      className={cn(
+        'group relative flex flex-col overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-xs hover:shadow-md hover:border-zinc-300 transition-all duration-400',
+        fillHeight && 'h-full',
+      )}
     >
-      <Link href={href} className="block flex-1">
+      <Link href={href} className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         {/* Cover image placeholder */}
-        <div className="mb-4 h-42 w-full overflow-hidden bg-linear-to-br from-zinc-100 to-zinc-50 border border-zinc-100">
+        <div
+          className={cn(
+            'w-full overflow-hidden bg-linear-to-br from-zinc-100 to-zinc-50 border border-zinc-100',
+            hideMeta ? 'mb-5' : 'mb-4',
+            fillHeight ? 'min-h-28 flex-1' : 'h-42',
+          )}
+        >
           {post.coverImage ? (
             <Image
               src={post.coverImage}
@@ -64,40 +82,56 @@ export function PostCard({ post }: PostCardProps) {
           )}
         </div>
 
-        <TagPill kind={post.kind} category={post.category} className="mb-3 px-5" />
+        {!hideMeta && (
+          <TagPill kind={post.kind} category={post.category} className="mb-3 px-5" />
+        )}
 
-        <h3 className="mb-2 text-[15px] px-5 font-semibold text-zinc-900 leading-snug line-clamp-2 group-hover:text-primary transition-colors duration-200">
-          {post.title}
-        </h3>
-
-        <p className="text-[13px] text-zinc-500 leading-relaxed line-clamp-2 px-5">
-          {post.description}
-        </p>
+        <div
+          className={cn(
+            'w-full min-w-0 shrink-0 px-5',
+            hideMeta ? 'pb-8' : 'pb-4',
+          )}
+        >
+          <h3 className="mb-2 line-clamp-2 text-[15px] font-semibold leading-snug text-zinc-900 transition-colors duration-200 group-hover:text-primary">
+            {post.title}
+          </h3>
+          <p
+            className="overflow-hidden text-[13px] leading-relaxed text-zinc-500"
+            style={{
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 2,
+            }}
+          >
+            {post.description}
+          </p>
+        </div>
       </Link>
 
-      {/* Footer */}
-      <div className="flex items-center gap-2.5 border-t border-zinc-100 px-5 py-3">
-        {author.avatar && (
-          <div className="relative size-6 shrink-0 overflow-hidden rounded-full ring-1 ring-zinc-200">
-            <Image
-              src={author.avatar}
-              alt={author.name}
-              fill
-              className="object-cover"
-              sizes="24px"
-            />
-          </div>
-        )}
-        <span className="flex-1 truncate text-[12px] font-medium text-zinc-600">
-          {author.name}
-        </span>
-        <time className="shrink-0 text-[11px] text-zinc-400" dateTime={post.publishedAt}>
-          {formatDate(post.publishedAt)}
-        </time>
-        <span className="shrink-0 text-[11px] text-zinc-400">
-          · {post.readingTime}m
-        </span>
-      </div>
+      {!hideMeta && (
+        <div className="mt-auto flex items-center gap-2.5 border-t border-zinc-100 px-5 py-3">
+          {author.avatar && (
+            <div className="relative size-6 shrink-0 overflow-hidden rounded-full ring-1 ring-zinc-200">
+              <Image
+                src={author.avatar}
+                alt={author.name}
+                fill
+                className="object-cover"
+                sizes="24px"
+              />
+            </div>
+          )}
+          <span className="flex-1 truncate text-[12px] font-medium text-zinc-600">
+            {author.name}
+          </span>
+          <time className="shrink-0 text-[11px] text-zinc-400" dateTime={post.publishedAt}>
+            {formatDate(post.publishedAt)}
+          </time>
+          <span className="shrink-0 text-[11px] text-zinc-400">
+            · {post.readingTime}m
+          </span>
+        </div>
+      )}
     </motion.article>
   )
 }

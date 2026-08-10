@@ -1,3 +1,4 @@
+import { FeaturedGuides } from "@/app/components/landing/FeaturedGuides"
 import { Footer } from "@/app/components/landing/Footer"
 import { GitHubStars, GitHubStarsSkeleton } from "@/app/components/landing/GitHubStars"
 import { HeroSection } from "@/app/components/landing/HeroSection"
@@ -33,6 +34,7 @@ export default function Page() {
                 <StatsSection />
             </Suspense>
             <WhyFlutterInit />
+            <FeaturedGuides />
             <Footer />
         </main>
     )
