@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   title: 'Blog | FlutterInit',
   description:
     'Updates, guides, and deep-dives on Flutter architecture, state management, and backend integrations — from the creator of FlutterInit.',
+  alternates: {
+    canonical: 'https://flutterinit.com/blog',
+  },
   openGraph: {
     title: 'Blog | FlutterInit',
     description:
