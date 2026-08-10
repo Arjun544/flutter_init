@@ -1,0 +1,264 @@
+---
+title: "MobX + Clean Architecture + Firebase — Reactive State Done Right"
+description: "MobX + Clean + Firebase: reactive observables on Clean layers with Firebase Auth. Less common than Riverpod — still a valid FlutterInit stack."
+kind: guide
+category: state-management
+tags: [mobx, clean-architecture, firebase, flutter]
+publishedAt: "2026-08-05"
+author: arjun
+stackConfig:
+  architecture: clean
+  stateManagement: mobx
+  backend: firebase
+  navigation: go_router
+whenToChoose: "Choose this stack when you like MobX's observable/action model (or you're coming from React/web MobX), want Clean Architecture's feature folders, and Firebase as the backend. Be honest with your team: MobX is less common in Flutter than Riverpod or Bloc, so hiring and Stack Overflow answers are thinner — but the pattern works, and FlutterInit generates the codegen setup for you."
+---
+
+MobX + Clean Architecture + Firebase gives you reactive `@observable` state behind Clean `data` / `domain` / `presentation` layers, with Firebase Auth email-password wired in. It's a valid Flutter stack — just less common than Riverpod or Bloc. FlutterInit generates the stores, `build_runner` config, and Firebase Auth service so you're not hand-rolling codegen.
+
+## What This Stack Generates
+
+Select **MobX + Clean Architecture + Firebase** and you get:
+
+- **Clean feature folders** — `lib/src/features/auth/{data,domain,presentation}/`
+- **MobX stores** — `AuthStore` / `SessionStore` with `@observable` + `@action`, plus `mobx`, `flutter_mobx`, and `build_runner`
+- **Firebase** — `AuthService` over `signInWithEmailAndPassword`, plus Google Services setup docs
+- **go_router** — session-aware redirects
+
+Honest caveat up front: most Flutter job posts and tutorials assume Riverpod or Bloc. Pick MobX because you want the reactive model, not because it's the default community pick.
+
+## Project Structure
+
+<Files defaultOpen={["lib", "src", "features", "auth", "data", "domain", "presentation", "providers"]}>
+  <FolderItem value="lib">
+    <FolderTrigger>lib</FolderTrigger>
+    <FolderContent>
+      <SubFiles>
+        <FolderItem value="src">
+          <FolderTrigger>src</FolderTrigger>
+          <FolderContent>
+            <SubFiles>
+              <FolderItem value="config">
+                <FolderTrigger>config</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>app_config.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="services">
+                <FolderTrigger>services</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FileItem>auth_service.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="features">
+                <FolderTrigger>features</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FolderItem value="auth">
+                      <FolderTrigger>auth</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FolderItem value="data">
+                            <FolderTrigger>data</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FolderItem value="models">
+                                  <FolderTrigger>models</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>user_model.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                                <FolderItem value="repositories">
+                                  <FolderTrigger>repositories</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>auth_repository_impl.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="domain">
+                            <FolderTrigger>domain</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FolderItem value="entities">
+                                  <FolderTrigger>entities</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>user.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                                <FolderItem value="repositories">
+                                  <FolderTrigger>repositories</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>auth_repository.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FolderItem value="presentation">
+                            <FolderTrigger>presentation</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FolderItem value="providers">
+                                  <FolderTrigger>providers</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>auth_store.dart</FileItem>
+                                      <FileItem>session_store.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                                <FolderItem value="screens">
+                                  <FolderTrigger>screens</FolderTrigger>
+                                  <FolderContent>
+                                    <SubFiles>
+                                      <FileItem>login_screen.dart</FileItem>
+                                      <FileItem>signup_screen.dart</FileItem>
+                                      <FileItem>forgot_password_screen.dart</FileItem>
+                                    </SubFiles>
+                                  </FolderContent>
+                                </FolderItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+            </SubFiles>
+          </FolderContent>
+        </FolderItem>
+        <FileItem>main.dart</FileItem>
+      </SubFiles>
+    </FolderContent>
+  </FolderItem>
+</Files>
+
+On Clean / Feature-First, MobX stores land under `presentation/providers/` (`auth_store.dart`, `session_store.dart`). On MVVM, they land under `lib/src/ui/auth/stores/` instead.
+
+## Observables, Actions, Reactions
+
+MobX's contract is simple:
+
+- **`@observable`** — state the UI can react to (`isLoading`, user, form fields)
+- **`@action`** — the only place you mutate observables (login, logout, toggle loading)
+- **Reactions** — `Observer` widgets (via `flutter_mobx`) rebuild when tracked observables change
+
+You don't manually call `notifyListeners()`. Codegen wires the tracking.
+
+```dart
+// presentation/providers/auth_store.dart
+part 'auth_store.g.dart';
+
+class AuthStore = AuthStoreBase with _$AuthStore;
+
+abstract class AuthStoreBase with Store {
+  final AuthRepository _repository;
+
+  AuthStoreBase({required AuthRepository repository}) : _repository = repository;
+
+  @observable
+  bool isLoading = false;
+
+  @action
+  void login({
+    required BuildContext context,
+    required String email,
+    required String password,
+  }) async {
+    isLoading = true;
+
+    final result = await _repository.login(email: email, password: password);
+
+    isLoading = false;
+    result.fold(
+      (failure) {
+        if (context.mounted) {
+          showToast(context, message: failure.message, status: 'error');
+        }
+      },
+      (_) {
+        if (context.mounted) context.go(AppRoutes.home);
+      },
+    );
+  }
+}
+```
+
+Screens wrap reactive bits in `Observer`:
+
+```dart
+Observer(
+  builder: (_) => ElevatedButton(
+    onPressed: store.isLoading ? null : () => store.login(...),
+    child: store.isLoading
+        ? const CircularProgressIndicator()
+        : const Text('Sign in'),
+  ),
+)
+```
+
+## Codegen — build_runner Is Required
+
+MobX stores need generated mixins (`_$AuthStore`). FlutterInit adds `mobx`, `flutter_mobx`, `mobx_codegen`, and `build_runner` to `pubspec.yaml`. After you edit a store:
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
+
+Skip this step and you'll get missing `part` / `_$AuthStore` errors. Re-run after every store change. Same story as Hive adapters or AutoRoute — this stack is codegen-heavy by design.
+
+## Domain and Data Still Stay Clean
+
+The store depends on `AuthRepository` — not Firebase. Domain stays SDK-free:
+
+```dart
+// domain/repositories/auth_repository.dart
+abstract class AuthRepository {
+  Stream<AppUser?> get onAuthStateChanged;
+
+  FutureEither<AppUser> login({
+    required String email,
+    required String password,
+  });
+
+  FutureEither<void> logout();
+}
+```
+
+Data implements it via `AuthService` → `FirebaseAuth.signInWithEmailAndPassword`. Drop in `google-services.json` / `GoogleService-Info.plist` per `SETUP.md`. That's the Firebase edge; everything above it stays testable with a fake repository.
+
+## When to Choose This vs Alternatives
+
+**Pick MobX + Clean + Firebase when:**
+
+- Your team already thinks in observables/actions (web MobX, or prior Flutter MobX apps)
+- You want Clean feature folders but prefer MobX ergonomics over Riverpod providers
+- You're fine running `build_runner` as part of the daily loop
+
+**Skip it when:**
+
+- You want the most hireable Flutter stack — prefer [Riverpod + Clean + Firebase](/blogs/guides/state-management/riverpod-clean-firebase)
+- You want zero codegen for state — Provider or Riverpod without code generation is lighter
+- You're new to Clean Architecture itself — start with the [Clean Architecture generated guide](/blogs/guides/architecture/clean-architecture-generated), then layer MobX once the folders make sense
+
+MobX isn't wrong in Flutter. It's just quieter. Generate it when the reactive model is a deliberate choice, not a default.
+
+## Ready to Generate?
+
+Open the [dashboard](/create), select **Clean + MobX + Firebase + go_router**, run `build_runner` once after unzip, and you've got reactive stores sitting on Clean layers with Firebase Auth ready for email-password.

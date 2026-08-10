@@ -1,0 +1,49 @@
+# FlutterInit
+
+> Generate production-ready Flutter projects with your chosen architecture, state management, backend, and navigation — plus AGENTS.md / CLAUDE.md / DESIGN.md for AI coding tools.
+
+Website: https://flutterinit.com
+Dashboard: https://flutterinit.com/create
+Blog: https://flutterinit.com/blogs
+Sitemap: https://flutterinit.com/sitemap.xml
+
+## Product
+
+FlutterInit is a Flutter project generator (web + CLI). Pick architecture (Clean, Feature-First, MVVM, …), state (Riverpod, Bloc, Provider, MobX, …), backend (Firebase, Supabase, Appwrite, or none), and routing (go_router, AutoRoute). Output includes wired auth screens, theme tokens, and AI context files so Cursor / Claude Code follow the stack.
+
+## Guides (combo matrix)
+
+- [Riverpod + Clean + Firebase](https://flutterinit.com/blogs/guides/state-management/riverpod-clean-firebase)
+- [Bloc + Feature-First + Supabase](https://flutterinit.com/blogs/guides/state-management/bloc-feature-first-supabase)
+- [MVVM + Provider + Appwrite](https://flutterinit.com/blogs/guides/state-management/mvvm-provider-appwrite)
+- [Riverpod + Feature-First + Supabase](https://flutterinit.com/blogs/guides/state-management/riverpod-feature-first-supabase)
+- [Provider + MVVM + Firebase](https://flutterinit.com/blogs/guides/state-management/provider-mvvm-firebase)
+- [MobX + Clean + Firebase](https://flutterinit.com/blogs/guides/state-management/mobx-clean-firebase)
+- [Bloc + Clean + Appwrite](https://flutterinit.com/blogs/guides/state-management/bloc-clean-appwrite)
+
+## Architecture & backend
+
+- [Clean Architecture in a generated project](https://flutterinit.com/blogs/guides/architecture/clean-architecture-generated)
+- [Feature-First vs Clean](https://flutterinit.com/blogs/guides/architecture/feature-first-vs-clean)
+- [MVVM practical guide](https://flutterinit.com/blogs/guides/architecture/mvvm-practical-guide)
+- [GoRouter vs AutoRoute](https://flutterinit.com/blogs/guides/architecture/gorouter-vs-autoroute-clean)
+- [Firebase Auth wiring](https://flutterinit.com/blogs/guides/backend/firebase-auth-wired-up)
+- [Supabase + Riverpod](https://flutterinit.com/blogs/guides/backend/supabase-riverpod-realtime)
+- [Appwrite vs Firebase vs Supabase](https://flutterinit.com/blogs/guides/backend/appwrite-vs-firebase-vs-supabase)
+
+## AI context layer
+
+- [Why CLAUDE.md and AGENTS.md](https://flutterinit.com/blogs/guides/ai-context/why-claude-and-agents-md)
+- [Cursor with structured AI context](https://flutterinit.com/blogs/guides/ai-context/cursor-with-structured-ai-context)
+- [Deterministic generation vs AI boilerplate](https://flutterinit.com/blogs/guides/ai-context/deterministic-vs-ai-boilerplate)
+- [DESIGN.md explained](https://flutterinit.com/blogs/guides/ai-context/design-md-explained)
+
+## Comparisons
+
+- [flutter create vs FlutterInit](https://flutterinit.com/blogs/guides/comparisons/flutter-create-vs-flutterinit)
+- [FlutterInit vs very_good_cli vs Mason](https://flutterinit.com/blogs/guides/comparisons/flutterinit-vs-very-good-cli-vs-mason)
+- [Dio + interceptors](https://flutterinit.com/blogs/guides/networking/dio-interceptors)
+
+## Optional
+
+- [Full content index](https://flutterinit.com/llms-full.txt): optional deeper dump (same URLs)

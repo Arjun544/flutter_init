@@ -1,0 +1,54 @@
+---
+title: "DESIGN.md Explained: Giving Your AI Agent the Architecture Decisions It Needs"
+description: "DESIGN.md is FlutterInit’s design-system brief for agents: theme, colors, typography, spacing, and motion — so UI changes stay on-token."
+kind: guide
+category: ai-context
+tags: [design-md, ai-context, theme, flutter, flutterinit]
+publishedAt: "2026-08-22"
+author: arjun
+---
+
+`DESIGN.md` is not a moodboard. It’s a generated contract for UI work: which theme preset you chose, how colors and type resolve, and which spacing/motion tokens exist. Agents that read it stop inventing random `EdgeInsets.all(13)` and hex colors.
+
+## What gets written
+
+At generation time FlutterInit renders `DESIGN.md` from your theme config. Typical sections:
+
+- **Theme overview** — preset, Material 3 vs Cupertino notes, dark mode
+- **Color system** — `context.colors` / `context.appColors`, no hardcoded hex
+- **Typography** — `textTheme` roles; custom font families when uploaded
+- **Spacing, borders, motion** — `AppSpacing`, `AppBorders`, `AppShadows`, `AppDurations`, `AppCurves`
+- Pointers back to `AGENTS.md` for structural rules
+
+Those tokens live under `lib/src/theme/` (for example `theme_constants.dart`, `color_schemes.dart`, `theme.dart`).
+
+## Why agents need this
+
+Without DESIGN.md, an agent “improving” a login screen will:
+
+- Inline `Color(0xFF…)` 
+- Mix font sizes that ignore `textTheme`
+- Ignore dark mode semantic colors
+
+With DESIGN.md, you can say: “Restyle the auth screens using DESIGN.md tokens only.” That’s a constrained, reviewable change.
+
+## How it pairs with AGENTS.md
+
+| File | Answers |
+|------|---------|
+| `AGENTS.md` / `CLAUDE.md` | Where code goes, which state/nav/backend patterns |
+| `DESIGN.md` | How UI should look and feel |
+| `SETUP.md` | How to run and configure backends |
+
+Architecture without design tokens still produces ugly inconsistencies. Design tokens without architecture still dump logic in widgets. You want both.
+
+## Practical workflow
+
+1. Change brand colors in the FlutterInit wizard (or edit theme files carefully).
+2. Keep DESIGN.md in sync when you change generation inputs (regenerate or update the doc).
+3. In Cursor, reference DESIGN.md on any visual task.
+4. Reject PRs that introduce raw hex or one-off ThemeData in features.
+
+Deeper agent workflow: [How to Get More Out of Cursor](/blogs/guides/ai-context/cursor-with-structured-ai-context). Broader moat: [Why We Generate CLAUDE.md and AGENTS.md](/blogs/guides/ai-context/why-claude-and-agents-md).
+
+Generate a themed project on [/create](/create) and open `DESIGN.md` before you touch UI.

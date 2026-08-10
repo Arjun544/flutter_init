@@ -19,6 +19,12 @@
       "sourceType": "github",
       "computedHash": "82588484b29316f3106185374cc6aedf409c38a0698d49f7034c9b5ec07a1aa7"
     },
+    "competitors": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/competitors/SKILL.md",
+      "computedHash": "28d933d676811df76d1c59ccbb99d8768b107ac9f17a721a67dd5a239847984e"
+    },
     "content-strategy": {
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",
@@ -172,6 +178,12 @@
       "source": "jeremylongshore/claude-code-plugins-plus-skills",
       "sourceType": "github",
       "computedHash": "b5f4671cac3f8b6a812a415ddff6f9ed9e37a0daee7260951a479321fca3d509"
+    },
+    "schema": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/schema/SKILL.md",
+      "computedHash": "13693bae311fd444da31a82b3aa46003e12a21220aae98c77ee479fe34116067"
     },
     "seo-audit": {
       "source": "coreyhaines31/marketingskills",

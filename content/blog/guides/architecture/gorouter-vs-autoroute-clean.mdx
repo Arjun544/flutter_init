@@ -1,0 +1,60 @@
+---
+title: "GoRouter vs AutoRoute in a Clean Architecture Flutter App"
+description: "FlutterInit can emit go_router or AutoRoute from one template. Here’s how they differ in a Clean Architecture app — and when to pick each."
+kind: guide
+category: architecture
+tags: [go-router, auto-route, navigation, clean-architecture, flutter]
+publishedAt: "2026-08-03"
+author: arjun
+stackConfig:
+  architecture: clean
+  stateManagement: riverpod
+  backend: firebase
+  navigation: go_router
+whenToChoose: "Pick go_router when you want path-based routes with less codegen. Pick AutoRoute when you want typed routes and are fine running build_runner."
+---
+
+FlutterInit doesn’t maintain two unrelated router codebases. One template — `lib/src/routing/app_router.dart` — branches on your navigation choice. In a Clean Architecture project, screens still live under `lib/src/features/.../presentation/screens`. Only the router API changes.
+
+## What you get with go_router
+
+When navigation is `go_router`, the generator emits a `GoRouter` with path builders for onboarding, login, signup, forgot password, and home. Navigation looks like `context.go` / `context.push`. Deep links are URL-shaped. No `build_runner` step for routes.
+
+```dart
+final GoRouter appRouter = GoRouter(
+  // routes for onboarding, auth, home…
+);
+```
+
+## What you get with AutoRoute
+
+When navigation is `auto_route`, you get `@AutoRouterConfig` on a `RootStackRouter`, plus `auto_route` / `auto_route_generator` in `pubspec.yaml`. Screens are annotated `@RoutePage()`. You run `build_runner` to produce `app_router.gr.dart`. Navigation uses `context.router.push` / `replace` / `pop`.
+
+Typed routes catch typos at compile time. The cost is codegen and a slightly heavier setup.
+
+## Clean Architecture stays the same
+
+Either router:
+
+- Imports feature screens from the Clean/Feature-First tree (or MVVM `ui/` paths when that’s your architecture)
+- Shares `app_routes.dart` and `global_navigator.dart` helpers
+- Must stay in the “modify with caution” zone in AGENTS.md — bad redirects break auth flows
+
+Don’t put routing logic in widgets deep in the tree. Push through the central router.
+
+## When to choose which
+
+| Need | Prefer |
+|------|--------|
+| Fast iteration, web-friendly paths, less tooling | go_router |
+| Compile-time route args, large app with many screens | AutoRoute |
+| GetX for state | GetX navigation is forced — not this pair |
+
+GetX state management forces the GetX router in FlutterInit. Otherwise you choose go_router or AutoRoute (or imperative Navigator).
+
+## Related
+
+- [Clean Architecture in a Generated Project](/blogs/guides/architecture/clean-architecture-generated)
+- [Riverpod + Clean + Firebase](/blogs/guides/state-management/riverpod-clean-firebase)
+
+Generate either router on [/create](/create) and open `lib/src/routing/app_router.dart` — the difference is right there.

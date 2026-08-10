@@ -1,0 +1,58 @@
+---
+title: "Deterministic Generation vs AI-Generated Boilerplate — Why We Chose Handlebars"
+description: "FlutterInit uses Handlebars templates, not an LLM, to emit Flutter scaffolds. Same inputs always produce the same architecture, deps, and AI context files."
+kind: guide
+category: ai-context
+tags: [handlebars, code-generation, ai-context, flutterinit, flutter]
+publishedAt: "2026-08-15"
+author: arjun
+---
+
+FlutterInit does not ask an LLM to invent your project structure. It renders **Handlebars templates** with a typed config: architecture, state, backend, navigation, misc flags. Same inputs → same files. That’s deliberate.
+
+## What “AI-generated boilerplate” gets wrong
+
+Asking ChatGPT for a “Clean Architecture Flutter starter” produces:
+
+- Slightly different folder names every time
+- Half-wired dependencies
+- Auth that almost compiles
+- No shared vocabulary for the next agent
+
+You spend the first week normalizing what the model improvised. That’s the opposite of a scaffold.
+
+## What deterministic generation guarantees
+
+Our generator (`generateFlutterScaffold` on web; CLI overlay after `flutter create`) merges:
+
+1. **Base** — theme, routing, config, utils, LLM docs
+2. **Architecture overlay** — Clean, Feature-First, MVVM, …
+3. **Backend overlay** — Firebase / Supabase / Appwrite auth services
+4. **Optional misc** — Dio, storage, localization, …
+
+Conditional files use flags like `(isBloc)@auth_bloc.dart.hbs`. Riverpod projects don’t get leftover Bloc files. Dio code only appears when you enable it.
+
+## Where AI *does* belong
+
+AI is excellent at **extending** a known structure. It’s poor at inventing a stable team standard from a blank chat.
+
+So we generate:
+
+- The tree and wiring (Handlebars)
+- `AGENTS.md` / `CLAUDE.md` / `DESIGN.md` / Cursor rules (Handlebars partials)
+
+Then you use Cursor or Claude Code *inside* those rails. See [Why We Generate CLAUDE.md and AGENTS.md](/blogs/guides/ai-context/why-claude-and-agents-md).
+
+## Trade-offs we’re honest about
+
+- Templates lag fashion. New packages land when we wire them — not when Twitter does.
+- Feature-First and Clean layouts are intentionally close today; docs and agent rules carry a lot of the distinction.
+- You won’t get a one-off “creative” folder layout. That’s the point.
+
+## Who this is for
+
+Teams that want **repeatable** starters across clients or products. Solo builders who want agents to behave. Anyone tired of re-explaining architecture in every chat.
+
+Compare what you get vs empty `flutter create` in [What flutter create Doesn't Give You](/blogs/guides/comparisons/flutter-create-vs-flutterinit).
+
+Pick a stack on [/create](/create) twice with the same options — you’ll get the same shape. That’s the product.

@@ -22,6 +22,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
+import { AUTHORS } from '@/lib/blog/authors'
 
 export const revalidate = 3600
 
@@ -48,14 +49,19 @@ export async function generateMetadata({
     kind: post.kind,
     category: post.category,
   })
+  const canonicalPath = `/blogs/${post.slug.join('/')}`
 
   return {
     title: post.title,
     description: post.description,
+    alternates: {
+      canonical: canonicalPath,
+    },
     openGraph: {
       title: post.title,
       description: post.description,
       type: 'article',
+      url: canonicalPath,
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt,
       images: [`/api/og?${ogParams.toString()}`],
@@ -116,9 +122,46 @@ export default async function BlogPostPage({
 
   const isGuide = post.kind === 'guide'
   const tocItems = extractTocItems(post.content)
+  const author = AUTHORS[post.author]
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://flutterinit.com'
+  const postUrl = `${siteUrl}/blogs/${post.slug.join('/')}`
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.description,
+    datePublished: post.publishedAt,
+    ...(post.updatedAt ? { dateModified: post.updatedAt } : {}),
+    url: postUrl,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': postUrl },
+    author: author
+      ? {
+          '@type': 'Person',
+          name: author.name,
+          ...(author.github
+            ? { url: `https://github.com/${author.github}` }
+            : {}),
+        }
+      : undefined,
+    publisher: {
+      '@type': 'Organization',
+      name: 'FlutterInit',
+      url: siteUrl,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${siteUrl}/logo.svg`,
+      },
+    },
+    articleSection: post.category,
+    keywords: post.tags.join(', '),
+  }
 
   return (
     <main className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* ── Top nav ── */}
       <div className="border-b border-zinc-200 bg-white sticky top-0 z-10">
         <div className="mx-auto max-w-6xl px-6 py-4 md:px-8">

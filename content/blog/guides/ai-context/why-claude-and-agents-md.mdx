@@ -1,0 +1,64 @@
+---
+title: "Why We Generate CLAUDE.md and AGENTS.md With Every Project"
+description: "FlutterInit ships CLAUDE.md, AGENTS.md, DESIGN.md, and Cursor rules with every scaffold so AI agents know your stack before they touch a file."
+kind: guide
+category: ai-context
+tags: [agents-md, claude-md, ai-context, cursor, flutterinit, flutter]
+publishedAt: "2026-08-01"
+author: arjun
+whenToChoose: "Use this guide when you care more about how Cursor or Claude Code behaves in your repo than which state library you picked. The AI context layer is what keeps generated structure alive after day one."
+---
+
+Most Flutter starters hand you folders and a `pubspec.yaml`. FlutterInit also writes **CLAUDE.md**, **AGENTS.md**, **DESIGN.md**, **SETUP.md**, and a Cursor rule under `.cursor/rules/`. Those files tell coding agents your architecture, state library, router, backend, and UI tokens — so they stop inventing a second pattern on the first feature.
+
+## The problem AI-generated apps hit on day two
+
+You ask an agent to “add a todos feature.” Without project rules it:
+
+- Drops business logic in widgets
+- Spins up a second state library
+- Hardcodes colors that ignore your theme
+- Skips your `Either` / `runTask` networking conventions
+
+Deterministic generation gets you a consistent first commit. The context files keep the *next* hundred commits consistent.
+
+## What each file is for
+
+| File | Who reads it | Job |
+|------|----------------|-----|
+| `AGENTS.md` | Any agent / human | Full stack brief: architecture, state, nav, backend, networking, “safe to modify” zones |
+| `CLAUDE.md` | Claude Code | Same stack rules, framed for Claude Code’s project brief |
+| `DESIGN.md` | Agents touching UI | Theme, colors, typography, spacing, motion tokens |
+| `SETUP.md` | Humans + agents | Env keys, Firebase/Supabase/Appwrite, native setup |
+| `.cursor/rules/flutter-project.mdc` | Cursor | Always-on rule with the same LLM partials |
+
+CLAUDE.md and AGENTS.md share the same Handlebars partials under `templates/flutter/partials/llm/`. One source of truth, two entry points for different tools.
+
+## What’s inside AGENTS.md (and CLAUDE.md)
+
+A generated project doesn’t get generic “write clean code” advice. It gets stack-specific rules:
+
+- Architecture paths (`lib/src/features/**` for Clean / Feature-First, `lib/src/ui/**` for MVVM, …)
+- State patterns (`ref.watch`, `BlocBuilder`, Provider, …)
+- Navigation API (`context.go` vs AutoRoute)
+- Backend conventions for Firebase, Supabase, or Appwrite
+- Networking (`DioService` / `runTask` when Dio is enabled)
+- Add-feature workflow so new slices match the scaffold
+
+Plus hard limits: don’t call backends from widgets, don’t add a second router, don’t commit real `.env` secrets.
+
+## Why this beats pasting a prompt every time
+
+Prompts evaporate. Files in the repo don’t.
+
+When you open the project in Cursor, the always-apply rule loads without ceremony. When you use Claude Code, `CLAUDE.md` is the brief. When a teammate clones the repo six months later, the same constraints still apply.
+
+That’s the moat: **deterministic scaffolding + durable agent context**, not “AI wrote my boilerplate once.”
+
+## Related reading
+
+- [DESIGN.md Explained](/blogs/guides/ai-context/design-md-explained) — UI tokens agents must respect
+- [How to Get More Out of Cursor](/blogs/guides/ai-context/cursor-with-structured-ai-context) — practical workflows
+- [Deterministic Generation vs AI Boilerplate](/blogs/guides/ai-context/deterministic-vs-ai-boilerplate) — why we use Handlebars
+
+Generate a project on [/create](/create) and open `AGENTS.md` first — that’s the map.

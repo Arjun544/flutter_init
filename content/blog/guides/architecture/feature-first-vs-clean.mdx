@@ -1,0 +1,38 @@
+---
+title: "Feature-First vs Clean Architecture — Which One Scales With Your Team"
+description: "In FlutterInit, Feature-First and Clean share feature folders today. Choose based on team mental model and docs — not imaginary file trees."
+kind: guide
+category: architecture
+tags: [feature-first, clean-architecture, flutter, architecture]
+publishedAt: "2026-07-17"
+author: arjun
+---
+
+Feature-First vs Clean is the question every Flutter team argues about. In FlutterInit both options generate `lib/src/features/...` with data/domain/presentation under auth. The scalable choice is about **how your team talks and what AGENTS.md enforces**, not a secret third folder layout.
+
+## Side-by-side
+
+| | Feature-First | Clean |
+|--|---------------|-------|
+| Physical tree (FlutterInit) | `lib/src/features/{feature}/…` | Same shape today |
+| Default mental model | “Ship a feature slice” | “Protect domain from frameworks” |
+| Wizard default | Feature-First is the product default | Opt in when you want the Clean label |
+| Best paired guides | [Riverpod + Feature-First + Supabase](/blogs/guides/state-management/riverpod-feature-first-supabase) | [Clean generated](/blogs/guides/architecture/clean-architecture-generated), [Riverpod + Clean + Firebase](/blogs/guides/state-management/riverpod-clean-firebase) |
+
+## What actually scales with your team
+
+**Small team (1–3):** Feature-First. Less naming ceremony. Same escape hatches when a feature needs a repository interface.
+
+**Larger team / regulated domain:** Lean Clean in language and reviews — domain interfaces, no SDK imports in entities — even if folders look familiar.
+
+**Agents:** Both get architecture rules in AGENTS.md. Wrong choice is letting Cursor invent a third layout.
+
+## MVVM is the other fork
+
+If you want `data` + `ui` without feature packages, use [MVVM](/blogs/guides/architecture/mvvm-practical-guide) instead of this debate.
+
+## Decision rule
+
+If your PR template already says “don’t import Firebase in widgets,” you’re doing Clean. If your board says “finish the billing feature folder,” you’re Feature-First. FlutterInit supports both labels — pick the one your team will enforce.
+
+Generate either on [/create](/create).

@@ -1,0 +1,112 @@
+---
+title: "MVVM + Provider + Appwrite — When Simplicity Beats Scale"
+description: "MVVM with Provider and Appwrite is FlutterInit’s low-ceremony stack: data + ui folders, ChangeNotifier-style auth, and Appwrite sessions."
+kind: guide
+category: state-management
+tags: [provider, mvvm, appwrite, flutter, architecture]
+publishedAt: "2026-07-15"
+author: arjun
+stackConfig:
+  architecture: mvvm
+  stateManagement: provider
+  backend: appwrite
+  navigation: go_router
+whenToChoose: "Pick this when you’re a solo or small team, want Appwrite (including self-host), and don’t need Clean Architecture ceremony yet."
+---
+
+MVVM + Provider + Appwrite is the simple path. FlutterInit puts models/repos under `lib/src/data` and screens under `lib/src/ui`, wires Provider (or Riverpod) auth notifiers, and points `AuthService` at Appwrite’s Account API. You ship faster; you accept less layer theater.
+
+## What This Stack Generates
+
+- `lib/src/data/models` + `lib/src/data/repositories`
+- `lib/src/ui/auth` (screens + `providers/` for Provider)
+- `lib/src/ui/home`, `lib/src/ui/onboarding`
+- Appwrite client + Account in `AppConfig` (`APPWRITE_ENDPOINT`, `APPWRITE_PROJECT_ID`)
+- go_router + AI context files
+
+## Project Structure
+
+<Files defaultOpen={["lib", "src", "ui", "auth"]}>
+  <FolderItem value="lib">
+    <FolderTrigger>lib</FolderTrigger>
+    <FolderContent>
+      <SubFiles>
+        <FolderItem value="src">
+          <FolderTrigger>src</FolderTrigger>
+          <FolderContent>
+            <SubFiles>
+              <FolderItem value="data">
+                <FolderTrigger>data</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FolderItem value="models">
+                      <FolderTrigger>models</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FileItem>user_model.dart</FileItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                    <FolderItem value="repositories">
+                      <FolderTrigger>repositories</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FileItem>auth_repository.dart</FileItem>
+                          <FileItem>auth_repository_impl.dart</FileItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+              <FolderItem value="ui">
+                <FolderTrigger>ui</FolderTrigger>
+                <FolderContent>
+                  <SubFiles>
+                    <FolderItem value="auth">
+                      <FolderTrigger>auth</FolderTrigger>
+                      <FolderContent>
+                        <SubFiles>
+                          <FolderItem value="providers">
+                            <FolderTrigger>providers</FolderTrigger>
+                            <FolderContent>
+                              <SubFiles>
+                                <FileItem>auth_provider.dart</FileItem>
+                                <FileItem>session_provider.dart</FileItem>
+                              </SubFiles>
+                            </FolderContent>
+                          </FolderItem>
+                          <FileItem>login_screen.dart</FileItem>
+                          <FileItem>signup_screen.dart</FileItem>
+                          <FileItem>forgot_password_screen.dart</FileItem>
+                        </SubFiles>
+                      </FolderContent>
+                    </FolderItem>
+                    <FileItem>home/home_page.dart</FileItem>
+                    <FileItem>onboarding/onboarding_page.dart</FileItem>
+                  </SubFiles>
+                </FolderContent>
+              </FolderItem>
+            </SubFiles>
+          </FolderContent>
+        </FolderItem>
+      </SubFiles>
+    </FolderContent>
+  </FolderItem>
+</Files>
+
+## Provider as the “ViewModel”
+
+Generated auth uses a `ChangeNotifier`-style provider that calls the repository and navigates on success. Screens listen with `context.watch` / `Consumer`. No event classes unless you want them later.
+
+## Appwrite specifics
+
+Appwrite auth doesn’t expose the same stream model as Firebase/Supabase. FlutterInit’s Appwrite `AuthService` uses Account email sessions and a manual `StreamController` for auth state. That detail matters when you write session listeners — don’t assume `authStateChanges` is SDK-native.
+
+## When simplicity loses
+
+Move toward [Clean + Bloc + Appwrite](/blogs/guides/state-management/bloc-clean-appwrite) or [Feature-First + Bloc + Supabase](/blogs/guides/state-management/bloc-feature-first-supabase) when multiple teams touch the same features and you need stricter boundaries.
+
+Practical MVVM walkthrough: [MVVM in Flutter](/blogs/guides/architecture/mvvm-practical-guide). Backend comparison: [Appwrite vs Firebase vs Supabase](/blogs/guides/backend/appwrite-vs-firebase-vs-supabase).
+
+Generate this stack on [/create](/create).

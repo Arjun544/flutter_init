@@ -4,7 +4,14 @@ import { HeroSection } from "@/app/components/landing/HeroSection"
 import { Navbar } from "@/app/components/landing/Navbar"
 import { StatsSection, StatsSectionSkeleton } from "@/app/components/landing/StatsSection"
 import { WhyFlutterInit } from "@/app/components/landing/WhyFlutterInit"
+import type { Metadata } from "next"
 import { Suspense } from "react"
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "https://flutterinit.com",
+  },
+}
 
 // Re-render this page (and re-fetch stats from Supabase) at most every 60 seconds.
 // Without this, Next.js statically renders the page once at build time and the

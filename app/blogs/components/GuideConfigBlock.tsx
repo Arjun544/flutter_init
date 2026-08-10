@@ -19,6 +19,7 @@ const STATE_LABELS: Record<StackConfig['stateManagement'], string> = {
   provider: 'Provider',
   getx: 'GetX',
   signals: 'Signals',
+  mobx: 'MobX',
 }
 
 const BACKEND_LABELS: Record<StackConfig['backend'], string> = {

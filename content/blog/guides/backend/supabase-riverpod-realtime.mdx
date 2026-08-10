@@ -1,0 +1,55 @@
+---
+title: "Supabase + Riverpod: Real-Time Data Without the Boilerplate"
+description: "FlutterInit scaffolds Supabase auth and Riverpod providers. Realtime channels are the next step on that base — here’s the honest split."
+kind: guide
+category: backend
+tags: [supabase, riverpod, flutter, realtime]
+publishedAt: "2026-07-19"
+author: arjun
+stackConfig:
+  architecture: feature-first
+  stateManagement: riverpod
+  backend: supabase
+  navigation: go_router
+whenToChoose: "Use Supabase + Riverpod when you want Postgres, email auth, and Riverpod — then add realtime subscriptions on the generated client."
+---
+
+Supabase + Riverpod is popular because Postgres + `ref.watch` is a clean mental model. FlutterInit removes the boring part: initialize Supabase, wire `AuthService` (`signInWithPassword`, `onAuthStateChange`), and hook Riverpod auth controllers. **Realtime table subscriptions are not a fake generated feature** — you add them on the shared client once auth works.
+
+## What the scaffold gives you
+
+- `Supabase.initialize` via `SUPABASE_URL` / `SUPABASE_ANON_KEY`
+- `AuthService` with auth state stream mapped to user maps
+- Riverpod repository + controller providers under your architecture
+- SETUP.md for keys
+
+Combo deep dive: [Riverpod + Feature-First + Supabase](/blogs/guides/state-management/riverpod-feature-first-supabase).
+
+## Auth stream → Riverpod
+
+Supabase emits `onAuthStateChange`. Session providers/Blocs in the scaffold listen through the repository/service so screens don’t subscribe ad hoc.
+
+## Adding realtime (your code, their client)
+
+Once `AppConfig.supabase` exists:
+
+```dart
+// Example pattern — add in a repository, expose via Riverpod StreamProvider
+supabase
+  .from('todos')
+  .stream(primaryKey: ['id'])
+  .map((rows) => rows.map(Todo.fromJson).toList());
+```
+
+Keep the stream in **data**, map to domain models, expose with `StreamProvider` or equivalent. Don’t open channels inside widgets.
+
+## RLS and keys
+
+Anon key in the client is normal. Row Level Security is mandatory for anything serious — FlutterInit can’t invent your policies.
+
+## Related
+
+- [Firebase Auth wiring](/blogs/guides/backend/firebase-auth-wired-up)
+- [Backend comparison](/blogs/guides/backend/appwrite-vs-firebase-vs-supabase)
+
+Generate Supabase + Riverpod on [/create](/create), ship auth, then add one realtime table.

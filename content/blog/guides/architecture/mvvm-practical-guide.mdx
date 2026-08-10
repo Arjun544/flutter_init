@@ -1,0 +1,54 @@
+---
+title: "MVVM in Flutter: A Practical Guide, Not the Textbook Definition"
+description: "FlutterInit’s MVVM is practical: lib/src/data for repos, lib/src/ui for screens and providers — ViewModels without Android textbook baggage."
+kind: guide
+category: architecture
+tags: [mvvm, flutter, architecture, provider]
+publishedAt: "2026-07-24"
+author: arjun
+stackConfig:
+  architecture: mvvm
+  stateManagement: provider
+  backend: none
+  navigation: go_router
+whenToChoose: "Use MVVM when you want a clear data/ui split without feature packages or full Clean ceremony."
+---
+
+Textbook MVVM talks about data binding and `INotifyPropertyChanged`. FlutterInit’s MVVM is simpler: **data** owns models and repositories; **ui** owns screens and state objects (Provider, Riverpod, Bloc, MobX, or plain view models). That’s the practical definition we generate.
+
+## Layout
+
+```
+lib/src/
+  data/
+    models/
+    repositories/
+  ui/
+    auth/          # screens + providers|bloc|stores|…
+    home/
+    onboarding/
+```
+
+No `features/auth/domain` package. Repository interfaces can still live next to implementations under `data/`.
+
+## ViewModels in practice
+
+With Provider selected, auth state is a `ChangeNotifier` under `ui/auth/providers`. With Riverpod, you get providers in the same folder slot. With Bloc, `ui/auth/bloc`. Same screens; different state folder.
+
+Screens should:
+
+- Read state from the ViewModel/provider
+- Call methods like `login` / `signUp`
+- Not touch `AuthService` or Dio directly
+
+## When MVVM is enough
+
+- Apps under ~20 screens
+- Beginners graduating from `setState`
+- Appwrite/Firebase auth without multi-team domain politics
+
+When it’s not: shared domain across modules, heavy testing of use cases, or enterprise review culture — move to [Clean](/blogs/guides/architecture/clean-architecture-generated).
+
+Combo examples: [MVVM + Provider + Appwrite](/blogs/guides/state-management/mvvm-provider-appwrite), [Provider + MVVM + Firebase](/blogs/guides/state-management/provider-mvvm-firebase).
+
+Generate MVVM on [/create](/create).

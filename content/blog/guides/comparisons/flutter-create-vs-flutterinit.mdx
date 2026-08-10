@@ -1,0 +1,50 @@
+---
+title: "What flutter create Doesn't Give You (And What FlutterInit Adds)"
+description: "flutter create gives a counter demo. FlutterInit adds architecture, auth wiring, routing, theme tokens, and AI context files — then you own the code."
+kind: guide
+category: comparisons
+tags: [flutter-create, flutterinit, scaffolding, comparison, flutter]
+publishedAt: "2026-08-06"
+author: arjun
+---
+
+`flutter create` is the right first command for a brand-new app binary. It is not a product architecture. FlutterInit starts from that reality (the CLI literally runs `flutter create`, then overlays) and adds the layers teams rebuild by hand every time.
+
+## What flutter create gives you
+
+- Platform folders (Android, iOS, web, …)
+- A default counter (or empty) UI
+- A minimal `pubspec.yaml`
+- Analyzer / lints defaults
+
+That’s necessary. It isn’t sufficient for auth, features, or agent-assisted development.
+
+## What FlutterInit adds on top
+
+| Layer | FlutterInit |
+|-------|-------------|
+| Architecture | Clean, Feature-First, MVVM, … under `lib/src/` |
+| State | Riverpod, Bloc, Provider, MobX, GetX, … |
+| Navigation | go_router, AutoRoute, or imperative |
+| Backend | Firebase / Supabase / Appwrite auth services + AppConfig |
+| Networking | Optional Dio (+ interceptors) or http |
+| Theme | Tokens + DESIGN.md |
+| AI context | AGENTS.md, CLAUDE.md, Cursor rules, SETUP.md |
+
+You download a zip (web) or generate in-place (CLI). No lock-in SDK in your app — it’s your Dart code.
+
+## Honest trade-offs
+
+- FlutterInit opinionates structure. If you want a totally custom layout, you’ll delete or reshape folders.
+- Templates won’t include every package on pub.dev the week it launches.
+- `flutter create` alone is better when you’re learning Flutter widgets and don’t need auth yet.
+
+## Who should use which
+
+- **Learning Flutter** → `flutter create`
+- **Shipping a client app next week** → FlutterInit (or a maintained template you trust)
+- **Need agents to respect architecture** → FlutterInit’s context files matter more than the folder names
+
+See also [FlutterInit vs very_good_cli vs Mason](/blogs/guides/comparisons/flutterinit-vs-very-good-cli-vs-mason) and [Why We Generate CLAUDE.md and AGENTS.md](/blogs/guides/ai-context/why-claude-and-agents-md).
+
+Build a stack on [/create](/create) and compare the tree to a fresh `flutter create` folder — the gap is obvious.
