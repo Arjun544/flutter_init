@@ -116,7 +116,7 @@ export function Footer() {
               href="/blogs"
               className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors font-medium"
             >
-              Blog
+              Blogs
             </Link>
 
             <div className="flex items-center gap-2 text-[13px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
