@@ -36,7 +36,7 @@
       </td>
       <td width="20"></td>
       <td align="center">
-        <a href="https://flutterinit.com/blog">
+        <a href="https://flutterinit.com/blogs">
           <img src="https://img.shields.io/badge/✍️_Blog_&_Guides-0f172a?style=for-the-badge&logoColor=white" height="40" alt="Blog & Guides" />
         </a>
       </td>
@@ -158,7 +158,7 @@ These files give your AI editor full context about your architecture, state mana
 
 ## ✍️ Blog & Guides
 
-FlutterInit ships a built-in blog at [flutterinit.com/blog](https://flutterinit.com/blog) — a file-based MDX publication powered by Next.js, with two content types:
+FlutterInit ships a built-in blog at [flutterinit.com/blogs](https://flutterinit.com/blogs) — a file-based MDX publication powered by Next.js, with two content types:
 
 | Kind | Purpose |
 |------|---------|

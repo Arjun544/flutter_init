@@ -1,0 +1,57 @@
+---
+title: "Live Code Preview — Inspect Your Flutter Scaffold Before You Download"
+description: "FlutterInit now includes a VS Code–style live code preview. Browse the generated file tree, open tabs, and watch your scaffold update as you change wizard options — before you ever download a ZIP."
+kind: update
+category: announcements
+tags: [code-preview, flutter, tooling, productivity, transparency]
+publishedAt: "2026-08-10"
+author: arjun
+featured: false
+---
+
+Generating a Flutter project should not feel like a black box.
+
+You pick an architecture, a state-management library, a backend, hit **Generate**, and hope the ZIP matches what you imagined. FlutterInit already removed most of that guesswork — and now it goes one step further.
+
+**Live Code Preview** lets you open a full editor-style view of the exact scaffold your current wizard configuration would produce — before you download anything.
+
+## What You Get
+
+Open **Preview code** from the create wizard and a new window loads a VS Code–inspired workspace:
+
+- **Explorer** — a collapsible folder tree of every file in the generated project
+- **Tabs** — open multiple files, pin the ones you care about, close others from a right-click menu
+- **Syntax highlighting** — Dart, YAML, JSON, and more via [Shiki](https://shiki.style/), with selectable highlight styles
+- **Live sync** — change an option in the wizard and the preview regenerates automatically
+
+No refresh button. No second generate step just to “check.” The preview stays in sync with your configuration.
+
+## Why It Matters
+
+Scaffold generators are only useful if you trust them. Seeing `lib/main.dart`, your router setup, theme wiring, and `pubspec.yaml` *before* unzipping removes the last bit of doubt.
+
+It is especially helpful when you are comparing stacks:
+
+- Riverpod vs Bloc folder layout
+- go_router vs auto_route boilerplate
+- Firebase vs Supabase wiring
+- What localization assets get emitted when i18n is enabled
+
+You can flip options in the wizard and watch the tree and file contents update in the preview window.
+
+## How to Try It
+
+1. Go to [flutterinit.com/create](https://flutterinit.com/create)
+2. Configure your project as usual
+3. Click **Preview code** (opens in a new tab)
+4. Browse the explorer, open files, and keep tweaking the wizard
+
+When you are happy with the structure, generate the ZIP as before — the download path is unchanged.
+
+## What’s Next
+
+The preview is read-only by design. It is there for transparency, not for editing the template in the browser. Asset files like images and SVGs show a clear empty state instead of dumping binary noise into the editor.
+
+If you want deeper tooling around the preview — search, diffs between configurations, or sharing a preview link — tell us what would help your workflow most.
+
+Generate with confidence. Inspect first, download when it looks right.

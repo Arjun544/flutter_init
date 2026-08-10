@@ -12,7 +12,7 @@ interface FeaturedPostProps {
 }
 
 export function FeaturedPost({ post }: FeaturedPostProps) {
-  const href = `/blog/${post.slug.join('/')}`
+  const href = `/blogs/${post.slug.join('/')}`
 
   return (
     <article className="group relative overflow-hidden rounded-3xl border border-zinc-200/80 bg-white shadow-xs hover:border-zinc-300 transition-all duration-400">
@@ -28,7 +28,7 @@ export function FeaturedPost({ post }: FeaturedPostProps) {
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full min-h-[280px] items-center justify-center">
+            <div className="flex h-full min-h-70 items-center justify-center">
               <div className="text-center px-8">
                 <div
                   className="mx-auto mb-4 size-16 rounded-2xl flex items-center justify-center shadow-lg"

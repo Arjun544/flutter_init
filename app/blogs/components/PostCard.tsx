@@ -23,7 +23,7 @@ interface PostCardProps {
 
 export function PostCard({ post }: PostCardProps) {
   const author = AUTHORS[post.author] ?? { name: post.author, avatar: '' }
-  const href = `/blog/${post.slug.join('/')}`
+  const href = `/blogs/${post.slug.join('/')}`
 
   return (
     <motion.article

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   description:
     'Updates, guides, and deep-dives on Flutter architecture, state management, and backend integrations — from the creator of FlutterInit.',
   alternates: {
-    canonical: 'https://flutterinit.com/blog',
+    canonical: 'https://flutterinit.com/blogs',
   },
   openGraph: {
     title: 'Blog | FlutterInit',
@@ -130,7 +130,7 @@ export default async function BlogPage({
     if (selectedYear !== 'all') p.set('year', selectedYear)
     if (selectedMonth !== 'all') p.set('month', selectedMonth)
     if (selectedSort !== 'desc') p.set('sort', selectedSort)
-    return `/blog?${p.toString()}`
+    return `/blogs?${p.toString()}`
   }
 
   const getPageNumbers = () => {

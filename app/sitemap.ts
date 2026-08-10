@@ -7,7 +7,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getAllPosts()
 
   const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
-    url: `${baseUrl}/blog/${post.slug.join('/')}`,
+    url: `${baseUrl}/blogs/${post.slug.join('/')}`,
     lastModified: new Date(post.updatedAt ?? post.publishedAt),
     changeFrequency: 'monthly' as const,
     priority: post.kind === 'guide' ? 0.7 : 0.6,
@@ -27,7 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/blog`,
+      url: `${baseUrl}/blogs`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,

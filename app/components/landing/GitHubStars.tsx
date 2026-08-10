@@ -105,7 +105,7 @@ export async function GitHubStars({ variant = 'default' }: { variant?: 'default'
 export function GitHubStarsSkeleton({ variant = 'default' }: { variant?: 'default' | 'sm' }) {
   if (variant === 'sm') {
     return (
-      <div className="flex items-center gap-2.5 h-9 px-3 rounded-lg bg-white border border-zinc-200 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] w-[120px] animate-pulse">
+      <div className="flex items-center gap-2.5 h-9 px-3 rounded-lg bg-white border border-zinc-200 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] w-30 animate-pulse">
         <div className="flex items-center gap-1.5">
           <div className="w-4 h-4 rounded-full bg-zinc-100" />
           <div className="w-10 h-3 bg-zinc-100 rounded" />

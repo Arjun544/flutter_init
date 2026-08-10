@@ -8,12 +8,12 @@ import rehypeSlug from 'rehype-slug'
 import { getAllPosts } from '@/lib/blog/getAllPosts'
 import { getPostBySlug } from '@/lib/blog/getPostBySlug'
 import { getRelatedPosts } from '@/lib/blog/getRelatedPosts'
-import { mdxComponents } from '@/app/blog/components/MDXComponents'
-import { AuthorByline } from '@/app/blog/components/AuthorByline'
-import { TagPill } from '@/app/blog/components/TagPill'
-import { GuideConfigBlock } from '@/app/blog/components/GuideConfigBlock'
-import { RelatedPosts } from '@/app/blog/components/RelatedPosts'
-import { TableOfContents, type TocItem } from '@/app/blog/components/TableOfContents'
+import { mdxComponents } from '@/app/blogs/components/MDXComponents'
+import { AuthorByline } from '@/app/blogs/components/AuthorByline'
+import { TagPill } from '@/app/blogs/components/TagPill'
+import { GuideConfigBlock } from '@/app/blogs/components/GuideConfigBlock'
+import { RelatedPosts } from '@/app/blogs/components/RelatedPosts'
+import { TableOfContents, type TocItem } from '@/app/blogs/components/TableOfContents'
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -129,7 +129,7 @@ export default async function BlogPostPage({
 
             <nav className="flex items-center gap-6">
               <Link
-                href="/blog"
+                href="/blogs"
                 className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
               >
                 Blog
@@ -163,12 +163,12 @@ export default async function BlogPostPage({
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <BreadcrumbLink asChild>
-                      <Link href="/blog">Blog</Link>
+                      <Link href="/blogs">Blog</Link>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="text-zinc-800 font-medium truncate max-w-[200px] sm:max-w-xs">
+                    <BreadcrumbPage className="text-zinc-800 font-medium truncate max-w-50 sm:max-w-xs">
                       {post.title}
                     </BreadcrumbPage>
                   </BreadcrumbItem>
