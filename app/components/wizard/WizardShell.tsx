@@ -129,11 +129,6 @@ export function WizardShell() {
         }
     }
 
-    const progress = React.useMemo(
-        () => Math.round(((stepIndex + 1) / stepOrder.length) * 100),
-        [stepIndex]
-    )
-
     const handleNext = async () => {
         if (stepIndex === stepOrder.length - 1) {
             await handleGenerate()
@@ -195,7 +190,7 @@ export function WizardShell() {
                             variant="outline"
                             asChild
                             disabled={!isValid || isGenerating}
-                            className="h-10 px-4 border-border/40 bg-background/50 shadow-xs cursor-pointer"
+                            className="hidden lg:inline-flex h-10 px-4 border-border/40 bg-background/50 shadow-xs cursor-pointer"
                         >
                             <Link
                                 href={isValid ? "/create/code" : "#"}
@@ -205,8 +200,7 @@ export function WizardShell() {
                                 className={cn((!isValid || isGenerating) && "pointer-events-none opacity-50")}
                             >
                                 <HugeiconsIcon icon={SourceCodeIcon} className="size-4 mr-1.5" />
-                                <span className="hidden sm:inline">Preview code</span>
-                                <span className="sm:hidden">Code</span>
+                                Preview code
                             </Link>
                         </Button>
                         <Button
@@ -251,6 +245,30 @@ export function WizardShell() {
                         </div>
                     </main>
                 </div>
+
+                {/* Mobile floating preview — keeps header uncluttered on small screens */}
+                <Button
+                    asChild
+                    disabled={!isValid || isGenerating}
+                    className={cn(
+                        "lg:hidden fixed z-40 bottom-6 right-4 h-12 gap-2 rounded-xl px-5",
+                        "bg-primary text-primary-foreground shadow-lg",
+                        "hover:bg-primary/90 active:scale-[0.98] transition-transform",
+                        (!isValid || isGenerating) && "opacity-50"
+                    )}
+                >
+                    <Link
+                        href={isValid ? "/create/code" : "#"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Preview code"
+                        aria-disabled={!isValid || isGenerating}
+                        className={cn((!isValid || isGenerating) && "pointer-events-none")}
+                    >
+                        <HugeiconsIcon icon={SourceCodeIcon} className="size-4" />
+                        Preview
+                    </Link>
+                </Button>
 
                 <PackageInfoPanel />
             </SidebarInset>

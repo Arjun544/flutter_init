@@ -61,7 +61,7 @@ function FolderTrigger({
 }: FolderTriggerProps) {
   return (
     <FolderHeaderPrimitive>
-      <FolderTriggerPrimitive className="w-full text-start">
+      <FolderTriggerPrimitive className="w-full text-start cursor-pointer">
         <FolderHighlightPrimitive>
           <FolderPrimitive className="flex items-center justify-between gap-2 p-2 pointer-events-none">
             <div
