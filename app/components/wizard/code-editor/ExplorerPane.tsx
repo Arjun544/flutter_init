@@ -84,7 +84,7 @@ export function ExplorerPane({
             open={openFolders}
             onOpenChange={setOpenFolders}
             className={cn(
-              "h-full py-0 pl-2 pr-0 md:**:data-[slot=folder]:py-0.5 md:**:data-[slot=file]:py-0.5",
+              "h-full py-0 pl-2 pr-2 md:**:data-[slot=folder]:py-0.5 md:**:data-[slot=file]:py-0.5",
               "[scrollbar-width:none] hover:[scrollbar-width:thin]",
               "[&::-webkit-scrollbar]:w-0 hover:[&::-webkit-scrollbar]:w-1.5",
               "[&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-transparent",
