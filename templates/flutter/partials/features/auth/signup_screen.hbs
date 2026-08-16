@@ -8,7 +8,7 @@ import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}pr
 {{else if flags.isProvider}}
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/{{else if (eq architecture "mvc")}}controllers/auth/{{else if (eq architecture "mvvm")}}ui/auth/providers/{{else}}features/auth/presentation/providers/{{/if}}auth_provider.dart';
 {{else if flags.isGetX}}
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/controllers/auth/{{else if (eq architecture "mvc")}}controllers/auth/{{else if (eq architecture "mvvm")}}ui/auth/controllers/{{else}}features/auth/presentation/controllers/{{/if}}auth_controller.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/controllers/auth/{{else if (eq architecture "mvc")}}controllers/auth/{{else if (eq architecture "mvvm")}}ui/auth/controllers/{{else}}features/auth/presentation/providers/{{/if}}auth_controller.dart';
 {{else if flags.isMobX}}
 {{#if flags.usesFlutterHooks}}
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/{{else if (eq architecture "mvc")}}controllers/auth/{{else if (eq architecture "mvvm")}}ui/auth/stores/{{else}}features/auth/presentation/providers/{{/if}}auth_store.dart';
@@ -22,6 +22,47 @@ import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}pr
 {{#if (eq flags.routerPackage "auto_route")}}
 @RoutePage()
 {{/if}}
+{{#if flags.isGetX}}
+class SignupScreen extends GetView<AuthController> {
+  const SignupScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = context.theme.colorScheme;
+    final tt = context.theme.textTheme;
+
+    Future<void> handleSignup() async {
+      if (!(controller.signUpFormKey.currentState?.validate() ?? false)) return;
+
+      controller.signUp(
+        context: context, 
+        name: controller.nameController.text,
+        email: controller.signUpEmailController.text, 
+        password: controller.signUpPasswordController.text,
+      );
+    }
+
+    return Obx(() {
+      final isLoading = controller.isLoading.value;
+      return _SignupView(
+        formKey: controller.signUpFormKey,
+        nameController: controller.nameController,
+        emailController: controller.signUpEmailController,
+        passwordController: controller.signUpPasswordController,
+        confirmPasswordController: controller.signUpConfirmPasswordController,
+        obscurePassword: controller.signUpObscurePassword.value,
+        obscureConfirmPassword: controller.signUpObscureConfirmPassword.value,
+        isLoading: isLoading,
+        onToggleObscure: () => controller.signUpObscurePassword.toggle(),
+        onToggleConfirmObscure: () => controller.signUpObscureConfirmPassword.toggle(),
+        onSignup: handleSignup,
+        cs: cs,
+        tt: tt,
+      );
+    });
+  }
+}
+{{else}}
 {{#if flags.usesFlutterHooks}}
 class SignupScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}HookWidget{{/if}} {
   const SignupScreen({super.key});
@@ -332,6 +373,7 @@ class _SignupScreenState extends {{#if flags.isRiverpod}}ConsumerState<SignupScr
   }
 }
 {{/if}}
+{{/if}}
 
 class _SignupView extends StatelessWidget {
   const _SignupView({
@@ -479,7 +521,7 @@ class _SignupView extends StatelessWidget {
                     {{else if (eq flags.routerPackage "auto_route")}}
                     context.pushRoute(const LoginRoute());
                     {{else if flags.isGetX}}
-                    Get.toNamed(AppRoutes.login);
+                    Get.toNamed<dynamic>(AppRoutes.login);
                     {{else}}
                     Navigator.pushNamed(context, AppRoutes.login);
                     {{/if}}
