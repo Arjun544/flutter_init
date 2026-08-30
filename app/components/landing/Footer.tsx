@@ -10,13 +10,21 @@ import {
 import { HugeiconsIcon } from '@hugeicons/react';
 import Image from "next/image";
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
 
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setCurrentYear(new Date().getFullYear());
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const handleCopyEmail = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -97,7 +105,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2 text-zinc-500 font-medium text-sm">
-            <span>© {currentYear} FlutterInit.</span>
+            <span>© {currentYear ?? ''} FlutterInit.</span>
             <span className="hidden md:inline">Built with</span>
             <HugeiconsIcon icon={FavouriteIcon} size={16} className="text-rose-500 fill-rose-500 animate-pulse" />
             <span>by</span>

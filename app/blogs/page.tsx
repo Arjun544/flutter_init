@@ -14,8 +14,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
-
-export const revalidate = 3600
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
   title: 'Blogs | FlutterInit',
@@ -34,7 +33,38 @@ export const metadata: Metadata = {
 
 const POSTS_PER_PAGE = 24
 
-export default async function BlogPage({
+export default function BlogPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    page?: string
+    kind?: string
+    category?: string
+    year?: string
+    month?: string
+    sort?: string
+  }>
+}) {
+  return (
+    <Suspense fallback={<BlogPageSkeleton />}>
+      <BlogPageContent searchParams={searchParams} />
+    </Suspense>
+  )
+}
+
+function BlogPageSkeleton() {
+  return (
+    <main className="min-h-screen bg-white">
+      <div className="mx-auto max-w-7xl px-6 py-12 md:px-12">
+        <div className="h-10 w-32 animate-pulse rounded bg-zinc-100" />
+        <div className="mt-3 h-5 w-80 max-w-full animate-pulse rounded bg-zinc-100" />
+        <div className="mt-10 h-12 w-full animate-pulse rounded-xl bg-zinc-100" />
+      </div>
+    </main>
+  )
+}
+
+async function BlogPageContent({
   searchParams,
 }: {
   searchParams: Promise<{

@@ -16,6 +16,7 @@ import { canPreviewAsText } from "@/app/components/wizard/code-editor/unzipScaff
 import { scaffoldConfigSchema } from "@/app/lib/config/schema"
 import { useWizard } from "@/app/lib/state/useWizardStore"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 export function CodeEditorWorkspace() {
@@ -87,8 +88,14 @@ export function CodeEditorWorkspace() {
 
   if (!isHydrated) {
     return (
-      <div className="flex h-dvh items-center justify-center bg-background text-sm text-muted-foreground">
-        Restoring session…
+      <div className="flex h-dvh items-center justify-center bg-background px-6 text-sm text-muted-foreground">
+        <div className="flex items-center gap-3 rounded-xl border border-border/50 bg-card/50 px-4 py-3 shadow-sm">
+          <Spinner className="size-5 text-primary" />
+          <div className="flex flex-col gap-0.5">
+            <span className="font-medium text-foreground">Restoring session</span>
+            <span className="text-xs">Loading your saved project settings…</span>
+          </div>
+        </div>
       </div>
     )
   }

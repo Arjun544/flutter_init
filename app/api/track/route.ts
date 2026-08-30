@@ -70,8 +70,6 @@ function buildTrackPayload(input: unknown): TrackPayload | null {
     }
 }
 
-export const runtime = "nodejs"
-
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json()

@@ -3,9 +3,6 @@ import { NextRequest } from "next/server"
 import { scaffoldConfigSchema } from "@/app/lib/config/schema"
 import { generateFlutterScaffold } from "@/app/lib/generator"
 
-export const runtime = "nodejs"
-export const dynamic = "force-dynamic"
-
 export async function POST(request: NextRequest) {
     try {
         // Payload arrives as multipart/form-data so that binary font blobs can
@@ -30,7 +27,7 @@ export async function POST(request: NextRequest) {
         const zipBuffer = await generateFlutterScaffold(config, fontEntries)
         const fileName = `${config.appName.replace(/\s+/g, "-").toLowerCase()}.zip`
 
-        return new Response(zipBuffer as any, {
+        return new Response(new Uint8Array(zipBuffer), {
             status: 200,
             headers: {
                 "Content-Type": "application/zip",
