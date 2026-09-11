@@ -1,7 +1,7 @@
 import '../../imports/imports.dart';
 
 /// A wrapper widget that provides skeleton loading effects.
-/// 
+///
 /// Uses [Skeletonizer] if enabled.
 class SkeletonWrapper extends StatelessWidget {
   final Widget child;
@@ -51,7 +51,6 @@ class SkeletonWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!enabled) return child;
 
-    {{#if flags.usesSkeletonizer}}
     return Skeletonizer(
       enabled: isLoading,
       effect: effect,
@@ -64,18 +63,5 @@ class SkeletonWrapper extends StatelessWidget {
       ignorePointers: ignorePointers,
       child: child,
     );
-    {{else}}
-    if (isLoading) {
-      // Simple fallback for loading state if skeletonizer is not enabled
-      return AbsorbPointer(
-        absorbing: ignorePointers,
-        child: Opacity(
-          opacity: 0.5,
-          child: child,
-        ),
-      );
-    }
-    return child;
-    {{/if}}
   }
 }

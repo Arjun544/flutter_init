@@ -8,11 +8,14 @@ class HiveService {
 
   /// Initialize Hive and open a default box.
   FutureEither<void> init() async {
-    return runTask(() async {
-      await Hive.initFlutter();
-      await Hive.openBox<dynamic>('app_box');
-      AppLogger.info('Hive initialized');
-    });
+    return runTask(
+      () async {
+        await Hive.initFlutter();
+        await Hive.openBox<dynamic>('app_box');
+      },
+      operation: 'hive.init',
+      category: LogCategory.database,
+    );
   }
 
   /// Get data from the default box.
@@ -20,40 +23,58 @@ class HiveService {
     try {
       final box = Hive.box<dynamic>('app_box');
       return box.get(key, defaultValue: defaultValue) as T?;
-    } catch (e) {
-      AppLogger.error('Hive get error', e);
+    } catch (_) {
       return defaultValue;
     }
   }
 
   /// Put data into the default box.
   FutureEither<void> put(String key, dynamic value) async {
-    return runTask(() async {
-      final box = Hive.box<dynamic>('app_box');
-      await box.put(key, value);
-    });
+    return runTask(
+      () async {
+        final box = Hive.box<dynamic>('app_box');
+        await box.put(key, value);
+      },
+      operation: 'hive.put',
+      category: LogCategory.database,
+      context: {'key': key},
+    );
   }
 
   /// Delete data from the default box.
   FutureEither<void> delete(String key) async {
-    return runTask(() async {
-      final box = Hive.box<dynamic>('app_box');
-      await box.delete(key);
-    });
+    return runTask(
+      () async {
+        final box = Hive.box<dynamic>('app_box');
+        await box.delete(key);
+      },
+      operation: 'hive.delete',
+      category: LogCategory.database,
+      context: {'key': key},
+    );
   }
 
   /// Clear all data from the default box.
   FutureEither<void> clear() async {
-    return runTask(() async {
-      final box = Hive.box<dynamic>('app_box');
-      await box.clear();
-    });
+    return runTask(
+      () async {
+        final box = Hive.box<dynamic>('app_box');
+        await box.clear();
+      },
+      operation: 'hive.clear',
+      category: LogCategory.database,
+    );
   }
 
   /// Open a custom box for specialized storage.
   FutureEither<Box<T>> openCustomBox<T>(String name) async {
-    return runTask(() async {
-      return await Hive.openBox<T>(name);
-    });
+    return runTask(
+      () async {
+        return await Hive.openBox<T>(name);
+      },
+      operation: 'hive.openCustomBox',
+      category: LogCategory.database,
+      context: {'box': name},
+    );
   }
 }

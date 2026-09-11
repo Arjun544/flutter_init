@@ -8,7 +8,9 @@ extension StringExtension on String {
 
   bool get isValidPhoneNumber {
     if (length > 16 || length < 9) return false;
-    return RegExp(r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$').hasMatch(this);
+    return RegExp(
+      r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$',
+    ).hasMatch(this);
   }
 
   bool get isValidUrl {

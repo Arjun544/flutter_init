@@ -43,9 +43,14 @@ export function deriveFontFamily(fileName: string): string {
 
 export const customFontEntrySchema = z.object({
     /** Logical font family name, e.g. "Inter" */
-    family: z.string().min(1),
+    family: z.string()
+        .trim()
+        .min(1)
+        .regex(/^[A-Za-z][A-Za-z0-9 _-]*$/, "Font family contains unsupported characters"),
     /** Original file name, e.g. "Inter-Bold.ttf" */
-    fileName: z.string().min(1),
+    fileName: z.string()
+        .trim()
+        .regex(/^[A-Za-z0-9][A-Za-z0-9._-]*\.(ttf|otf|ttc)$/i, "Font file name must be a safe .ttf, .otf, or .ttc file name"),
     style: fontStyleSchema.default("normal"),
     weight: fontWeightSchema.default("400"),
 })

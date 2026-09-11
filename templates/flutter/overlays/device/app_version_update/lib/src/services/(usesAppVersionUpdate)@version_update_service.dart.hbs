@@ -13,12 +13,17 @@ class VersionUpdateService {
     String? appleId,
     String? playStoreId,
   }) async {
-    return runTask(() async {
-      return await AppVersionUpdate.checkForUpdates(
-        appleId: appleId,
-        playStoreId: playStoreId,
-      );
-    }, requiresNetwork: true);
+    return runTask(
+      () async {
+        return await AppVersionUpdate.checkForUpdates(
+          appleId: appleId,
+          playStoreId: playStoreId,
+        );
+      },
+      operation: 'versionUpdate.checkForUpdate',
+      category: LogCategory.app,
+      requiresNetwork: true,
+    );
   }
 
   /// High-level method to check for updates and show the dialog automatically if available.
@@ -27,28 +32,30 @@ class VersionUpdateService {
     String? playStoreId,
     bool mandatory = false,
   }) async {
-    return runTask(() async {
-      final result = await AppVersionUpdate.checkForUpdates(
-        appleId: appleId,
-        playStoreId: playStoreId,
-      );
+    return runTask(
+      () async {
+        final result = await AppVersionUpdate.checkForUpdates(
+          appleId: appleId,
+          playStoreId: playStoreId,
+        );
 
-      if (result.canUpdate ?? false) {
-        final context = rootContext;
-        if (context == null) {
-          AppLogger.warning('Cannot show update dialog: rootContext is null');
-          return;
-        }
+        if (result.canUpdate ?? false) {
+          final context = rootContext;
+          if (context == null) return;
 
-        if(context.mounted){
-          AppVersionUpdate.showAlertUpdate(
-            appVersionResult: result,
-            context: context,
-            mandatory: mandatory,
-          );
+          if (context.mounted) {
+            AppVersionUpdate.showAlertUpdate(
+              appVersionResult: result,
+              context: context,
+              mandatory: mandatory,
+            );
+          }
         }
-      }
-    }, requiresNetwork: true);
+      },
+      operation: 'versionUpdate.checkAndShowUpdate',
+      category: LogCategory.app,
+      requiresNetwork: true,
+    );
   }
 
   /// Display a platform-specific update dialog.
@@ -60,20 +67,24 @@ class VersionUpdateService {
     String? cancelText,
     String? updateText,
   }) async {
-    return runTask(() async {
-      final context = rootContext;
-      if (context == null) return;
+    return runTask(
+      () async {
+        final context = rootContext;
+        if (context == null) return;
 
-      AppVersionUpdate.showAlertUpdate(
-        appVersionResult: updateResult,
-        context: context,
-        mandatory: mandatory,
-        title: title ?? 'New version available',
-        content: content ?? 'Would you like to update your application?',
-        cancelButtonText: cancelText ?? 'UPDATE LATER',
-        updateButtonText: updateText ?? 'UPDATE',
-      );
-    });
+        AppVersionUpdate.showAlertUpdate(
+          appVersionResult: updateResult,
+          context: context,
+          mandatory: mandatory,
+          title: title ?? 'New version available',
+          content: content ?? 'Would you like to update your application?',
+          cancelButtonText: cancelText ?? 'UPDATE LATER',
+          updateButtonText: updateText ?? 'UPDATE',
+        );
+      },
+      operation: 'versionUpdate.showUpdateAlert',
+      category: LogCategory.app,
+    );
   }
 
   /// Display a platform-specific update bottom sheet.
@@ -83,18 +94,22 @@ class VersionUpdateService {
     String? title,
     Widget? content,
   }) async {
-    return runTask(() async {
-      final context = rootContext;
-      if (context == null) return;
+    return runTask(
+      () async {
+        final context = rootContext;
+        if (context == null) return;
 
-      AppVersionUpdate.showBottomSheetUpdate(
-        appVersionResult: updateResult,
-        context: context,
-        mandatory: mandatory,
-        title: title ?? 'New version available',
-        content: content,
-      );
-    });
+        AppVersionUpdate.showBottomSheetUpdate(
+          appVersionResult: updateResult,
+          context: context,
+          mandatory: mandatory,
+          title: title ?? 'New version available',
+          content: content,
+        );
+      },
+      operation: 'versionUpdate.showUpdateBottomSheet',
+      category: LogCategory.app,
+    );
   }
 
   /// Display a dedicated update page.
@@ -103,16 +118,20 @@ class VersionUpdateService {
     bool mandatory = false,
     Widget? page,
   }) async {
-    return runTask(() async {
-      final context = rootContext;
-      if (context == null) return;
+    return runTask(
+      () async {
+        final context = rootContext;
+        if (context == null) return;
 
-      AppVersionUpdate.showPageUpdate(
-        appVersionResult: updateResult,
-        context: context,
-        mandatory: mandatory,
-        page: page,
-      );
-    });
+        AppVersionUpdate.showPageUpdate(
+          appVersionResult: updateResult,
+          context: context,
+          mandatory: mandatory,
+          page: page,
+        );
+      },
+      operation: 'versionUpdate.showUpdatePage',
+      category: LogCategory.app,
+    );
   }
 }

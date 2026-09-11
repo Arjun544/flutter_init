@@ -10,7 +10,10 @@ FlutterInit follows a "src-first" encapsulation model. All internal logic, imple
 my_app/
 ├── android/            # Native Android project and configurations
 ├── ios/                # Native iOS project, Podfile, and Runner icons
-├── web/                # (Optional) Web-build entry point
+├── web/                # Web-build entry point
+├── windows/            # Windows runner and build configuration
+├── macos/              # macOS runner and build configuration
+├── linux/              # Linux runner and build configuration
 ├── assets/             # Images, JSON translations, and fonts
 ├── lib/
 │   ├── main.dart       # App initialization entry point

@@ -89,7 +89,7 @@ Every generated project includes:
 - Routing pre-configured with your chosen navigation package
 - State management boilerplate set up and ready to extend
 - `pubspec.yaml` with all chosen dependencies declared
-- Environment config (`.env` support via `flutter_dotenv`)
+- Optional client configuration (`.env` support via `flutter_dotenv`; never store secrets in it)
 - Logging, error handling, and base network layer (if Dio selected)
 - Material 3 theme with dark mode support
 - AI context files: `CLAUDE.md`, `AGENTS.md`, `.cursorrules` — pre-written for your exact stack so AI editors have full project context from day one
@@ -118,7 +118,7 @@ That's it. Your project is ready.
 ## 🛠️ Prerequisites
 
 ### To use a generated project
-- Flutter SDK `^3.5.0` ([install guide](https://docs.flutter.dev/get-started/install))
+- Flutter SDK with Dart `3.11.0+` ([install guide](https://docs.flutter.dev/get-started/install))
 
 No other tools required. FlutterInit runs in your browser.
 
@@ -233,7 +233,10 @@ npm run test:layer1
 # Dart validation on generated output (Layer 2)
 npm run test:layer2
 
-# Full pre-flight check
+# Dart format gate on generated output (Layer 3)
+npm run test:layer3
+
+# Full pre-flight check (Layer 1 + 2 + 3)
 npm run test:preflight
 
 # Generate guide file trees

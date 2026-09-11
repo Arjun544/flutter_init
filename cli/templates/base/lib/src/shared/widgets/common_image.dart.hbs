@@ -1,8 +1,7 @@
 import '../../imports/imports.dart';
 
-
 /// A multi-purpose image widget that handles network images, SVGs, and local assets.
-/// 
+///
 /// Automatically uses [CachedNetworkImage] if enabled for web images.
 /// Automatically uses [SvgPicture] if enabled for SVG files.
 class CommonImage extends StatelessWidget {
@@ -29,45 +28,32 @@ class CommonImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double? adjustedWidth = {{#if flags.usesScreenutil}}width?.w{{else}}width{{/if}};
-    final double? adjustedHeight = {{#if flags.usesScreenutil}}height?.h{{else}}height{{/if}};
+    final double? adjustedWidth = width?.w;
+    final double? adjustedHeight = height?.h;
 
     Widget image;
 
     if (imageUrl.startsWith('http')) {
-      {{#if flags.usesCachedNetworkImage}}
       image = AppCachedImage(
         imageUrl: imageUrl,
-        width: width,
-        height: height,
+        width: adjustedWidth,
+        height: adjustedHeight,
         fit: fit,
         color: color,
         placeholder: placeholder,
         errorWidget: errorWidget,
         borderRadius: borderRadius,
       );
-      {{else}}
-      image = Image.network(
-        imageUrl,
-        width: adjustedWidth,
-        height: adjustedHeight,
-        fit: fit,
-        color: color,
-        errorBuilder: (context, error, stackTrace) => errorWidget ?? _buildDefaultErrorWidget(),
-      );
-      {{/if}}
     } else if (imageUrl.endsWith('.svg')) {
-      {{#if flags.usesFlutterSvg}}
       image = SvgPicture.asset(
         imageUrl,
         width: adjustedWidth,
         height: adjustedHeight,
         fit: fit,
-        colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+        colorFilter: color != null
+            ? ColorFilter.mode(color!, BlendMode.srcIn)
+            : null,
       );
-      {{else}}
-      image = const Icon(Icons.broken_image, color: Colors.grey);
-      {{/if}}
     } else {
       image = Image.asset(
         imageUrl,
@@ -75,15 +61,13 @@ class CommonImage extends StatelessWidget {
         height: adjustedHeight,
         fit: fit,
         color: color,
-        errorBuilder: (context, error, stackTrace) => errorWidget ?? _buildDefaultErrorWidget(),
+        errorBuilder: (context, error, stackTrace) =>
+            errorWidget ?? _buildDefaultErrorWidget(),
       );
     }
 
     if (borderRadius != null) {
-      return ClipRRect(
-        borderRadius: borderRadius!,
-        child: image,
-      );
+      return ClipRRect(borderRadius: borderRadius!, child: image);
     }
 
     return image;
@@ -91,30 +75,10 @@ class CommonImage extends StatelessWidget {
 
   Widget _buildDefaultErrorWidget() {
     return Container(
-      width: width,
-      height: height,
+      width: width?.w,
+      height: height?.h,
       color: Colors.grey[200],
-      child: {{#if flags.usesHugeicons}}
-          HugeIcon(
-            icon: HugeIcons.strokeRoundedImageNotFound02,
-            size: {{res 24 'sp' flags.usesScreenutil}},
-          )
-        {{else if flags.usesIconsaxPlus}}
-          const Icon(
-            IconsaxPlusBold.image,
-            color: Colors.grey,
-          )
-        {{else if flags.usesFlutterRemix}}
-          const Icon(
-            FlutterRemix.image_line,
-            color: Colors.grey,
-          )
-        {{else}}
-          const Icon(
-            Icons.error_outline,
-            color: Colors.grey,
-          )
-        {{/if}},
+      child: const Icon(Icons.error_outline, color: Colors.grey),
     );
   }
 }

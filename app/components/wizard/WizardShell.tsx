@@ -337,7 +337,7 @@ function WizardSidebar() {
                             FlutterInit
                         </p>
                         <p className="truncate text-[11px] text-muted-foreground">
-                            Project generator
+                            Project Generator
                         </p>
                     </div>
                     <Badge

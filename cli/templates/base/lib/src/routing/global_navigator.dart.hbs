@@ -12,4 +12,3 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 /// Returns `null` before the app is mounted. Check for `null` before
 /// using this in background services or repositories.
 BuildContext? get rootContext => rootNavigatorKey.currentContext;
-

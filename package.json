@@ -12,8 +12,10 @@
     "test:integration": "vitest run --config vitest.config.ts tests/integration/",
     "test:layer1": "npm run test:unit && npm run test:integration",
     "test:layer2": "bun scripts/validate-dart.ts --mode critical",
+    "test:layer3": "bun scripts/validate-format.ts --mode critical",
     "test:tier3": "bun tests/e2e/run-matrix.ts",
-    "test:preflight": "npm run test:layer1 && npm run test:layer2",
+    "test:preflight": "npm run test:layer1 && npm run test:layer2 && npm run test:layer3",
+    "check:templates": "bun scripts/check-template-sync.ts",
     "generate:guide-trees": "bun scripts/generate-guide-trees.ts"
   },
   "dependencies": {

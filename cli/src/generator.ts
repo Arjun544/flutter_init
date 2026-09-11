@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // FlutterInit CLI — Project Generator
-// Orchestrates: flutter create → template overlay → folder structure →
-//               pub get → dart analyze → outro
+// Orchestrates: flutter create → template overlays → native config →
+//               pub get → code generation → dart analyze → outro
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { cancel, confirm, isCancel, note, outro, spinner } from '@clack/prompts'
@@ -11,92 +11,11 @@ import pc from 'picocolors'
 import type { FlutterInitConfig } from './config'
 import { configureNativeFiles } from './native'
 import { buildTemplateContext, renderTemplate, TEMPLATE_ROOT } from './templates'
+import { selectOverlayKeys } from '../../shared/generator-contract'
 import { trackCliGeneration } from './utils/analytics'
 import { exec } from './utils/exec'
-import { createGitkeep, isDirNonEmpty, removeDir, writeFile } from './utils/fs'
+import { isDirNonEmpty, removeDir, writeFile } from './utils/fs'
 import { brand, logError, logWarn } from './utils/logger'
-
-// ─── Architecture folder structures ───────────────────────────────────────────
-
-const ARCH_FOLDERS: Record<string, string[]> = {
-  clean: [
-    'lib/src/features/auth/data/datasources',
-    'lib/src/features/auth/data/models',
-    'lib/src/features/auth/data/repositories',
-    'lib/src/features/auth/domain/entities',
-    'lib/src/features/auth/domain/repositories',
-    'lib/src/features/auth/domain/usecases',
-    'lib/src/features/auth/presentation/pages',
-    'lib/src/features/auth/presentation/widgets',
-    'lib/src/features/home/data/datasources',
-    'lib/src/features/home/data/models',
-    'lib/src/features/home/data/repositories',
-    'lib/src/features/home/domain/entities',
-    'lib/src/features/home/domain/repositories',
-    'lib/src/features/home/domain/usecases',
-    'lib/src/features/home/presentation/pages',
-    'lib/src/features/home/presentation/widgets',
-    'lib/src/shared/widgets',
-    'lib/src/shared/models',
-    'lib/src/theme',
-    'lib/src/routing',
-    'lib/src/config',
-    'lib/src/utils',
-  ],
-  mvvm: [
-    'lib/src/features/auth/model',
-    'lib/src/features/auth/view',
-    'lib/src/features/auth/viewmodel',
-    'lib/src/features/home/model',
-    'lib/src/features/home/view',
-    'lib/src/features/home/viewmodel',
-    'lib/src/shared/widgets',
-    'lib/src/shared/models',
-    'lib/src/theme',
-    'lib/src/routing',
-    'lib/src/config',
-  ],
-  'feature-first': [
-    'lib/src/features/auth/screens',
-    'lib/src/features/auth/widgets',
-    'lib/src/features/auth/controllers',
-    'lib/src/features/auth/models',
-    'lib/src/features/auth/services',
-    'lib/src/features/home/screens',
-    'lib/src/features/home/widgets',
-    'lib/src/features/home/controllers',
-    'lib/src/features/home/models',
-    'lib/src/shared/widgets',
-    'lib/src/shared/constants',
-    'lib/src/theme',
-    'lib/src/routing',
-  ],
-  mvc: [
-    'lib/src/models',
-    'lib/src/views/auth',
-    'lib/src/views/home',
-    'lib/src/controllers',
-    'lib/src/services',
-    'lib/src/widgets',
-    'lib/src/theme',
-    'lib/src/routing',
-    'lib/src/utils',
-  ],
-  'layer-first': [
-    'lib/src/data/datasources',
-    'lib/src/data/models',
-    'lib/src/data/repositories',
-    'lib/src/domain/entities',
-    'lib/src/domain/repositories',
-    'lib/src/domain/usecases',
-    'lib/src/presentation/pages',
-    'lib/src/presentation/widgets',
-    'lib/src/presentation/state',
-    'lib/src/theme',
-    'lib/src/routing',
-    'lib/src/utils',
-  ],
-}
 
 // ─── Helper: resolve conditional file names ───────────────────────────────────
 //
@@ -105,7 +24,7 @@ const ARCH_FOLDERS: Record<string, string[]> = {
 //
 //   (flag1,flag2,...)@real_filename.ext[.hbs]
 //
-// ALL listed flags must be truthy in the template context for the file to be
+// ANY listed flag may be truthy in the template context for the file to be
 // emitted.  When emitted the output filename is the part after "@" (with the
 // ".hbs" suffix already stripped by the caller).
 //
@@ -180,6 +99,32 @@ function overlayTemplateDir(
 
 export async function generateProject(config: FlutterInitConfig): Promise<void> {
   const { outputDir, projectName, orgName, architecture, backend, navigation } = config
+  if (backend === 'custom' && !config.usesDio && !config.usesHttp) {
+    throw new Error('Custom backend requires either Dio or the HTTP client.')
+  }
+  const overlays = selectOverlayKeys({
+    architecture,
+    stateManagement: config.stateManager,
+    navigation,
+    backend: { provider: backend },
+    localizationEnabled: config.useLocalization,
+    usesDotenv: config.usesDotenv,
+    usesHive: config.usesHive,
+    usesDio: config.usesDio,
+    usesHttp: config.usesHttp,
+    usesCachedNetworkImage: config.usesCachedNetworkImage,
+    usesSecureStorage: config.usesSecureStorage,
+    usesSharedPreferences: config.usesSharedPreferences,
+    usesPathProvider: config.usesPathProvider,
+    usesSharePlus: config.usesSharePlus,
+    usesPermissionHandler: config.usesPermissionHandler,
+    usesUrlLauncher: config.usesUrlLauncher,
+    usesGeolocator: config.usesGeolocator,
+    usesImagePicker: config.usesImagePicker,
+    usesFilePicker: config.usesFilePicker,
+    usesDeviceInfoPlus: config.usesDeviceInfoPlus,
+    usesAppVersionUpdate: config.usesAppVersionUpdate,
+  })
 
   // ── Guard: check for existing non-empty directory ──────────────────────────
   if (isDirNonEmpty(outputDir)) {
@@ -224,26 +169,16 @@ export async function generateProject(config: FlutterInitConfig): Promise<void> 
     process.exit(1)
   }
 
-  // ── Step 3: Create architecture folder structure ───────────────────────────
-  s.start(`Creating ${architecture} folder structure...`)
-  try {
-    const folders = ARCH_FOLDERS[architecture] ?? []
-    for (const folder of folders) {
-      createGitkeep(path.join(outputDir, folder))
-    }
-    s.stop(`${pc.green('✓')} ${ARCH_FOLDERS[architecture]?.length ?? 0} directories created`)
-  } catch (err) {
-    s.stop(pc.red('✗ Folder creation failed'))
-    logError(`Failed to create architecture folders: ${(err as Error).message}`)
-    removeDir(outputDir)
-    process.exit(1)
-  }
-
-  // ── Step 4: Overlay architecture-specific templates ───────────────────────
+  // ── Step 3: Overlay architecture and state templates ──────────────────────
   s.start('Applying architecture templates...')
   try {
-    const archTemplateDir = path.join(TEMPLATE_ROOT, 'overlays', 'architecture', architecture)
+    const archTemplateDir = path.join(TEMPLATE_ROOT, 'overlays', 'architecture', overlays.architecture)
     overlayTemplateDir(archTemplateDir, outputDir, config)
+    overlayTemplateDir(
+      path.join(TEMPLATE_ROOT, 'overlays', 'state', overlays.state),
+      outputDir,
+      config,
+    )
     s.stop(`${pc.green('✓')} Architecture templates applied`)
   } catch (err) {
     s.stop(pc.red('✗ Architecture template overlay failed'))
@@ -252,46 +187,83 @@ export async function generateProject(config: FlutterInitConfig): Promise<void> 
     process.exit(1)
   }
 
-  // ── Step 5: Overlay backend templates (if selected) ───────────────────────
-  if (backend !== 'none') {
-    s.start(`Applying ${backend} backend templates...`)
+  // ── Step 4: Apply all selected feature overlays ───────────────────────────
+  const selectedOverlays: Array<[string, string]> = [
+    ['backend', path.join('overlays', 'backend', overlays.backend)],
+    ...(overlays.routing
+      ? [['routing', path.join('overlays', 'routing', overlays.routing)] as [string, string]]
+      : []),
+    ...(overlays.networking
+      ? [['networking', path.join('overlays', 'networking', overlays.networking)] as [string, string]]
+      : []),
+    ...(overlays.cachedImage
+      ? [['cached images', path.join('overlays', 'networking', 'cached_image')] as [string, string]]
+      : []),
+    ...(overlays.localization
+      ? [['localization', path.join('overlays', 'extras', 'localization')] as [string, string]]
+      : []),
+    ...overlays.storage.map((name) => ['storage', path.join('overlays', 'storage', name)] as [string, string]),
+    ...overlays.utilities.map((name) => ['utilities', path.join('overlays', 'utilities', name)] as [string, string]),
+    ...(overlays.media
+      ? [['media', path.join('overlays', 'media')] as [string, string]]
+      : []),
+    ...overlays.device.map((name) => ['device', path.join('overlays', 'device', name)] as [string, string]),
+    ...(overlays.flavors
+      ? [['flavors', path.join('overlays', 'extras', 'flavors')] as [string, string]]
+      : []),
+    ...(overlays.dotenv
+      ? [['dotenv', path.join('overlays', 'extras', 'dotenv')] as [string, string]]
+      : []),
+  ]
+
+  for (const [label, relativePath] of selectedOverlays) {
+    const templateDir = path.join(TEMPLATE_ROOT, relativePath)
+    if (!fs.existsSync(templateDir)) continue
+
+    s.start(`Applying ${label} templates...`)
     try {
-      const backendTemplateDir = path.join(TEMPLATE_ROOT, 'overlays', 'backend', backend)
-      overlayTemplateDir(backendTemplateDir, outputDir, config)
-      s.stop(`${pc.green('✓')} ${backend} templates applied`)
+      overlayTemplateDir(templateDir, outputDir, config)
+      s.stop(`${pc.green('✓')} ${label} templates applied`)
     } catch (err) {
-      s.stop(pc.yellow(`⚠ Backend templates had issues — ${(err as Error).message}`))
-      // Non-fatal: warn but don't block
+      s.stop(pc.red(`✗ ${label} template overlay failed`))
+      logError(`${label} templates failed: ${(err as Error).message}`)
+      removeDir(outputDir)
+      process.exit(1)
     }
   }
 
-  // ── Step 6: Overlay navigation templates (if selected) ────────────────────
-  if (navigation !== 'none') {
-    const navName = navigation === 'gorouter' ? 'go_router' : 'auto_route'
-    s.start(`Applying ${navName} navigation templates...`)
-    try {
-      const navTemplateDir = path.join(TEMPLATE_ROOT, 'overlays', 'navigation', navName)
-      if (fs.existsSync(navTemplateDir)) {
-        overlayTemplateDir(navTemplateDir, outputDir, config)
-      }
-      s.stop(`${pc.green('✓')} Navigation templates applied`)
-    } catch (err) {
-      s.stop(pc.yellow(`⚠ Navigation templates had issues — ${(err as Error).message}`))
-    }
-  }
-
-  // ── Step 7: Configure native permissions ──────────────────────────────────
+  // ── Step 5: Configure native permissions ──────────────────────────────────
   const ns = spinner()
   ns.start('Configuring native permissions...')
   try {
     await configureNativeFiles(config)
     ns.stop(`${pc.green('✓')} Native permissions configured`)
   } catch (err) {
-    ns.stop(pc.yellow('⚠ Native configuration skipped — check AndroidManifest.xml and Info.plist manually'))
-    logWarn(String(err))
+    ns.stop(pc.red('✗ Native configuration failed'))
+    logError(`Native configuration failed: ${String(err)}`)
+    removeDir(outputDir)
+    process.exit(1)
   }
 
-  // ── Step 8: Upload Generation Telemetry ────────────────────────────────────
+  // ── Step 6: Validate the generated project ────────────────────────────────
+  const vs = spinner()
+  vs.start('Resolving and analyzing generated project...')
+  try {
+    exec('flutter pub get', { cwd: outputDir })
+    const context = buildTemplateContext(config)
+    if (context.flags.requiresCodeGeneration) {
+      exec('dart run build_runner build --delete-conflicting-outputs', { cwd: outputDir })
+    }
+    exec('dart analyze --fatal-infos', { cwd: outputDir })
+    vs.stop(`${pc.green('✓')} Generated project passed validation`)
+  } catch (err) {
+    vs.stop(pc.red('✗ Generated project validation failed'))
+    logError(`Generated project validation failed: ${(err as Error).message}`)
+    removeDir(outputDir)
+    process.exit(1)
+  }
+
+  // ── Step 7: Upload Generation Telemetry ───────────────────────────────────
   await trackCliGeneration(config)
 
   // ── Outro ─────────────────────────────────────────────────────────────────

@@ -158,10 +158,5 @@ TextTheme buildTextTheme() {
     ),
   );
 
-  {{#if flags.hasCustomFonts}}
-  // Apply the primary custom font family to every text style in the scale.
-  return baseTextTheme.apply(fontFamily: '{{flags.primaryFontFamily}}');
-  {{else}}
   return baseTextTheme;
-  {{/if}}
 }

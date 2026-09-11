@@ -9,6 +9,7 @@ import Handlebars from 'handlebars'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import type { FlutterInitConfig } from './config'
+import { deriveGeneratorCapabilities } from '../../shared/generator-contract'
 
 // ── Resolve template root ──────────────────────────────────────────────────
 // Works both in monorepo (bun run dev) and as published npm package
@@ -128,6 +129,12 @@ Handlebars.registerHelper('when', function (this: unknown, condition, options) {
 export interface TemplateContext extends Omit<FlutterInitConfig, 'backend'> {
   appName: string
   backend: any
+  theme: {
+    preset: 'material3' | 'cupertino' | 'custom'
+    primaryColor: string
+    darkMode: { enabled: boolean; system: boolean }
+    customFonts: never[]
+  }
   isRiverpod: boolean
   isBloc: boolean
   isProvider: boolean
@@ -153,7 +160,9 @@ export interface TemplateContext extends Omit<FlutterInitConfig, 'backend'> {
 
 export function buildTemplateContext(config: FlutterInitConfig): TemplateContext {
   const routerPackage =
-    config.navigation === 'gorouter'
+    config.stateManager === 'getx' || config.navigation === 'getx'
+      ? 'getx'
+      : config.navigation === 'gorouter'
       ? 'go_router'
       : config.navigation === 'autoroute'
         ? 'auto_route'
@@ -161,6 +170,32 @@ export function buildTemplateContext(config: FlutterInitConfig): TemplateContext
 
   const appSnake = config.projectName.trim().replace(/\s+/g, '_').toLowerCase()
   const appSlug = config.projectName.trim().replace(/\s+/g, '-').toLowerCase()
+  const themePreset = config.themePreset ?? (config.useMaterial3 ? 'material3' : 'custom')
+  const defaultBackendOptions = config.backend === 'firebase'
+    ? {
+        authEmail: true,
+        authGoogle: true,
+        authPhone: false,
+        firestore: true,
+        realtimeDb: false,
+        storage: true,
+        analytics: true,
+        crashlytics: true,
+      }
+    : config.backend === 'supabase'
+      ? { auth: true, database: true, edgeFunctions: true }
+      : config.backend === 'appwrite'
+        ? { auth: true, database: true, storage: true }
+        : undefined
+  const backendOptions = config.backendOptions ?? defaultBackendOptions
+  const capabilities = deriveGeneratorCapabilities({
+    stateManagement: config.stateManager,
+    navigation: config.navigation,
+    backend: { provider: config.backend, options: backendOptions },
+    localizationEnabled: config.useLocalization,
+    usesDotenv: config.usesDotenv,
+    usesHive: config.usesHive,
+  })
 
   const flags = {
     appSlug,
@@ -172,11 +207,11 @@ export function buildTemplateContext(config: FlutterInitConfig): TemplateContext
     isBloc: config.stateManager === 'bloc',
     isGetX: config.stateManager === 'getx',
     isMobX: config.stateManager === 'mobx',
-    isNoneState: false,
-    usesFirebase: config.backend === 'firebase',
-    usesSupabase: config.backend === 'supabase',
-    usesAppwrite: config.backend === 'appwrite',
-    usesCustomBackend: config.backend === 'custom',
+    isNoneState: config.stateManager === 'none',
+    usesFirebase: capabilities.usesFirebase,
+    usesSupabase: capabilities.usesSupabase,
+    usesAppwrite: capabilities.usesAppwrite,
+    usesCustomBackend: capabilities.usesCustomBackend,
     usesDio: config.usesDio,
     usesHttp: config.usesHttp,
     usesHive: config.usesHive,
@@ -197,8 +232,9 @@ export function buildTemplateContext(config: FlutterInitConfig): TemplateContext
     fallbackLocale: 'en',
     hasFlavors: true,
     hasDarkMode: config.themeMode !== 'light',
-    isCupertino: false,
-    isCustomTheme: true,
+    isCupertino: themePreset === 'cupertino',
+    isCustomTheme: themePreset === 'custom',
+    isMaterial3: themePreset === 'material3',
     usesFlutterHooks: config.usesFlutterHooks,
     usesImagePicker: config.usesImagePicker,
     usesCamera: config.usesCamera,
@@ -211,13 +247,19 @@ export function buildTemplateContext(config: FlutterInitConfig): TemplateContext
     usesAppVersionUpdate: config.usesAppVersionUpdate,
     usesGeolocator: config.usesGeolocator,
     usesNotifications: config.usesNotifications,
-    usesFirebaseAuth: config.backend === 'firebase',
-    usesFirebaseFirestore: config.backend === 'firebase',
-    usesFirebaseStorage: config.backend === 'firebase',
-    usesSupabaseAuth: config.backend === 'supabase',
-    usesSupabaseDb: config.backend === 'supabase',
-    usesAppwriteAuth: config.backend === 'appwrite',
-    usesAppwriteDb: config.backend === 'appwrite',
+    usesFirebaseAuth: capabilities.usesFirebaseAuth,
+    usesFirebaseFirestore: capabilities.usesFirebaseFirestore,
+    usesFirebaseRealtimeDb: capabilities.usesFirebaseRealtimeDb,
+    usesFirebaseStorage: capabilities.usesFirebaseStorage,
+    usesFirebaseAnalytics: capabilities.usesFirebaseAnalytics,
+    usesFirebaseCrashlytics: capabilities.usesFirebaseCrashlytics,
+    usesSupabaseAuth: capabilities.usesSupabaseAuth,
+    usesSupabaseDb: capabilities.usesSupabaseDatabase,
+    usesSupabaseEdgeFunctions: capabilities.usesSupabaseEdgeFunctions,
+    usesAppwriteAuth: capabilities.usesAppwriteAuth,
+    usesAppwriteDb: capabilities.usesAppwriteDatabase,
+    usesAppwriteStorage: capabilities.usesAppwriteStorage,
+    requiresCodeGeneration: capabilities.requiresCodeGeneration,
     hasCustomFonts: false,
     primaryFontFamily: '',
     fontFamilies: [] as any[],
@@ -225,22 +267,22 @@ export function buildTemplateContext(config: FlutterInitConfig): TemplateContext
 
   const backend = {
     provider: config.backend,
-    options: {
-      authEmail: config.backend === 'firebase',
-      firestore: config.backend === 'firebase',
-      realtimeDb: false,
-      storage: config.backend === 'firebase',
-      analytics: config.backend === 'firebase',
-      crashlytics: config.backend === 'firebase',
-      auth: config.backend !== 'none',
-      database: config.backend !== 'none',
-    }
+    options: backendOptions ?? {},
   }
 
   return {
     ...config,
     appName: config.projectName,
     backend,
+    theme: {
+      preset: themePreset,
+      primaryColor: config.primaryColor,
+      darkMode: {
+        enabled: config.themeMode !== 'light',
+        system: config.themeMode === 'both',
+      },
+      customFonts: [],
+    },
     flags,
     isRiverpod: config.stateManager === 'riverpod',
     isBloc: config.stateManager === 'bloc',
@@ -258,7 +300,7 @@ export function buildTemplateContext(config: FlutterInitConfig): TemplateContext
     hasBackend: config.backend !== 'none',
     hasGoRouter: config.navigation === 'gorouter',
     hasAutoRoute: config.navigation === 'autoroute',
-    hasNavigation: config.navigation !== 'none',
+    hasNavigation: config.navigation !== 'none' || config.stateManager === 'getx',
     hasDarkMode: config.themeMode !== 'light',
     hasLightMode: config.themeMode !== 'dark',
     hasBothModes: config.themeMode === 'both',

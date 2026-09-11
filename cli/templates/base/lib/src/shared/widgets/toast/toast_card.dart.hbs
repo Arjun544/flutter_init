@@ -28,9 +28,7 @@ class ToastCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color ?? context.theme.dialogTheme.backgroundColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: context.theme.colorScheme.outline,
-        ),
+        border: Border.all(color: context.theme.colorScheme.outline),
         boxShadow: [
           BoxShadow(
             blurRadius: 10,
@@ -54,4 +52,3 @@ class ToastCard extends StatelessWidget {
     );
   }
 }
-

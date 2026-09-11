@@ -2,13 +2,15 @@ import '../imports/imports.dart';
 
 extension WidgetExtension on Widget {
   /// Wrap the widget with Padding
-  Widget paddingAll(double value) => Padding(
-        padding: EdgeInsets.all(value),
-        child: this,
-      );
+  Widget paddingAll(double value) =>
+      Padding(padding: EdgeInsets.all(value), child: this);
 
-  Widget paddingSymmetric({double horizontal = 0, double vertical = 0}) => Padding(
-        padding: EdgeInsets.symmetric(horizontal: horizontal, vertical: vertical),
+  Widget paddingSymmetric({double horizontal = 0, double vertical = 0}) =>
+      Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: horizontal,
+          vertical: vertical,
+        ),
         child: this,
       );
 
@@ -17,11 +19,15 @@ extension WidgetExtension on Widget {
     double top = 0,
     double right = 0,
     double bottom = 0,
-  }) =>
-      Padding(
-        padding: EdgeInsets.only(left: left, top: top, right: right, bottom: bottom),
-        child: this,
-      );
+  }) => Padding(
+    padding: EdgeInsets.only(
+      left: left,
+      top: top,
+      right: right,
+      bottom: bottom,
+    ),
+    child: this,
+  );
 
   /// Wrap the widget with Opacity
   Widget opacity(double value) => Opacity(opacity: value, child: this);

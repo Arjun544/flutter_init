@@ -8,7 +8,7 @@ class AppAssets {
   static const String googleIcon = '$_iconsPath/google.svg';
   static const String facebookIcon = '$_iconsPath/facebook.svg';
   static const String appleIcon = '$_iconsPath/apple.svg';
-  
+
   // You can add more categories here as well, such as:
   // static const String _imagesPath = '$_basePath/images';
   // static const String logo = '$_imagesPath/logo.png';

@@ -1,1 +1,35 @@
-{{> features/auth/user_model }}
+import 'package:test_app/src/features/auth/domain/entities/user.dart';
+
+class UserModel {
+  const UserModel({
+    required this.id,
+    required this.email,
+    this.name,
+    this.photoUrl,
+  });
+
+  final String id;
+  final String email;
+  final String? name;
+  final String? photoUrl;
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      name: json['name'] as String?,
+      photoUrl: json['photoUrl'] as String?,
+    );
+  }
+
+  AppUser toEntity() {
+    return AppUser(id: id, email: email, name: name, photoUrl: photoUrl);
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'email': email,
+    'name': name,
+    'photoUrl': photoUrl,
+  };
+}

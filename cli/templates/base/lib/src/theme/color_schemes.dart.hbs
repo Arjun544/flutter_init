@@ -78,9 +78,17 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       info: Color.lerp(info, other.info, t)!,
       onInfo: Color.lerp(onInfo, other.onInfo, t)!,
       successContainer: Color.lerp(successContainer, other.successContainer, t),
-      onSuccessContainer: Color.lerp(onSuccessContainer, other.onSuccessContainer, t),
+      onSuccessContainer: Color.lerp(
+        onSuccessContainer,
+        other.onSuccessContainer,
+        t,
+      ),
       warningContainer: Color.lerp(warningContainer, other.warningContainer, t),
-      onWarningContainer: Color.lerp(onWarningContainer, other.onWarningContainer, t),
+      onWarningContainer: Color.lerp(
+        onWarningContainer,
+        other.onWarningContainer,
+        t,
+      ),
       infoContainer: Color.lerp(infoContainer, other.infoContainer, t),
       onInfoContainer: Color.lerp(onInfoContainer, other.onInfoContainer, t),
     );
@@ -123,4 +131,4 @@ class AppPalettes {
 }
 
 /// Access semantic colors via `context.appColors` from `context_extension.dart`.
-/// Example: `context.appColors.success`
+/// Example: `context.appColors.success`

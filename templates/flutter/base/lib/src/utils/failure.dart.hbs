@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 abstract class Failure extends Equatable {
   final String message;
-  final dynamic error;
+  final Object? error;
 
   const Failure(this.message, {this.error});
 

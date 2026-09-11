@@ -26,7 +26,9 @@ extension IterableExtension<T> on Iterable<T> {
     final chunks = <List<T>>[];
     final list = toList();
     for (var i = 0; i < list.length; i += size) {
-      chunks.add(list.sublist(i, i + size > list.length ? list.length : i + size));
+      chunks.add(
+        list.sublist(i, i + size > list.length ? list.length : i + size),
+      );
     }
     return chunks;
   }

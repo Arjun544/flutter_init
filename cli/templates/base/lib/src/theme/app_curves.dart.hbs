@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 ///
 /// Material 3 defines four core easing families:
 /// - **Standard** — most UI transitions
-/// - **Emphasized** — important / expressive transitions  
+/// - **Emphasized** — important / expressive transitions
 /// - **Decelerate** — elements entering the screen
 /// - **Accelerate** — elements leaving the screen
 ///

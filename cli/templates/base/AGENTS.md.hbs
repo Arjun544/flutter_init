@@ -61,14 +61,14 @@
 | `lib/src/theme/**` | Global visual system |
 | `lib/src/imports/**` | Barrel exports — keep pattern consistent |
 | `pubspec.yaml` | Dependency graph for the whole app |
-{{#if flags.usesDotenv}}| `.env` | Secrets — never commit real values |{{/if}}
+{{#if flags.usesDotenv}}| `.env` | Client configuration — never commit private credentials |{{/if}}
 
 ## Do not touch
 
 | Path | Why |
 |------|-----|
 | `android/`, `ios/`, `web/`, desktop folders | Native project configuration |
-{{#if flags.usesDotenv}}| `.env` with real secrets | Security |{{/if}}
+{{#if flags.usesDotenv}}| `.env` with private credentials | Security |{{/if}}
 {{#if flags.usesFirebase}}| `google-services.json`, `GoogleService-Info.plist` | Environment-specific credentials |{{/if}}
 
 ---
@@ -77,7 +77,7 @@
 
 ```bash
 flutter pub get
-flutter analyze
+dart analyze --fatal-infos
 ```
 
 {{> llm/build-runner-note}}
@@ -88,7 +88,7 @@ flutter analyze
 After editing `assets/translations/*.json`:
 
 ```bash
-flutter pub run easy_localization:generate -S assets/translations -O lib/src/core/i18n -o locale_keys.g.dart
+dart run easy_localization:generate -S assets/translations -O lib/src/generated -o locale_keys.g.dart
 ```
 {{/if}}
 
@@ -98,35 +98,6 @@ flutter test
 
 ---
 
-{{#if flags.usesPermissionHandler}}
-## Native Permissions
-
-This project uses `permission_handler` to manage runtime permissions.
-
-Configured permissions:
-{{#if flags.usesCamera}}- Camera and photo library (Android + iOS){{/if}}
-{{#if flags.usesImagePicker}}- Image picker (camera + gallery access){{/if}}
-{{#if flags.usesFilePicker}}- File system / document picker{{/if}}
-{{#if flags.usesGeolocator}}- Location (fine + coarse on Android, WhenInUse + Always on iOS){{/if}}
-{{#if flags.usesNotifications}}- Local notifications (POST_NOTIFICATIONS on Android 13+){{/if}}
-
-### Permission Request Pattern
-
-Always check permission status before requesting:
-
-```dart
-final status = await Permission.camera.status;
-if (status.isDenied) {
-  await Permission.camera.request();
-}
-```
-
-Never request permissions on app launch. Request contextually — when the
-user triggers the feature that needs the permission.
-
----
-
-{{/if}}
 ## Hard limits
 
 - Do not disable `flutter_lints` rules without an explanatory comment.

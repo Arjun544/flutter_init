@@ -73,25 +73,26 @@ describe('buildAndroidPermissions', () => {
     expect(result).toHaveLength(0)
   })
 
-  it('adds CAMERA + READ/WRITE_EXTERNAL_STORAGE when usesCamera is true', () => {
+  it('adds camera and API-specific image permissions when usesCamera is true', () => {
     const config = { ...baseConfig, usesCamera: true }
     const result = buildAndroidPermissions(config)
     expect(result).toContain('android.permission.CAMERA')
     expect(result).toContain('android.permission.READ_EXTERNAL_STORAGE')
-    expect(result).toContain('android.permission.WRITE_EXTERNAL_STORAGE')
+    expect(result).toContain('android.permission.READ_MEDIA_IMAGES')
   })
 
-  it('adds CAMERA + READ/WRITE_EXTERNAL_STORAGE when usesImagePicker is true', () => {
+  it('adds camera and media permissions when usesImagePicker is true', () => {
     const config = { ...baseConfig, usesImagePicker: true }
     const result = buildAndroidPermissions(config)
     expect(result).toContain('android.permission.CAMERA')
     expect(result).toContain('android.permission.READ_EXTERNAL_STORAGE')
+    expect(result).toContain('android.permission.READ_MEDIA_IMAGES')
   })
 
-  it('adds only READ_EXTERNAL_STORAGE for usesFilePicker alone', () => {
+  it('does not request storage permission for the document picker', () => {
     const config = { ...baseConfig, usesFilePicker: true }
     const result = buildAndroidPermissions(config)
-    expect(result).toContain('android.permission.READ_EXTERNAL_STORAGE')
+    expect(result).not.toContain('android.permission.READ_EXTERNAL_STORAGE')
     expect(result).not.toContain('android.permission.CAMERA')
   })
 
@@ -111,14 +112,10 @@ describe('buildAndroidPermissions', () => {
     expect(result).toContain('android.permission.POST_NOTIFICATIONS')
   })
 
-  it('deduplicates READ_EXTERNAL_STORAGE when camera and filePicker are both selected', () => {
+  it('does not duplicate image permissions when camera and filePicker are selected', () => {
     const config = { ...baseConfig, usesCamera: true, usesFilePicker: true }
     const result = buildAndroidPermissions(config)
-    // Raw result may contain duplicates — callers use new Set() but the
-    // builder itself returns the raw list; Set dedup happens in configureAndroid.
-    // Verify that the permission appears at least once.
-    const count = result.filter(p => p === 'android.permission.READ_EXTERNAL_STORAGE').length
-    expect(count).toBeGreaterThanOrEqual(1)
+    expect(result.filter(p => p === 'android.permission.READ_MEDIA_IMAGES').length).toBe(1)
   })
 
   it('combines all permissions when all features are selected', () => {
@@ -161,10 +158,10 @@ describe('buildIosPlistEntries', () => {
     expect(result.join('\n')).toContain('NSPhotoLibraryUsageDescription')
   })
 
-  it('adds only NSPhotoLibraryUsageDescription for usesFilePicker alone', () => {
+  it('does not add photo permissions for document file picker alone', () => {
     const config = { ...baseConfig, usesFilePicker: true }
     const result = buildIosPlistEntries(config)
-    expect(result.join('\n')).toContain('NSPhotoLibraryUsageDescription')
+    expect(result.join('\n')).not.toContain('NSPhotoLibraryUsageDescription')
     expect(result.join('\n')).not.toContain('NSCameraUsageDescription')
   })
 
@@ -231,7 +228,7 @@ describe('Layer 2 — native combinations', () => {
     const config = { ...baseConfig, usesFilePicker: true, usesNotifications: true }
     const permissions = buildAndroidPermissions(config)
     const unique = [...new Set(permissions)]
-    expect(unique).toContain('android.permission.READ_EXTERNAL_STORAGE')
+    expect(unique).not.toContain('android.permission.READ_EXTERNAL_STORAGE')
     expect(unique).toContain('android.permission.POST_NOTIFICATIONS')
     expect(unique).not.toContain('android.permission.CAMERA')
   })

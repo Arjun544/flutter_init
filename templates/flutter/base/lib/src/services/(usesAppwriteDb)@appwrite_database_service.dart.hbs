@@ -1,0 +1,59 @@
+import 'package:appwrite/appwrite.dart';
+import '../config/app_config.dart';
+import '../utils/utils.dart';
+
+class AppwriteDatabaseService {
+  AppwriteDatabaseService._();
+  static final instance = AppwriteDatabaseService._();
+
+  Databases get _databases => Databases(AppConfig.appwriteClient);
+
+  FutureEither<Object?> listDocuments(String collectionId) {
+    return runTask(
+      () {
+        _requireDatabaseId();
+        // Appwrite 22 returns a generated model that is not stable across SDK
+        // releases; keep this public service boundary SDK-version independent.
+        // ignore: deprecated_member_use
+        return _databases.listDocuments(
+          databaseId: AppConfig.appwriteDatabaseId,
+          collectionId: collectionId,
+        );
+      },
+      operation: 'appwrite.listDocuments',
+      category: LogCategory.database,
+      context: {'collectionId': collectionId},
+      requiresNetwork: true,
+    );
+  }
+
+  FutureEither<Object?> createDocument(
+    String collectionId,
+    Map<String, dynamic> data,
+  ) {
+    return runTask(
+      () {
+        _requireDatabaseId();
+        // ignore: deprecated_member_use
+        return _databases.createDocument(
+          databaseId: AppConfig.appwriteDatabaseId,
+          collectionId: collectionId,
+          documentId: ID.unique(),
+          data: data,
+        );
+      },
+      operation: 'appwrite.createDocument',
+      category: LogCategory.database,
+      context: {'collectionId': collectionId},
+      requiresNetwork: true,
+    );
+  }
+
+  void _requireDatabaseId() {
+    if (AppConfig.appwriteDatabaseId.isEmpty) {
+      throw StateError(
+        'APPWRITE_DATABASE_ID is required for database operations.',
+      );
+    }
+  }
+}

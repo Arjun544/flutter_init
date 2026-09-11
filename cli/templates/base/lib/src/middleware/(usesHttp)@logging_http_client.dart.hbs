@@ -1,0 +1,66 @@
+import 'dart:async';
+
+import 'package:http/http.dart' as http;
+
+import '../utils/logger.dart';
+
+/// http package middleware: wraps [http.Client] with structured network logs.
+class LoggingHttpClient extends http.BaseClient {
+  LoggingHttpClient(this._inner);
+
+  final http.Client _inner;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    final startedAt = DateTime.now();
+    AppLogger.network(
+      'HTTP request started',
+      context: {'method': request.method, 'path': request.url.path},
+    );
+    try {
+      final response = await _inner.send(request);
+      final bytes = await response.stream.toBytes();
+      final context = {
+        'method': request.method,
+        'path': request.url.path,
+        'statusCode': response.statusCode,
+        'durationMs': DateTime.now().difference(startedAt).inMilliseconds,
+      };
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        AppLogger.network('HTTP response received', context: context);
+      } else {
+        AppLogger.error(
+          'HTTP response failed',
+          category: LogCategory.network,
+          context: context,
+        );
+      }
+      return http.StreamedResponse(
+        Stream<List<int>>.value(bytes),
+        response.statusCode,
+        contentLength: bytes.length,
+        request: response.request,
+        headers: response.headers,
+        isRedirect: response.isRedirect,
+        persistentConnection: response.persistentConnection,
+        reasonPhrase: response.reasonPhrase,
+      );
+    } catch (error, stackTrace) {
+      AppLogger.error(
+        'HTTP request failed',
+        error: error,
+        stackTrace: stackTrace,
+        category: LogCategory.network,
+        context: {
+          'method': request.method,
+          'path': request.url.path,
+          'durationMs': DateTime.now().difference(startedAt).inMilliseconds,
+        },
+      );
+      rethrow;
+    }
+  }
+
+  @override
+  void close() => _inner.close();
+}

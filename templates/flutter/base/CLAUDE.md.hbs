@@ -63,14 +63,14 @@ This file is the project brief for Claude Code. Prefer it alongside **[AGENTS.md
 | `lib/src/theme/**` | Global visual system |
 | `lib/src/imports/**` | Barrel exports — keep pattern consistent |
 | `pubspec.yaml` | Dependency graph for the whole app |
-{{#if flags.usesDotenv}}| `.env` | Secrets — never commit real values |{{/if}}
+{{#if flags.usesDotenv}}| `.env` | Client configuration — never commit private credentials |{{/if}}
 
 ## Do not touch
 
 | Path | Why |
 |------|-----|
 | `android/`, `ios/`, `web/`, desktop folders | Native project configuration |
-{{#if flags.usesDotenv}}| `.env` with real secrets | Security |{{/if}}
+{{#if flags.usesDotenv}}| `.env` with private credentials | Security |{{/if}}
 {{#if flags.usesFirebase}}| `google-services.json`, `GoogleService-Info.plist` | Environment-specific credentials |{{/if}}
 
 ---
@@ -79,7 +79,7 @@ This file is the project brief for Claude Code. Prefer it alongside **[AGENTS.md
 
 ```bash
 flutter pub get
-flutter analyze
+dart analyze --fatal-infos
 ```
 
 {{> llm/build-runner-note}}
@@ -90,7 +90,7 @@ flutter analyze
 After editing `assets/translations/*.json`:
 
 ```bash
-flutter pub run easy_localization:generate -S assets/translations -O lib/src/core/i18n -o locale_keys.g.dart
+dart run easy_localization:generate -S assets/translations -O lib/src/generated -o locale_keys.g.dart
 ```
 {{/if}}
 

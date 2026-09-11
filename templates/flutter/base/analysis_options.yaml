@@ -3,7 +3,7 @@
 #
 # The issues identified by the analyzer are surfaced in the UI of Dart-enabled
 # IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
-# invoked from the command line by running `flutter analyze`.
+# invoked from the command line by running `dart analyze --fatal-infos`.
 
 # The following line activates a set of recommended lints for Flutter apps,
 # packages, and plugins designed to encourage good coding practices.
@@ -12,8 +12,6 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   errors:
     inference_failure_on_untyped_parameter: ignore
-  plugins:
-    - custom_lint
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
@@ -26,14 +24,8 @@ analyzer:
     - "**/android/.gradle/**"
     - "**/android/app/build/**"
     - "**/android/build/**"
-    - "**/web/**"
-    - "**/test/**"
-    - "**/integration_test/**"
-  strong-mode:
-    implicit-casts: true
-    implicit-dynamic: false
   language:
-    strict-casts: false
+    strict-casts: true
     strict-inference: true
     strict-raw-types: true
 
@@ -72,7 +64,6 @@ linter:
     use_enums: true
     use_full_hex_values_for_flutter_colors: true
     use_function_type_syntax_for_parameters: true
-    use_if_null_to_convert_nulls_to_bools: true
     use_is_even_rather_than_modulo: true
     use_key_in_widget_constructors: true
     use_late_for_private_fields_and_variables: true

@@ -2,12 +2,15 @@
 
 {{#if flags.usesDio}}
 - Use the shared `Dio` instance from `lib/src/config/app_config.dart` — never `Dio()` inside a widget or screen.
-- Extend or use existing services under `lib/src/services/` for HTTP calls.
-- Map transport errors to `Failure` / `FutureEither` results via `runTask()` — do not leak raw `DioException` to UI.
+- Prefer `DioService` under `lib/src/services/` for HTTP calls. Network logs come from `DioLoggingInterceptor` middleware — do not add `AppLogger.network` in service methods.
+- Wrap calls with `runTask(operation: 'dio.get', category: LogCategory.network, ...)`.
+- Map transport errors to `Failure` / `FutureEither` — do not leak raw `DioException` to UI.
 {{/if}}
 
 {{#if (and flags.usesHttp (not flags.usesDio))}}
 - Use the HTTP service exported from `lib/src/services/` — do not call `http.get` directly from presentation code.
+- Network logs come from `LoggingHttpClient` middleware on `AppConfig.httpClient`.
+- Wrap calls with `runTask(operation: 'http.get', category: LogCategory.network, ...)`.
 - Handle timeouts and socket errors explicitly in the service layer.
 {{/if}}
 

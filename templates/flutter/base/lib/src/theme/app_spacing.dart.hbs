@@ -1,6 +1,4 @@
-{{#if flags.usesScreenutil}}
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-{{/if}}
 
 /// Named spacing constants aligned with an 8-pt grid.
 ///
@@ -24,34 +22,34 @@ abstract final class AppSpacing {
   static const double _xxxl = 64;
 
   /// 2 pt — hairline gap, icon-to-label spacing.
-  static double get xxs => {{#if flags.usesScreenutil}}_xxs.r{{else}}_xxs{{/if}};
+  static double get xxs => _xxs.r;
 
   /// 4 pt — tightest spacing, between tightly coupled elements.
-  static double get xs => {{#if flags.usesScreenutil}}_xs.r{{else}}_xs{{/if}};
+  static double get xs => _xs.r;
 
   /// 8 pt — small spacing, inside compact components (chip padding, icon gap).
-  static double get sm => {{#if flags.usesScreenutil}}_sm.r{{else}}_sm{{/if}};
+  static double get sm => _sm.r;
 
   /// 12 pt — medium-small, inner card padding on dense layouts.
-  static double get ms => {{#if flags.usesScreenutil}}_ms.r{{else}}_ms{{/if}};
+  static double get ms => _ms.r;
 
   /// 16 pt — base unit, standard component padding and list item gaps.
-  static double get md => {{#if flags.usesScreenutil}}_md.r{{else}}_md{{/if}};
+  static double get md => _md.r;
 
   /// 20 pt — medium-large, comfortable section spacing.
-  static double get ml => {{#if flags.usesScreenutil}}_ml.r{{else}}_ml{{/if}};
+  static double get ml => _ml.r;
 
   /// 24 pt — large, between content sections on a page.
-  static double get lg => {{#if flags.usesScreenutil}}_lg.r{{else}}_lg{{/if}};
+  static double get lg => _lg.r;
 
   /// 32 pt — extra large, major section breaks or hero padding.
-  static double get xl => {{#if flags.usesScreenutil}}_xl.r{{else}}_xl{{/if}};
+  static double get xl => _xl.r;
 
   /// 48 pt — 2× large, top-of-page safe area offsets, empty state padding.
-  static double get xxl => {{#if flags.usesScreenutil}}_xxl.r{{else}}_xxl{{/if}};
+  static double get xxl => _xxl.r;
 
   /// 64 pt — maximum, full-bleed header heights.
-  static double get xxxl => {{#if flags.usesScreenutil}}_xxxl.r{{else}}_xxxl{{/if}};
+  static double get xxxl => _xxxl.r;
 
   // ── Semantic aliases ──────────────────────────────────────────────────────
 
@@ -67,14 +65,3 @@ abstract final class AppSpacing {
   /// Vertical gap between form fields.
   static double get formFieldGap => ms;
 }
-
-{{#unless flags.usesScreenutil}}
-/// Extension to provide identity scaling when ScreenUtil is disabled.
-/// This allows using .h, .w, .sp, .r on numbers without conditional checks.
-extension ResponsiveNumberExtension on num {
-  double get h => toDouble();
-  double get w => toDouble();
-  double get sp => toDouble();
-  double get r => toDouble();
-}
-{{/unless}}

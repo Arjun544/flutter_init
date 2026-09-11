@@ -1,9 +1,8 @@
 import '../../imports/core_imports.dart';
 import '../../imports/packages_imports.dart';
 
-
 /// A premium, highly customizable wrapper around [CachedNetworkImage].
-/// 
+///
 /// This widget provides smooth transitions, specialized error handling,
 /// and integrates with the project's design system.
 class AppCachedImage extends StatelessWidget {
@@ -66,22 +65,21 @@ class AppCachedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Adjust sizing for screenutil if enabled
-    final double? adjustedWidth = {{#if flags.usesScreenutil}}width?.w{{else}}width{{/if}};
-    final double? adjustedHeight = {{#if flags.usesScreenutil}}height?.h{{else}}height{{/if}};
-
     Widget imageContent = CachedNetworkImage(
       imageUrl: imageUrl,
       cacheKey: cacheKey,
-      width: adjustedWidth,
-      height: adjustedHeight,
+      // Dimensions are normalized by CommonImage before reaching this widget.
+      width: width,
+      height: height,
       fit: fit,
       color: color,
       colorBlendMode: colorBlendMode,
       alignment: alignment,
       fadeInDuration: fadeInDuration ?? const Duration(milliseconds: 500),
-      placeholder: (context, url) => placeholder ?? _buildDefaultPlaceholder(context),
-      errorWidget: (context, url, error) => errorWidget ?? _buildDefaultErrorWidget(context),
+      placeholder: (context, url) =>
+          placeholder ?? _buildDefaultPlaceholder(context),
+      errorWidget: (context, url, error) =>
+          errorWidget ?? _buildDefaultErrorWidget(context),
     );
 
     if (borderRadius != null) {
@@ -96,7 +94,6 @@ class AppCachedImage extends StatelessWidget {
 
   Widget _buildDefaultPlaceholder(BuildContext context) {
     if (useSkeleton) {
-      {{#if flags.usesSkeletonizer}}
       return Skeletonizer(
         enabled: true,
         child: Container(
@@ -108,9 +105,6 @@ class AppCachedImage extends StatelessWidget {
           ),
         ),
       );
-      {{else}}
-      return _buildLoadingIndicator(context);
-      {{/if}}
     }
     return _buildLoadingIndicator(context);
   }
@@ -119,10 +113,10 @@ class AppCachedImage extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      color: context.theme.colorScheme.surfaceContainerHighest .withValues(alpha: 0.9),
-      child: const Center(
-        child: CircularProgressIndicator(strokeWidth: 2),
+      color: context.theme.colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.9,
       ),
+      child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
     );
   }
 
@@ -130,30 +124,12 @@ class AppCachedImage extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      color: context.theme.colorScheme.errorContainer .withValues(alpha: 0.9),
+      color: context.theme.colorScheme.errorContainer.withValues(alpha: 0.9),
       child: Center(
-        child: {{#if flags.usesHugeicons}}
-          HugeIcon(
-            icon: HugeIcons.strokeRoundedImageNotFound02,
-            color: context.theme.colorScheme.error,
-            size: 24,
-          )
-        {{else if flags.usesIconsaxPlus}}
-          Icon(
-            IconsaxPlusBold.image,
-            color: context.theme.colorScheme.error,
-          )
-        {{else if flags.usesFlutterRemix}}
-          Icon(
-            FlutterRemix.image_line,
-            color: context.theme.colorScheme.error,
-          )
-        {{else}}
-          Icon(
-            Icons.broken_image_outlined,
-            color: context.theme.colorScheme.error,
-          )
-        {{/if}},
+        child: Icon(
+          Icons.broken_image_outlined,
+          color: context.theme.colorScheme.error,
+        ),
       ),
     );
   }
