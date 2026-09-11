@@ -75,25 +75,25 @@ describe("LLM context files", () => {
     })
 
     it("DESIGN.md includes ScreenUtil when enabled", async () => {
-        const withUtil = getFile(
-            await generateToMap(
+        const baseMisc = buildLlmConfig().misc
+        const [withFiles, withoutFiles] = await Promise.all([
+            generateToMap(
                 buildLlmConfig({
-                    misc: { ...buildLlmConfig().misc, usesScreenutil: true },
+                    misc: { ...baseMisc, usesScreenutil: true },
                 })
             ),
-            "DESIGN.md"
-        )!
+            generateToMap(
+                buildLlmConfig({
+                    misc: { ...baseMisc, usesScreenutil: false },
+                })
+            ),
+        ])
+
+        const withUtil = getFile(withFiles, "DESIGN.md")!
         expect(withUtil).toContain("ScreenUtil")
         expect(withUtil).toContain("390×844")
 
-        const withoutUtil = getFile(
-            await generateToMap(
-                buildLlmConfig({
-                    misc: { ...buildLlmConfig().misc, usesScreenutil: false },
-                })
-            ),
-            "DESIGN.md"
-        )!
+        const withoutUtil = getFile(withoutFiles, "DESIGN.md")!
         expect(withoutUtil).not.toContain("ScreenUtilInit")
         expect(withoutUtil).toContain("Responsive layout")
     })

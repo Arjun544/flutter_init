@@ -1,11 +1,72 @@
-import 'package:test_app/src/imports/imports.dart';
+import 'package:{{flags.appSnake}}/src/imports/imports.dart';
 
+{{#if (eq flags.routerPackage "auto_route")}}
+@RoutePage()
+{{/if}}
+{{#if flags.usesFlutterHooks}}
+class OnboardingPage extends HookWidget {
+  const OnboardingPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = context.theme;
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    final pageController = usePageController();
+    final currentIndex = useState(0);
+
+    final List<Map<String, dynamic>> onboardingData = useMemoized(() => [
+      {
+        'title': {{#if flags.supportsLocalization}}'onboarding.onboarding_title_1'.tr(){{else}}'Your Journey,\nPerfectly Planned'{{/if}},
+        'subtitle':
+            {{#if flags.supportsLocalization}}'onboarding.onboarding_subtitle_1'.tr(){{else}}'Effortlessly create and organize your\ndream trips. Start exploring now!'{{/if}},
+        'pageWidget': const FlutterLogo(size: 200),
+      },
+      {
+        'title': {{#if flags.supportsLocalization}}'onboarding.onboarding_title_2'.tr(){{else}}'Discover\nFriends Nearby'{{/if}},
+        'subtitle':
+            {{#if flags.supportsLocalization}}'onboarding.onboarding_subtitle_2'.tr(){{else}}'See where your friends are traveling and\nexplore the world together.'{{/if}},
+        'pageWidget': const FlutterLogo(size: 200),
+      },
+      {
+        'title': {{#if flags.supportsLocalization}}'onboarding.onboarding_title_3'.tr(){{else}}'Stay Updated\nwith Top Places'{{/if}},
+        'subtitle':
+            {{#if flags.supportsLocalization}}'onboarding.onboarding_subtitle_3'.tr(){{else}}'Find trending destinations and must-see attractions,\nall tailored to enhance your travel plans.'{{/if}},
+        'pageWidget': const FlutterLogo(size: 200),
+      },
+    ]);
+
+    void onGetStarted() {
+      // Navigate back or to home. For template purpose:
+      {{#if (eq flags.routerPackage "go_router")}}
+      context.go(AppRoutes.login);
+      {{else if (eq flags.routerPackage "auto_route")}}
+      context.replaceRoute(const LoginRoute());
+      {{else}}
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      {{/if}}
+    }
+
+    return _OnboardingView(
+      theme: theme,
+      colorScheme: colorScheme,
+      textTheme: textTheme,
+      pageController: pageController,
+      currentIndex: currentIndex.value,
+      onboardingData: onboardingData,
+      onPageChanged: (index) => currentIndex.value = index,
+      onGetStarted: onGetStarted,
+    );
+  }
+  }
+{{else}}
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
 
   @override
   State<OnboardingPage> createState() => _OnboardingPageState();
-}
+  }
 
 class _OnboardingPageState extends State<OnboardingPage> {
   late final PageController _pageController;
@@ -19,18 +80,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
     _pageController = PageController();
     _onboardingData = [
       {
-        'title': 'onboarding.onboarding_title_1'.tr(),
-        'subtitle': 'onboarding.onboarding_subtitle_1'.tr(),
+        'title': {{#if flags.supportsLocalization}}'onboarding.onboarding_title_1'.tr(){{else}}'Your Journey,\nPerfectly Planned'{{/if}},
+        'subtitle':
+            {{#if flags.supportsLocalization}}'onboarding.onboarding_subtitle_1'.tr(){{else}}'Effortlessly create and organize your\ndream trips. Start exploring now!'{{/if}},
         'pageWidget': const FlutterLogo(size: 200),
       },
       {
-        'title': 'onboarding.onboarding_title_2'.tr(),
-        'subtitle': 'onboarding.onboarding_subtitle_2'.tr(),
+        'title': {{#if flags.supportsLocalization}}'onboarding.onboarding_title_2'.tr(){{else}}'Discover\nFriends Nearby'{{/if}},
+        'subtitle':
+            {{#if flags.supportsLocalization}}'onboarding.onboarding_subtitle_2'.tr(){{else}}'See where your friends are traveling and\nexplore the world together.'{{/if}},
         'pageWidget': const FlutterLogo(size: 200),
       },
       {
-        'title': 'onboarding.onboarding_title_3'.tr(),
-        'subtitle': 'onboarding.onboarding_subtitle_3'.tr(),
+        'title': {{#if flags.supportsLocalization}}'onboarding.onboarding_title_3'.tr(){{else}}'Stay Updated\nwith Top Places'{{/if}},
+        'subtitle':
+            {{#if flags.supportsLocalization}}'onboarding.onboarding_subtitle_3'.tr(){{else}}'Find trending destinations and must-see attractions,\nall tailored to enhance your travel plans.'{{/if}},
         'pageWidget': const FlutterLogo(size: 200),
       },
     ];
@@ -44,7 +108,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   void _onGetStarted() {
     // Navigate back or to home. For template purpose:
+    {{#if (eq flags.routerPackage "go_router")}}
     context.go(AppRoutes.login);
+    {{else if (eq flags.routerPackage "auto_route")}}
+    context.replaceRoute(const LoginRoute());
+    {{else}}
+    Navigator.pushReplacementNamed(context, AppRoutes.login);
+    {{/if}}
   }
 
   @override
@@ -64,7 +134,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
       onGetStarted: _onGetStarted,
     );
   }
-}
+  }
+{{/if}}
 
 class _OnboardingView extends StatelessWidget {
   const _OnboardingView({
@@ -97,18 +168,18 @@ class _OnboardingView extends StatelessWidget {
             // Top branding
             Padding(
               padding: EdgeInsets.only(
-                top: AppSpacing.lg.h,
-                bottom: AppSpacing.md.h,
+                top: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}},
+                bottom: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}},
               ),
               child: Text(
                 'FlutterInit.',
                 style: textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w900,
                   color: colorScheme.onSurface,
-                  fontSize: 22.sp,
+                  fontSize: {{res 22 'sp' flags.usesScreenutil}},
                 ),
               ),
-            ),
+              ),
 
             // PageView
             Expanded(
@@ -124,19 +195,19 @@ class _OnboardingView extends StatelessWidget {
                         child: Center(
                           child: Padding(
                             padding: EdgeInsets.symmetric(
-                              horizontal: AppSpacing.lg.w,
-                            ),
+                              horizontal: {{res 'AppSpacing.lg' 'w' flags.usesScreenutil}},
+                              ),
                             child:
                                 onboardingData[index]['pageWidget'] as Widget,
                           ),
-                        ),
+                          ),
                       ),
 
                       // Text Section
                       Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: AppSpacing.xl.w,
-                        ),
+                          horizontal: {{res 'AppSpacing.xl' 'w' flags.usesScreenutil}},
+                          ),
                         child: Column(
                           children: [
                             Text(
@@ -146,49 +217,49 @@ class _OnboardingView extends StatelessWidget {
                                 fontWeight: FontWeight.w700,
                                 color: colorScheme.onSurface,
                                 height: 1.2,
-                                fontSize: 24.sp,
+                                fontSize: {{res 24 'sp' flags.usesScreenutil}},
                               ),
-                            ),
-                            SizedBox(height: AppSpacing.md.h),
+                              ),
+                            SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
                             Text(
                               onboardingData[index]['subtitle'] as String,
                               textAlign: TextAlign.center,
                               style: textTheme.bodyMedium?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                                 height: 1.5,
-                                fontSize: 14.sp,
+                                fontSize: {{res 14 'sp' flags.usesScreenutil}},
                               ),
-                            ),
+                              ),
                           ],
-                        ),
+                          ),
                       ),
-                      SizedBox(height: 40.h),
+                      {{#if flags.usesScreenutil}}SizedBox(height: 40.h){{else}}const SizedBox(height: 40){{/if}},
                     ],
                   );
                 },
               ),
-            ),
+              ),
 
             // Bottom Section: Dots and Button
             Padding(
-              padding: EdgeInsets.all(AppSpacing.xl.w),
+              padding: EdgeInsets.all({{res 'AppSpacing.xl' 'w' flags.usesScreenutil}}),
               child: Column(
                 children: [
-                  SizedBox(height: AppSpacing.xl),
+                   {{#if flags.usesScreenutil}}SizedBox(height: AppSpacing.xl){{else}}const SizedBox(height: 32){{/if}},
                   // Get Started Button
                   AppButton(
-                    label: 'shared.get_started'.tr(),
+                    label: {{#if flags.supportsLocalization}}'shared.get_started'.tr(){{else}}'Get Started'{{/if}},
                     onPressed: onGetStarted,
                     variant: ButtonVariant.primary,
                     width: ButtonSize.medium,
                   ),
-                  SizedBox(height: AppSpacing.md),
+                  {{#if flags.usesScreenutil}}SizedBox(height: AppSpacing.md){{else}}const SizedBox(height: 16){{/if}},
                 ],
               ),
-            ),
+              ),
           ],
         ),
-      ),
+        ),
     );
   }
-}
+  }

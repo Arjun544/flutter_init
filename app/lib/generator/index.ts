@@ -5,6 +5,7 @@ import path from "node:path"
 import JSZip from "jszip"
 
 import { CustomFontEntry, ScaffoldConfig, scaffoldConfigSchema } from "../config/schema"
+import { formatGeneratedProject } from "@/shared/format-generated"
 import {
     deriveGeneratorCapabilities,
     selectOverlayKeys,
@@ -93,7 +94,16 @@ type TemplateContext = ScaffoldConfig & {
     }
 }
 
-export async function generateFlutterScaffold(input: unknown, fontEntries: File[] = []) {
+export type GenerateScaffoldOptions = {
+    /** Skip post-render `dart format` (Layer 1 content tests; keeps CI/local fast when Dart is on PATH). */
+    skipFormat?: boolean
+}
+
+export async function generateFlutterScaffold(
+    input: unknown,
+    fontEntries: File[] = [],
+    options: GenerateScaffoldOptions = {},
+) {
     const config = scaffoldConfigSchema.parse(input)
     const context = buildTemplateContext(config)
 
@@ -152,6 +162,20 @@ export async function generateFlutterScaffold(input: unknown, fontEntries: File[
                 const destPath = path.join(fontsDir, safeName)
                 const buffer = Buffer.from(await fontFile.arrayBuffer())
                 await fs.writeFile(destPath, buffer)
+            }
+        }
+
+        // Best-effort format when Dart is on PATH (local/dev/CI). Production
+        // web hosts typically skip this; SETUP.md documents `dart format .`
+        // after flutter pub get for download users. Layer 1 tests pass
+        // skipFormat so content assertions stay fast with Dart installed.
+        if (!options.skipFormat) {
+            const formatResult = await formatGeneratedProject(workingDir)
+            if (!formatResult.skipped && !formatResult.success) {
+                console.warn(
+                    "dart format failed on generated scaffold:",
+                    formatResult.stderr || formatResult.stdout,
+                )
             }
         }
 

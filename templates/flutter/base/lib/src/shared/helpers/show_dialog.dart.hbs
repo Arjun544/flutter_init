@@ -32,7 +32,10 @@ Future<T?> showAppDialog<T>({
         ),
         child: Opacity(
           opacity: animation.value,
-          child: Transform.scale(scale: 0.9 + (0.1 * curve), child: child),
+          child: Transform.scale(
+            scale: 0.9 + (0.1 * curve),
+            child: child,
+          ),
         ),
       );
     },
@@ -43,4 +46,5 @@ Future<T?> showAppDialog<T>({
 Future<T?> showCustomDialogue<T>({
   required Widget child,
   bool hasBlur = true,
-}) => showAppDialog<T>(child: child, hasBlur: hasBlur);
+}) =>
+    showAppDialog<T>(child: child, hasBlur: hasBlur);

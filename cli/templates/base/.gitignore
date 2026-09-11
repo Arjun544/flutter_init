@@ -4,4 +4,9 @@
 .packages
 build/
 pubspec.lock
-.env
+ios/
+android/
+web/
+macos/
+windows/
+linux/

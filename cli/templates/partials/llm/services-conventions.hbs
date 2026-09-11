@@ -2,19 +2,11 @@
 
 - Services are singletons with `ClassName.instance`, returning `FutureEither<T>` via `runTask()`.
 - Never pass `BuildContext` into services — use `rootContext` from the global navigator helper when UI is required.
-- **Do not call `AppLogger` from services or screens.** Logging is middleware:
-  - Async service work → `runTask(operation: 'feature.action', category: LogCategory.auth|database|backend|network|app|token, context: {...})`
-  - Auth state streams → `logAuthStateChanges(...)`
-  - HTTP → `DioLoggingInterceptor` / `LoggingHttpClient` (already on `AppConfig` clients)
-  - Navigation → `AppRouteObserver` (already wired)
-  - State → `AppProviderObserver` / `AppBlocObserver` / session listener
-- `AppLogger` + `LogCategory` are the sink only (debug-only `dart:developer`). Categories: `APP`, `AUTH`, `BACKEND`, `DATABASE`, `NETWORK`, `PROVIDER`, `TOKEN`.
-- Pass a small `context` map (paths, keys, status codes, ids) — never passwords, tokens, or API keys.
-- User feedback: `showGlobalToast()`; dialogs: `showAppDialog()` / `context.showAppDialog()`.
+- Logging: `AppLogger`; user feedback: `showGlobalToast()`; dialogs: `showAppDialog()` / `context.showAppDialog()`.
 - Primary import barrel: `package:{{flags.appSlug}}/src/imports/imports.dart`.
 - File names: `snake_case.dart`; classes: `PascalCase`; private members: `_camelCase`.
 - Prefer `const` constructors where possible; avoid `dynamic` without justification.
-- No empty `catch` blocks — let `runTask` map failures, or rethrow.
+- No empty `catch` blocks — log, map to failure, or rethrow.
 - Do not add packages that duplicate existing stack choices (routing, state, backend).
 
 ### Dart / Flutter anti-patterns

@@ -1,7 +1,7 @@
 # FlutterInit — Comprehensive Testing Guide
 
-**Version:** 1.2  
-**Scope:** Template integrity, output validation, format gate, full combination coverage, and CI/CD integration  
+**Version:** 1.3  
+**Scope:** Template integrity, output validation, full combination coverage, and CI/CD integration  
 **Stack:** Bun, Vitest, Handlebars.js, Dart, GitHub Actions
 
 ---
@@ -10,10 +10,10 @@
 
 1. [Overview and Philosophy](#1-overview-and-philosophy)
 2. [Understanding the Testing Problem](#2-understanding-the-testing-problem)
-3. [The Three-Layer Model](#3-the-three-layer-model)
+3. [The Two-Layer Model](#3-the-two-layer-model)
 4. [Layer 1 — Template Integrity Testing](#4-layer-1--template-integrity-testing)
 5. [Layer 2 — Dart Output Validation](#5-layer-2--dart-output-validation)
-6. [Layer 3 — Dart Format Validation](#6-layer-3--dart-format-validation)
+6. [Post-Generate Formatting](#6-post-generate-formatting)
 7. [Full Combination Coverage](#7-full-combination-coverage)
 8. [The Combination Generator](#8-the-combination-generator)
 9. [What to Assert in Every Test](#9-what-to-assert-in-every-test)
@@ -36,7 +36,9 @@ A bug in a web app breaks a feature. A bug in FlutterInit breaks every project a
 
 **The primary goal of FlutterInit's test suite is a single guarantee:**
 
-> Every valid combination of user choices must produce a Flutter project that compiles, analyzes cleanly, matches `dart format` (VS Code Format Document), and reflects exactly what the user configured.
+> Every valid combination of user choices must produce a Flutter project that compiles, analyzes cleanly, and reflects exactly what the user configured.
+
+Formatting is a **generation concern**, not a test layer: after Handlebars renders real `.dart` files, the pipeline runs `dart format .` when the Dart SDK is available (CLI always; web when `dart` is on PATH). Generated `SETUP.md` also documents `dart format .` after `flutter pub get` for zip downloads from hosts without Dart.
 
 Nothing less is acceptable before a production release.
 
@@ -50,13 +52,15 @@ FlutterInit has a unique testing challenge because it sits at the intersection o
 
 **The JavaScript system** is responsible for taking user input, resolving template logic, injecting variables, and producing file strings. Bugs here include unresolved Handlebars tokens, incorrect conditionals, variable name mismatches, wrong file paths, and missing files for certain option combinations.
 
-**The Dart system** is the output of the JavaScript system. Bugs here include syntactically invalid Dart code, incorrect import paths, missing or duplicate dependencies in pubspec.yaml, conflicting package versions, architectural folder structures that don't match what was requested, and indentation/spacing that doesn't match `dart format`.
+**The Dart system** is the output of the JavaScript system. Bugs here include syntactically invalid Dart code, incorrect import paths, missing or duplicate dependencies in pubspec.yaml, conflicting package versions, and architectural folder structures that don't match what was requested.
+
+Handlebars `.hbs` files are not valid Dart, so they cannot be `dart format`'d in place. Spacing inconsistencies from template substitution are normalized **after** render on the generated tree.
 
 ---
 
-## 3. The Three-Layer Model
+## 3. The Two-Layer Model
 
-Think of FlutterInit's output pipeline as three sequential layers, each requiring its own validation strategy.
+Think of FlutterInit's output pipeline as two sequential validation layers, plus a post-generate format step outside the test matrix.
 
 **Layer 1 — The Template Engine (Unit & Integration)**
 - **Scope**: All 375 primary valid combinations of architecture, state management, and backend.
@@ -70,11 +74,10 @@ Think of FlutterInit's output pipeline as three sequential layers, each requirin
 - **Speed**: Slower (minutes).
 - **Environment**: Requires Flutter/Dart SDK.
 
-**Layer 3 — Dart Format (VS Code parity)**
-- **Goal**: Generate from templates, auto-fix dirty Dart with `dart format`, verify the result is clean.
-- **Tools**: Flutter/Dart SDK (`dart pub get`, `dart format`), Bun.
-- **Speed**: Faster than Layer 2 (no analyze / test / build_runner).
-- **Environment**: Requires Flutter/Dart SDK.
+**Post-generate format (not a test layer)**
+- **Goal**: Users receive `dart format`-clean Dart when the SDK is available.
+- **Where**: CLI after `flutter pub get`; web generator before zip when `dart` is on PATH; `SETUP.md` / README for download users.
+- **Helper**: `shared/format-generated.ts` / `bun scripts/format-generated.ts <dir>`.
 
 ---
 
@@ -116,7 +119,7 @@ npm run test:layer2
 ```
 
 ### The Validation Pipeline
-1.  **Project Generation**: Writes files to a temporary directory.
+1.  **Project Generation**: Writes files to a temporary directory (and formats when Dart is available).
 2.  **Dependency Resolution**: Runs `dart pub get`.
 3.  **Code Generation**: Runs `build_runner` when the normalized configuration
     reports `requiresCodeGeneration` (MobX, AutoRoute, or Hive).
@@ -133,31 +136,18 @@ npm run test:layer2
 
 ---
 
-## 6. Layer 3 — Dart Format Validation
+## 6. Post-Generate Formatting
 
-### Purpose
-Layer 3 generates Dart from templates, checks formatting against `dart format` (VS Code Format Document), **auto-fixes** any dirty files, then re-checks. The combo passes when the project is format-clean after auto-fix.
+Formatting is applied on the **generated** project, never by rewriting `.hbs` sources during tests.
 
-### Running Layer 3 Tests
-```bash
-# Run format validation for Critical Combinations
-npm run test:layer3
-```
+| Path | When |
+| :--- | :--- |
+| CLI (`cli/src/generator.ts`) | After `flutter pub get` via `formatGeneratedProject` |
+| Web (`app/lib/generator`) | Before zip, best-effort if `dart` is on PATH (skipped on typical Vercel hosts) |
+| Manual / scripts | `bun scripts/format-generated.ts <path-to-generated-project>` |
+| Generated docs | `SETUP.md` / README: `dart format .` after `flutter pub get` |
 
-### The Validation Pipeline
-1. **Project Generation**: Writes files from `.hbs` templates to `.temp/flutterinit-format/<combo>/`.
-2. **Dependency Resolution**: Runs `dart pub get` so `analysis_options.yaml` can resolve `package:flutter_lints/...`.
-3. **First check**: `dart format --output=none --set-exit-if-changed .` — lists generated `.dart` files that need reformatting.
-4. **Auto-fix**: runs `dart format` on those files.
-5. **Template write-back**: each dirty `.dart` file **replaces the whole** matching source `.hbs` / partial in `templates/flutter` (then syncs `cli/templates`).
-6. **Re-generate + second check**: must be format-clean.
-
-### Pass / fail
-A combo **passes** if it is already clean, or if format + whole-file `.hbs` replace + re-generate leaves a clean tree. It **fails** if `pub get`, format, or the final check fails.
-
-### What Layer 3 Catches
-- **Unformattable / broken Dart** that `dart format` cannot process.
-- **Formatter instability** (second check still dirty after apply — should be rare).
+Prefer formatting **after** `pub get` when possible — style can differ before packages resolve. The web zip path skips `pub get` for speed; SETUP covers the post-pub-get format for those users.
 
 ---
 
@@ -185,7 +175,6 @@ The combination generator (`tests/utils/combinations.ts`) is a shared utility th
 - **Token Cleanliness**: No `{{tokens}}` in output.
 - **Analysis (Layer 2)**: Zero errors, warnings, or info diagnostics, including
   tests and web code.
-- **Format (Layer 3)**: Generated Dart is formattable; auto-fix + re-check must leave the project format-clean.
 
 ---
 
@@ -201,8 +190,7 @@ tests/
 │   └── full-pipeline.spec.ts
 ├── results/            # Automated failure logs (gitignored)
 │   ├── layer1/failed-tests.log
-│   ├── layer2/failed-tests.log
-│   └── layer3/failed-tests.log
+│   └── layer2/failed-tests.log
 ├── utils/              # Shared logic
 │   ├── matrix.config.ts      # Option definitions
 │   ├── critical-combos.ts    # CI subset
@@ -221,12 +209,12 @@ tests/
 - **Duration**: < 3 mins.
 
 ### Tier 2 — Every PR to Main (Critical E2E)
-- **Runs**: Layer 1 + `npm run test:layer2` + `npm run test:layer3` (critical combos).
-- **Goal**: Verify core architectural integrity and format cleanliness.
+- **Runs**: Layer 1 + `npm run test:layer2` (critical combos).
+- **Goal**: Verify core architectural integrity.
 - **Duration**: < 15 mins (parallelized).
 
 ### Tier 3 — Pre-Release Gate (Full Matrix)
-- **Runs**: Full Layer 2 validation for all 375 primary combinations, plus Layer 3 format gate on critical combos.
+- **Runs**: Full Layer 2 validation for all 375 primary combinations.
 - **Goal**: Zero-bug guarantee for production.
 - **Duration**: 45-90 mins (distributed runners).
 
@@ -240,7 +228,7 @@ Before any release, the "Preflight" command must pass:
 npm run test:preflight
 ```
 
-This chains Layer 1, Layer 2, and Layer 3 validation. If any step fails, the deployment is blocked.
+This chains Layer 1 and Layer 2 validation. If any step fails, the deployment is blocked.
 
 ---
 
@@ -262,13 +250,12 @@ Coverage reporting tracks which option values appear across the test matrix so n
 When tests fail, diagnostics are automatically aggregated:
 - **Layer 1 Logs**: `tests/results/layer1/failed-tests.log`
 - **Layer 2 Logs**: `tests/results/layer2/failed-tests.log`
-- **Layer 3 Logs**: `tests/results/layer3/failed-tests.log`
 
 ### CI/CD Artifacts
 When a test fails in GitHub Actions, these detailed logs are preserved as artifacts:
 1. Navigate to the failed **Action run** in GitHub.
 2. Scroll to the **Artifacts** section at the bottom of the summary page.
-3. Download the relevant log (e.g., `tier2-layer3-failure-logs`).
+3. Download the relevant log (e.g., `tier2-layer2-failure-logs`).
 4. These logs match your local `tests/results/` structure and contain the full error context.
 
 ### Debugging a Specific Combination
@@ -276,11 +263,13 @@ If a specific combination fails (e.g., `layer-first|none|none|auto_route`):
 ```bash
 # Generate and debug a specific combo (Layer 2)
 bun scripts/validate-dart.ts --combo "mvvm|bloc|supabase|auto_route" --keep-output
-
-# Format gate for a specific combo (Layer 3)
-bun scripts/validate-format.ts --combo "mvvm|bloc|supabase|auto_route" --keep-output
 ```
-Inspect Layer 2 output in `./.temp/flutterinit/` and Layer 3 output in `./.temp/flutterinit-format/`.
+Inspect Layer 2 output in `./.temp/flutterinit/`.
+
+To format a generated tree manually:
+```bash
+bun scripts/format-generated.ts ./.temp/flutterinit/<project-dir>
+```
 
 ---
 
@@ -290,7 +279,7 @@ Inspect Layer 2 output in `./.temp/flutterinit/` and Layer 3 output in `./.temp/
 - **Ignoring Infos**: `dart analyze` MUST pass with `--fatal-infos`.
 - **Option Bleed**: Accidental inclusion of code from unselected flags.
 - **Missing build_runner**: Forgetting to run generation for MobX/AutoRoute.
-- **Format auto-fix**: Layer 3 applies `dart format` when the first check is dirty; it fails only if formatting cannot produce a clean tree.
+- **Formatting templates in place**: Do not try to `dart format` `.hbs` files or rewrite format fixes back into templates during CI. Format the generated project instead.
 
 ---
 
@@ -298,7 +287,6 @@ Inspect Layer 2 output in `./.temp/flutterinit/` and Layer 3 output in `./.temp/
 
 - [ ] `npm run test:layer1` passes 100%.
 - [ ] `npm run test:layer2` passes for all critical combinations.
-- [ ] `npm run test:layer3` passes for all critical combinations.
 - [ ] Unresolved token assertions pass globally for all primary combinations.
 - [ ] Every individual option value appears in at least three tested combinations.
 - [ ] Snapshot diffs have been reviewed and approved.
@@ -307,3 +295,4 @@ Inspect Layer 2 output in `./.temp/flutterinit/` and Layer 3 output in `./.temp/
 ---
 
 *This guide is the source of truth for FlutterInit quality standards. Update it whenever new options are added or the validation pipeline is enhanced.*
+

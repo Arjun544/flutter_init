@@ -1,7 +1,13 @@
-import 'package:flutter/foundation.dart';
+import 'dart:io';
+{{#if flags.usesImagePicker}}
 import 'package:image_picker/image_picker.dart';
+{{/if}}
+{{#if flags.usesFilePicker}}
 import 'package:file_picker/file_picker.dart';
+{{/if}}
+{{#if flags.usesPermissionHandler}}
 import 'package:permission_handler/permission_handler.dart';
+{{/if}}
 import '../utils/utils.dart';
 
 /// A service to handle media selection (images, videos, files).
@@ -9,132 +15,134 @@ class MediaService {
   MediaService._();
   static final MediaService instance = MediaService._();
 
+  {{#if flags.usesImagePicker}}
   final ImagePicker _imagePicker = ImagePicker();
 
   /// Pick an image from gallery or camera.
-  FutureEither<String?> pickImage({
+  FutureEither<File?> pickImage({
     required ImageSource source,
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
   }) async {
-    return runTask(
-      () async {
-        // Check permissions
-        if (source == ImageSource.camera) {
-          final status = await Permission.camera.request();
-          if (!status.isGranted) {
-            throw Exception('Camera permission denied');
-          }
-        } else {
-          if (!kIsWeb) {
-            final status = await Permission.photos.request();
-            if (!status.isGranted && !status.isLimited) {
-              throw Exception('Photos permission denied');
-            }
-          }
+    return runTask(() async {
+      {{#if flags.usesPermissionHandler}}
+      // Check permissions
+      if (source == ImageSource.camera) {
+        final status = await Permission.camera.request();
+        if (!status.isGranted) {
+          throw Exception('Camera permission denied');
         }
-
-        final XFile? file = await _imagePicker.pickImage(
-          source: source,
-          maxWidth: maxWidth,
-          maxHeight: maxHeight,
-          imageQuality: imageQuality,
-        );
-
-        return file?.path;
-      },
-      operation: 'media.pickImage',
-      category: LogCategory.app,
-      context: {'source': source.name},
-    );
-  }
-
-  /// Pick multiple images from gallery.
-  FutureEither<List<String>> pickMultiImage({
-    double? maxWidth,
-    double? maxHeight,
-    int? imageQuality,
-  }) async {
-    return runTask(
-      () async {
-        if (!kIsWeb) {
+      } else {
+        if (Platform.isAndroid || Platform.isIOS) {
           final status = await Permission.photos.request();
           if (!status.isGranted && !status.isLimited) {
             throw Exception('Photos permission denied');
           }
         }
+      }
+      {{/if}}
 
-        final List<XFile> files = await _imagePicker.pickMultiImage(
-          maxWidth: maxWidth,
-          maxHeight: maxHeight,
-          imageQuality: imageQuality,
-        );
+      final XFile? file = await _imagePicker.pickImage(
+        source: source,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        imageQuality: imageQuality,
+      );
 
-        return files.map((file) => file.path).toList();
-      },
-      operation: 'media.pickMultiImage',
-      category: LogCategory.app,
-    );
+      return file != null ? File(file.path) : null;
+    });
+  }
+
+  /// Pick multiple images from gallery.
+  FutureEither<List<File>> pickMultiImage({
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+  }) async {
+    return runTask(() async {
+      {{#if flags.usesPermissionHandler}}
+      if (Platform.isAndroid || Platform.isIOS) {
+        final status = await Permission.photos.request();
+        if (!status.isGranted && !status.isLimited) {
+          throw Exception('Photos permission denied');
+        }
+      }
+      {{/if}}
+
+      final List<XFile> files = await _imagePicker.pickMultiImage(
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        imageQuality: imageQuality,
+      );
+
+      return files.map((file) => File(file.path)).toList();
+    });
   }
 
   /// Pick a video from gallery or camera.
-  FutureEither<String?> pickVideo({
+  FutureEither<File?> pickVideo({
     required ImageSource source,
     Duration? maxDuration,
   }) async {
-    return runTask(
-      () async {
-        if (source == ImageSource.camera) {
-          final status = await Permission.camera.request();
-          if (!status.isGranted) {
-            throw Exception('Camera permission denied');
-          }
-        } else {
-          if (!kIsWeb) {
-            final status = await Permission.photos.request();
-            if (!status.isGranted && !status.isLimited) {
-              throw Exception('Photos permission denied');
-            }
+    return runTask(() async {
+      {{#if flags.usesPermissionHandler}}
+      if (source == ImageSource.camera) {
+        final status = await Permission.camera.request();
+        if (!status.isGranted) {
+          throw Exception('Camera permission denied');
+        }
+      } else {
+        if (Platform.isAndroid || Platform.isIOS) {
+          final status = await Permission.photos.request();
+          if (!status.isGranted && !status.isLimited) {
+            throw Exception('Photos permission denied');
           }
         }
+      }
+      {{/if}}
 
-        final XFile? file = await _imagePicker.pickVideo(
-          source: source,
-          maxDuration: maxDuration,
-        );
+      final XFile? file = await _imagePicker.pickVideo(
+        source: source,
+        maxDuration: maxDuration,
+      );
 
-        return file?.path;
-      },
-      operation: 'media.pickVideo',
-      category: LogCategory.app,
-      context: {'source': source.name},
-    );
+      return file != null ? File(file.path) : null;
+    });
   }
+  {{/if}}
 
+  {{#if flags.usesFilePicker}}
   /// Pick one or more files from the device.
-  FutureEither<List<String>> pickFiles({
+  FutureEither<List<File>> pickFiles({
     FileType type = FileType.any,
     List<String>? allowedExtensions,
     bool allowMultiple = false,
   }) async {
-    return runTask(
-      () async {
-        final FilePickerResult? result = await FilePicker.platform.pickFiles(
-          type: type,
-          allowedExtensions: allowedExtensions,
-          allowMultiple: allowMultiple,
-        );
-
-        if (result == null || result.files.isEmpty) {
-          return [];
+    return runTask(() async {
+      {{#if flags.usesPermissionHandler}}
+      if (Platform.isAndroid) {
+        final status = await Permission.storage.request();
+        if (!status.isGranted) {
+          // Note: On Android 13+, storage permission might be handled differently (media-specific)
+          // but permission_handler usually handles the abstraction.
         }
+      }
+      {{/if}}
 
-        return result.paths.whereType<String>().toList();
-      },
-      operation: 'media.pickFiles',
-      category: LogCategory.app,
-      context: {'allowMultiple': allowMultiple},
-    );
+      final FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: type,
+        allowedExtensions: allowedExtensions,
+        allowMultiple: allowMultiple,
+      );
+
+      if (result == null || result.files.isEmpty) return [];
+
+      return result.paths
+          .where((path) => path != null)
+          .map((path) => File(path!))
+          .toList();
+    });
   }
+  {{/if}}
 }

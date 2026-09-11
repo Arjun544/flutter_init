@@ -1,32 +1,113 @@
-import '../utils/logger.dart';
+{{#if flags.usesDio}}
+import '../imports/core_imports.dart';
+import '../middleware/dio_logging_interceptor.dart';
+{{/if}}
+{{#if flags.usesHttp}}
+import '../middleware/logging_http_client.dart';
+{{/if}}
+{{#if flags.usesDio}}
+import 'package:dio/dio.dart';
+{{/if}}
+{{#if flags.usesHttp}}
+import 'package:http/http.dart' as http;
+{{/if}}
+{{#if (eq backend.provider "firebase")}}
 import 'package:firebase_core/firebase_core.dart';
+{{#if flags.usesFirebaseAuth}}
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'package:firebase_storage/firebase_storage.dart';
+{{/if}}
+{{#if backend.options.firestore}}import 'package:cloud_firestore/cloud_firestore.dart';{{/if}}
+{{#if backend.options.realtimeDb}}import 'package:firebase_database/firebase_database.dart';{{/if}}
+{{#if backend.options.storage}}import 'package:firebase_storage/firebase_storage.dart';{{/if}}
+{{/if}}
+{{#if (eq backend.provider "supabase")}}
+import 'package:supabase_flutter/supabase_flutter.dart';
+{{/if}}
+{{#if (eq backend.provider "appwrite")}}
+import 'package:appwrite/appwrite.dart';
+{{/if}}
+{{#if flags.usesDotenv}}
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+{{/if}}
 
 class AppConfig {
   AppConfig._();
+  {{#if flags.usesDio}}
+  static late final Dio dio;
+  {{/if}}
+  {{#if flags.usesHttp}}
+  static late final http.Client httpClient;
+  {{/if}}
+  {{#if (eq backend.provider "supabase")}}
+  static late final SupabaseClient supabase;
+  {{/if}}
+  {{#if (eq backend.provider "appwrite")}}
+  static late final Client appwriteClient;
+  static late final Account appwriteAccount;
+  {{/if}}
+  {{#if (eq backend.provider "firebase")}}
+  {{#if flags.usesFirebaseAuth}}
   static FirebaseAuth get firebaseAuth => FirebaseAuth.instance;
+  {{/if}}
+  {{#if backend.options.firestore}}
   static FirebaseFirestore get firestore => FirebaseFirestore.instance;
+  {{/if}}
+  {{#if backend.options.realtimeDb}}
+  static FirebaseDatabase get realtimeDb => FirebaseDatabase.instance;
+  {{/if}}
+  {{#if backend.options.storage}}
   static FirebaseStorage get storage => FirebaseStorage.instance;
+  {{/if}}
+  {{/if}}
 
   static String get baseUrl => _getBaseUrl();
 
   static Future<void> init() async {
-    AppLogger.backend(
-      'Initializing application backend',
-      context: {'provider': 'firebase'},
-    );
+    {{#if (eq backend.provider "firebase")}}
     await Firebase.initializeApp();
+    {{/if}}
+    {{#if (eq backend.provider "supabase")}}
+    await Supabase.initialize(
+      url: {{#if flags.usesDotenv}}dotenv.get('SUPABASE_URL',
+          fallback: 'https://YOUR-PROJECT.supabase.co'){{else}}'https://YOUR-PROJECT.supabase.co'{{/if}},
+      publishableKey:
+          {{#if flags.usesDotenv}}dotenv.get('SUPABASE_ANON_KEY', fallback: 'YOUR-ANON-KEY'){{else}}'YOUR-ANON-KEY'{{/if}},
+    );
+    supabase = Supabase.instance.client;
+    {{/if}}
+    {{#if (eq backend.provider "appwrite")}}
+    appwriteClient = Client()
+      ..setEndpoint({{#if flags.usesDotenv}}dotenv.get('APPWRITE_ENDPOINT', fallback: 'https://cloud.appwrite.io/v1'){{else}}'https://cloud.appwrite.io/v1'{{/if}})
+      ..setProject({{#if flags.usesDotenv}}dotenv.get('APPWRITE_PROJECT_ID', fallback: 'your-project-id'){{else}}'your-project-id'{{/if}})
+      ..setSelfSigned(status: true);
+    appwriteAccount = Account(appwriteClient);
+    {{/if}}
+    {{#if flags.usesDio}}
+    dio = Dio(
+      BaseOptions(
+        baseUrl: _getBaseUrl(),
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
+
+    dio.interceptors.add(DioLoggingInterceptor());
+    {{/if}}
+
+    {{#if flags.usesHttp}}
+    httpClient = LoggingHttpClient(http.Client());
+    {{/if}}
   }
 
   static String _getBaseUrl() {
-    return _getEnv('API_BASE_URL', 'https://api.example.com');
-  }
-
-  static String _getEnv(String key, String fallback) {
-    return dotenv.get(key, fallback: fallback);
+    {{#if flags.usesDotenv}}
+    return dotenv.get('API_BASE_URL', fallback: '{{#if (eq backend.provider "custom")}}{{backend.options.baseUrl}}{{else}}https://api.example.com{{/if}}');
+    {{else}}
+    return '{{#if (eq backend.provider "custom")}}{{backend.options.baseUrl}}{{else}}https://api.example.com{{/if}}';
+    {{/if}}
   }
 }

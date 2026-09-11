@@ -11,6 +11,7 @@ import pc from 'picocolors'
 import type { FlutterInitConfig } from './config'
 import { configureNativeFiles } from './native'
 import { buildTemplateContext, renderTemplate, TEMPLATE_ROOT } from './templates'
+import { formatGeneratedProject } from '../../shared/format-generated'
 import { selectOverlayKeys } from '../../shared/generator-contract'
 import { trackCliGeneration } from './utils/analytics'
 import { exec } from './utils/exec'
@@ -250,6 +251,13 @@ export async function generateProject(config: FlutterInitConfig): Promise<void> 
   vs.start('Resolving and analyzing generated project...')
   try {
     exec('flutter pub get', { cwd: outputDir })
+    // Format after pub get — page width / style can differ before packages resolve
+    const formatResult = await formatGeneratedProject(outputDir)
+    if (formatResult.skipped) {
+      logWarn('dart not on PATH — skipped formatting generated project')
+    } else if (!formatResult.success) {
+      logWarn(`dart format failed:\n${formatResult.stderr || formatResult.stdout}`)
+    }
     const context = buildTemplateContext(config)
     if (context.flags.requiresCodeGeneration) {
       exec('dart run build_runner build --delete-conflicting-outputs', { cwd: outputDir })

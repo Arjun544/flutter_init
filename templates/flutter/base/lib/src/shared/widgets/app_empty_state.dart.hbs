@@ -15,14 +15,14 @@ import '../../imports/imports.dart';
 class AppEmptyState extends StatelessWidget {
   const AppEmptyState({
     super.key,
-    this.icon = Icons.inbox_outlined,
+    this.icon = {{#if flags.usesIconsaxPlus}}IconsaxPlusLinear.box{{else if flags.usesFlutterRemix}}FlutterRemix.inbox_line{{else if flags.usesHugeicons}}HugeIcons.strokeRoundedInbox{{else}}Icons.inbox_outlined{{/if}},
     required this.title,
     this.subtitle,
     this.actionLabel,
     this.onAction,
   });
 
-  final IconData icon;
+  final dynamic icon;
   final String title;
   final String? subtitle;
   final String? actionLabel;
@@ -35,16 +35,12 @@ class AppEmptyState extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(40.w),
+        padding: {{#if flags.usesScreenutil}}EdgeInsets.all(40.w){{else}}const EdgeInsets.all(40){{/if}},
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AppIcon(
-              icon: icon,
-              size: 64.sp,
-              color: cs.onSurfaceVariant.withValues(alpha: 0.5),
-            ),
-            SizedBox(height: 20.h),
+            AppIcon(icon: icon, size: {{res 64 'sp' flags.usesScreenutil}}, color: cs.onSurfaceVariant.withValues(alpha: 0.5)),
+            {{#if flags.usesScreenutil}}SizedBox(height: 20.h){{else}}const SizedBox(height: 20){{/if}},
             Text(
               title,
               style: tt.titleMedium?.copyWith(
@@ -54,7 +50,7 @@ class AppEmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
-              SizedBox(height: 8.h),
+              {{#if flags.usesScreenutil}}SizedBox(height: 8.h){{else}}const SizedBox(height: 8){{/if}},
               Text(
                 subtitle!,
                 style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
@@ -62,16 +58,16 @@ class AppEmptyState extends StatelessWidget {
               ),
             ],
             if (actionLabel != null && onAction != null) ...[
-              SizedBox(height: 28.h),
+              {{#if flags.usesScreenutil}}SizedBox(height: 28.h){{else}}const SizedBox(height: 28){{/if}},
               AppButton(
                 label: actionLabel!,
                 onPressed: onAction,
                 variant: ButtonVariant.secondary,
               ),
             ],
-          ],
+            ],
         ),
-      ),
+        ),
     );
   }
-}
+  }

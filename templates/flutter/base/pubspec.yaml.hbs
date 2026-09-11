@@ -4,7 +4,7 @@ publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.11.0 <4.0.0"
+  sdk: ">=3.5.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -139,6 +139,11 @@ dependencies:
   flutter_dotenv: ^6.0.0
   {{/if}}
 
+  # Logging
+  {{#if flags.usesLogger}}
+  logger: ^2.6.2
+  {{/if}}
+
   # Media
   {{#if flags.usesImagePicker}}
   image_picker: ^1.2.1
@@ -223,7 +228,6 @@ flutter:
     {{/if}}
     {{#if flags.usesDotenv}}
     - .env
-    - .env.example
     {{/if}}
 
   {{#if flags.hasCustomFonts}}

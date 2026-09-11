@@ -25,21 +25,20 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    return runTask(
-      () async {
-        await _account.createEmailPasswordSession(
-          email: email,
-          password: password,
-        );
-        final user = await _account.get();
-        final userData = {
-          'id': user.$id,
-          'email': user.email,
-          'name': user.name,
-        };
-        _authStateController.add(userData);
-        return userData;
-      },
+    return runTask(() async {
+      await _account.createEmailPasswordSession(
+        email: email, 
+        password: password
+      );
+      final user = await _account.get();
+      final userData = {
+        'id': user.$id,
+        'email': user.email,
+        'name': user.name,
+      };
+      _authStateController.add(userData);
+      return userData;
+    },
       operation: 'auth.login',
       category: LogCategory.auth,
       context: {'method': 'email'},
@@ -52,27 +51,26 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    return runTask(
-      () async {
-        final user = await _account.create(
-          userId: ID.unique(),
-          email: email,
-          password: password,
-          name: name,
-        );
-        // login after signup to get session
-        await _account.createEmailPasswordSession(
-          email: email,
-          password: password,
-        );
-        final userData = {
-          'id': user.$id,
-          'email': user.email,
-          'name': user.name,
-        };
-        _authStateController.add(userData);
-        return userData;
-      },
+    return runTask(() async {
+      final user = await _account.create(
+        userId: ID.unique(),
+        email: email, 
+        password: password,
+        name: name,
+      );
+      // login after signup to get session
+      await _account.createEmailPasswordSession(
+        email: email, 
+        password: password
+      );
+      final userData = {
+        'id': user.$id,
+        'email': user.email,
+        'name': user.name,
+      };
+      _authStateController.add(userData);
+      return userData;
+    },
       operation: 'auth.signUp',
       category: LogCategory.auth,
       context: {'method': 'email'},
@@ -81,14 +79,13 @@ class AuthService {
   }
 
   FutureEither<void> forgotPassword({required String email}) async {
-    return runTask(
-      () async {
-        // url for password recovery in your app
-        await _account.createRecovery(
-          email: email,
-          url: 'https://example.com/recovery',
-        );
-      },
+    return runTask(() async {
+      // url for password recovery in your app
+      await _account.createRecovery(
+        email: email, 
+        url: 'https://example.com/recovery'
+      );
+    },
       operation: 'auth.forgotPassword',
       category: LogCategory.auth,
       requiresNetwork: true,
@@ -96,11 +93,10 @@ class AuthService {
   }
 
   FutureEither<void> logout() async {
-    return runTask(
-      () async {
-        await _account.deleteSession(sessionId: 'current');
-        _authStateController.add(null);
-      },
+    return runTask(() async {
+      await _account.deleteSession(sessionId: 'current');
+      _authStateController.add(null);
+    },
       operation: 'auth.logout',
       category: LogCategory.auth,
       requiresNetwork: true,
@@ -108,15 +104,18 @@ class AuthService {
   }
 
   FutureEither<Map<String, dynamic>?> getCurrentUser() async {
-    return runTask(
-      () async {
-        try {
-          final user = await _account.get();
-          return {'id': user.$id, 'email': user.email, 'name': user.name};
-        } catch (_) {
-          return null; // session likely missing or invalid
-        }
-      },
+    return runTask(() async {
+      try {
+        final user = await _account.get();
+        return {
+          'id': user.$id,
+          'email': user.email,
+          'name': user.name,
+        };
+      } catch (e) {
+        return null; // session likely missing or invalid
+      }
+    },
       operation: 'auth.getCurrentUser',
       category: LogCategory.auth,
     );

@@ -47,46 +47,46 @@ class AppButton extends StatelessWidget {
     final isDisabled = onPressed == null || isLoading;
 
     final double buttonHeight = switch (height) {
-      ButtonSize.small => 36,
-      ButtonSize.medium => 48,
-      ButtonSize.large => 56,
+      ButtonSize.small => {{res 36 'h' flags.usesScreenutil}},
+      ButtonSize.medium => {{res 48 'h' flags.usesScreenutil}},
+      ButtonSize.large => {{res 56 'h' flags.usesScreenutil}},
     };
 
     final double? buttonWidth = switch (width) {
-      ButtonSize.small => 100,
-      ButtonSize.medium => 150,
-      ButtonSize.large => 200,
+      ButtonSize.small => {{res 100 'w' flags.usesScreenutil}},
+      ButtonSize.medium => {{res 150 'w' flags.usesScreenutil}},
+      ButtonSize.large => {{res 200 'w' flags.usesScreenutil}},
       null => null,
     };
 
     final double horizontalPadding = switch (height) {
-      ButtonSize.small => 12,
-      ButtonSize.medium => 20,
-      ButtonSize.large => 28,
+      ButtonSize.small => {{res 12 'w' flags.usesScreenutil}},
+      ButtonSize.medium => {{res 20 'w' flags.usesScreenutil}},
+      ButtonSize.large => {{res 28 'w' flags.usesScreenutil}},
     };
 
     final double fontSize = switch (height) {
-      ButtonSize.small => 12,
-      ButtonSize.medium => 14,
-      ButtonSize.large => 16,
+      ButtonSize.small => {{res 12 'sp' flags.usesScreenutil}},
+      ButtonSize.medium => {{res 14 'sp' flags.usesScreenutil}},
+      ButtonSize.large => {{res 16 'sp' flags.usesScreenutil}},
     };
 
     final (bg, fg, border) = switch (variant) {
       ButtonVariant.primary => (
-        color ?? cs.primary,
-        color ?? cs.onPrimary,
-        null,
-      ),
+          color ?? cs.primary,
+          color ?? cs.onPrimary,
+          null
+        ),
       ButtonVariant.secondary => (
-        cs.secondaryContainer,
-        cs.onSecondaryContainer,
-        null,
-      ),
+          cs.secondaryContainer,
+          cs.onSecondaryContainer,
+          null
+        ),
       ButtonVariant.outline => (
-        Colors.transparent,
-        cs.primary,
-        BorderSide(color: cs.outline, width: 1.5),
-      ),
+          Colors.transparent,
+          cs.primary,
+          BorderSide(color: cs.outline, width: 1.5)
+        ),
       ButtonVariant.ghost => (Colors.transparent, cs.primary, null),
       ButtonVariant.danger => (cs.error, cs.onError, null),
       ButtonVariant.success => (appColors.success, appColors.onSuccess, null),
@@ -98,9 +98,12 @@ class AppButton extends StatelessWidget {
       child: isLoading
           ? SizedBox(
               key: const ValueKey('loader'),
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2, color: fg),
+              width: {{res 20 'w' flags.usesScreenutil}},
+              height: {{res 20 'h' flags.usesScreenutil}},
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: fg,
+        ),
             )
           : Row(
               key: const ValueKey('content'),
@@ -108,7 +111,7 @@ class AppButton extends StatelessWidget {
               children: [
                 if (prefixIcon != null) ...[
                   prefixIcon!,
-                  const SizedBox(width: 8),
+                  {{#if flags.usesScreenutil}}SizedBox(width: 8.w){{else}}const SizedBox(width: 8){{/if}},
                 ],
                 Text(
                   label,
@@ -118,10 +121,10 @@ class AppButton extends StatelessWidget {
                     color: isDisabled
                         ? fg.withValues(alpha: 0.5)
                         : textColor ?? fg,
-                  ),
+        ),
                 ),
                 if (suffixIcon != null) ...[
-                  const SizedBox(width: 8),
+                  {{#if flags.usesScreenutil}}SizedBox(width: 8.w){{else}}const SizedBox(width: 8){{/if}},
                   suffixIcon!,
                 ],
               ],
@@ -149,7 +152,7 @@ class AppButton extends StatelessWidget {
           ),
           child: child,
         ),
-      ),
+        ),
     );
   }
 }

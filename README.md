@@ -233,10 +233,7 @@ npm run test:layer1
 # Dart validation on generated output (Layer 2)
 npm run test:layer2
 
-# Dart format gate on generated output (Layer 3)
-npm run test:layer3
-
-# Full pre-flight check (Layer 1 + 2 + 3)
+# Full pre-flight check (Layer 1 + 2)
 npm run test:preflight
 
 # Generate guide file trees

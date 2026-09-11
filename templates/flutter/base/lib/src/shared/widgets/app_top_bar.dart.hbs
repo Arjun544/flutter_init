@@ -23,15 +23,33 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     final theme = context.theme;
 
     // Check if we can pop
+{{#if (eq flags.routerPackage "go_router")}}
     final bool canPop = context.canPop();
+{{else if (eq flags.routerPackage "auto_route")}}
+    final bool canPop = context.router.canPop();
+{{else}}
+    final bool canPop = Navigator.canPop(context);
+{{/if}}
 
     void handleBack() {
       if (onPressed != null) {
         onPressed!();
       } else if (canPop) {
+{{#if (eq flags.routerPackage "go_router")}}
         context.pop();
+{{else if (eq flags.routerPackage "auto_route")}}
+        context.router.maybePop();
+{{else}}
+        Navigator.maybePop(context);
+{{/if}}
       } else {
+{{#if (eq flags.routerPackage "go_router")}}
         context.go(AppRoutes.home);
+{{else if (eq flags.routerPackage "auto_route")}}
+        context.router.replaceAll([const HomeRoute()]);
+{{else}}
+        Navigator.pushReplacementNamed(context, AppRoutes.home);
+{{/if}}
       }
     }
 
@@ -40,29 +58,45 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       backgroundColor: isTransparent ? Colors.transparent : null,
       shadowColor: Colors.transparent,
-      title:
-          titleWidget ??
+      title: titleWidget ??
           Text(
             title,
-            style:
-                theme.appBarTheme.titleTextStyle?.copyWith(
+            style: theme.appBarTheme.titleTextStyle?.copyWith(
                   fontWeight: FontWeight.w600,
                 ) ??
                 theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
           ),
-      leadingWidth: 40.w,
+      leadingWidth: {{res 40 'w' flags.usesScreenutil}},
       leading: GestureDetector(
         onTap: handleBack,
         child: ColoredBox(
           color: Colors.transparent,
-          child: Icon(
-            Icons.arrow_back,
-            color:
-                theme.appBarTheme.iconTheme?.color ??
+          child: {{#if flags.usesHugeicons}}
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedArrowLeft01,
+                size: {{res 24 'sp' flags.usesScreenutil}},
+              )
+{{else if flags.usesIconsaxPlus}}
+              Icon(
+                IconsaxPlusLinear.arrow_left,
+            color: theme.appBarTheme.iconTheme?.color ??
                 theme.colorScheme.onSurface,
-          ),
+              )
+{{else if flags.usesFlutterRemix}}
+              Icon(
+                FlutterRemix.arrow_left_line,
+            color: theme.appBarTheme.iconTheme?.color ??
+                theme.colorScheme.onSurface,
+              )
+{{else}}
+              Icon(
+            Icons.arrow_back,
+            color: theme.appBarTheme.iconTheme?.color ??
+                theme.colorScheme.onSurface,
+              )
+            {{/if}},
         ),
       ),
       iconTheme: theme.appBarTheme.iconTheme,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+{{#if (eq flags.routerPackage "go_router")}}
 import 'package:go_router/go_router.dart';
+{{/if}}
 
 import '../theme/color_schemes.dart';
 import '../theme/theme.dart';
@@ -48,7 +50,11 @@ extension ContextExtension on BuildContext {
     ScaffoldMessenger.of(this)
       ..clearSnackBars()
       ..showSnackBar(
-        SnackBar(content: Text(message), action: action, duration: duration),
+        SnackBar(
+          content: Text(message),
+          action: action,
+          duration: duration,
+        ),
       );
   }
 
@@ -56,7 +62,10 @@ extension ContextExtension on BuildContext {
     ScaffoldMessenger.of(this)
       ..clearSnackBars()
       ..showSnackBar(
-        SnackBar(content: Text(message), backgroundColor: appColors.success),
+        SnackBar(
+          content: Text(message),
+          backgroundColor: appColors.success,
+        ),
       );
   }
 
@@ -64,7 +73,10 @@ extension ContextExtension on BuildContext {
     ScaffoldMessenger.of(this)
       ..clearSnackBars()
       ..showSnackBar(
-        SnackBar(content: Text(message), backgroundColor: colors.error),
+        SnackBar(
+          content: Text(message),
+          backgroundColor: colors.error,
+        ),
       );
   }
 
@@ -82,7 +94,10 @@ extension ContextExtension on BuildContext {
   }
 
   Future<T?> showAppDialog<T>({required WidgetBuilder builder}) {
-    return showDialog<T>(context: this, builder: builder);
+    return showDialog<T>(
+      context: this,
+      builder: builder,
+    );
   }
 
   /// Shows a snackbar with a colour driven by [SnackBarType].
@@ -113,13 +128,41 @@ extension ContextExtension on BuildContext {
   }
 
   // ── Routing shortcuts ────────────────────────────────────────────────────
+  {{#if (eq flags.routerPackage "go_router")}}
   String get currentRoute {
     final router = GoRouter.of(this);
-    final RouteMatch lastMatch =
-        router.routerDelegate.currentConfiguration.last;
+    final RouteMatch lastMatch = router.routerDelegate.currentConfiguration.last;
     final RouteMatchList matchList = lastMatch is ImperativeRouteMatch
         ? lastMatch.matches
         : router.routerDelegate.currentConfiguration;
     return matchList.uri.toString();
   }
+  {{/if}}
+
+  {{#unless flags.routerPackage}}
+  void pop<T extends Object?>([T? result]) => Navigator.of(this).pop<T>(result);
+
+  Future<T?> push<T extends Object?>(Route<T> route) {
+    return Navigator.of(this).push<T>(route);
+  }
+
+  Future<T?> pushNamed<T extends Object?>(
+    String routeName, {
+    Object? arguments,
+  }) {
+    return Navigator.of(this).pushNamed<T>(routeName, arguments: arguments);
+  }
+
+  Future<T?> pushReplacementNamed<T extends Object?, TO extends Object?>(
+    String routeName, {
+    TO? result,
+    Object? arguments,
+  }) {
+    return Navigator.of(this).pushReplacementNamed<T, TO>(
+      routeName,
+      result: result,
+      arguments: arguments,
+    );
+  }
+  {{/unless}}
 }

@@ -6,14 +6,15 @@ This project was generated dynamically based on your specific requirements. Befo
 
 ## 1. 📦 Initial Dependencies & Generation
 
-First, fetch all pub packages:
+First, fetch all pub packages, then format the generated Dart (templates are not pre-formatted):
 ```bash
 flutter pub get
+dart format .
 ```
 
 ### Code Generation
-{{#if flags.requiresCodeGeneration}}
-Your stack relies on code generation ({{#if flags.usesHive}}Hive adapters, {{/if}}{{#if flags.isMobX}}MobX, {{/if}}{{#if (eq flags.routerPackage "auto_route")}}Auto Route, {{/if}}etc.). Run the following command right away to generate the necessary files:
+{{#if (or flags.isMobX (eq flags.routerPackage "auto_route") flags.usesFirebase flags.usesHive)}}
+Your stack relies on code generation ({{#if flags.usesHive}}Hive Adapters, {{/if}}{{#if flags.isMobX}}MobX, {{/if}}{{#if (eq flags.routerPackage "auto_route")}}Auto Route, {{/if}}{{#if flags.usesFirebase}}Firebase, {{/if}}etc.). Run the following command right away to generate the necessary files:
 ```bash
 dart run build_runner build --delete-conflicting-outputs
 ```
@@ -25,7 +26,7 @@ dart run build_runner build --delete-conflicting-outputs
 {{#if flags.supportsLocalization}}
 Since you chose to include `easy_localization`, run these commands whenever you add or modify string translations to generate your keys correctly:
 ```bash
-dart run easy_localization:generate -S assets/translations -O lib/src/generated -o locale_keys.g.dart
+flutter pub run easy_localization:generate -S assets/translations -O lib/src/core/i18n -o locale_keys.g.dart
 ```
 {{else}}
 *(Localization is not enabled for this project)*
@@ -80,7 +81,8 @@ Open [`android/app/src/main/AndroidManifest.xml`](android/app/src/main/AndroidMa
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- Android 13+ -->
 {{/if}}
 {{#if flags.usesFilePicker}}
-    <!-- file_picker uses the system document picker; no storage permission is required -->
+    <!-- Required for file_picker -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 {{/if}}
 {{#if flags.usesGeolocator}}
     <!-- Required for geolocator -->
@@ -103,13 +105,15 @@ First, describe why you need permissions. Open [`ios/Runner/Info.plist`](ios/Run
     <string>This app requires access to the photo library to upload images.</string>
 {{/if}}
 {{#if flags.usesFilePicker}}
-    <!-- file_picker uses the system document picker; no plist entry is required -->
+    <!-- Required for file_picker -->
+    <key>NSAppleMusicUsageDescription</key>
+    <string>This app requires access to media to upload files.</string>
 {{/if}}
 {{#if flags.usesGeolocator}}
     <!-- Required for geolocator -->
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>This app requires access to location to provide localized content.</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <key>NSLocationAlwaysUsageDescription</key>
     <string>This app requires access to location in the background.</string>
 {{/if}}
 </dict>
@@ -141,7 +145,7 @@ post_install do |installer|
         'PERMISSION_LOCATION_WHENINUSE={{#if flags.usesGeolocator}}1{{else}}0{{/if}}',
 
         ## dart: PermissionGroup.mediaLibrary
-        'PERMISSION_MEDIA_LIBRARY=0',
+        'PERMISSION_MEDIA_LIBRARY={{#if flags.usesFilePicker}}1{{else}}0{{/if}}',
 
         ## dart: PermissionGroup.microphone (Usually 1 if video recording is active with image_picker)
         'PERMISSION_MICROPHONE={{#if flags.usesImagePicker}}1{{else}}0{{/if}}',
@@ -169,16 +173,11 @@ end
 
 ## 4. 🌍 Environment Variables
 
-{{#if flags.usesDotenv}}
-Your project uses optional client-side environment configuration. Values bundled into a Flutter app are public and must not contain secrets.
+Your project relies on `flutter_dotenv` to load secrets. 
 
-1. Copy [`.env.example`](.env.example) to [`.env`](.env) in the project root.
-2. Insert your client configuration values (e.g. `API_BASE_URL=https://api.example.com`).
-3. These values are accessible in Dart via `dotenv.env['API_BASE_URL']`; keep private credentials on your server.
-{{else}}
-Dotenv is disabled for this project. Configure backend values directly in
-`lib/src/config/app_config.dart` before using a remote service.
-{{/if}}
+1. Create a [`.env`](.env) file in the project root folder.
+2. Insert your required variables (e.g. `API_URL=https://api.example.com`).
+3. These keys are now accessible in Dart via `dotenv.env['API_URL']`.
 
 ---
 
@@ -211,27 +210,25 @@ You chose **Firebase** as your backend architecture.
 dart pub global activate flutterfire_cli
 flutterfire configure
 ```
-3. This generates `lib/firebase_options.dart`.
-4. Update `AppConfig.init()` in `lib/src/config/app_config.dart` to pass `DefaultFirebaseOptions.currentPlatform` to `Firebase.initializeApp(options: ...)`.
-5. Do not commit private server credentials; Firebase client configuration is public application metadata.
+3. This generates `lib/firebase_options.dart`. Your integration is already set up in `lib/src/app.dart` or `lib/main.dart` to securely initialize using this file!
 {{else if (eq backend.provider "supabase")}}
 You chose **Supabase** as your backend architecture.
 
 1. Create an empty project at [supabase.com](https://supabase.com/).
 2. Grab your `SUPABASE_URL` and `SUPABASE_ANON_KEY` from your Project API Settings.
-3. The generated initialization in `lib/src/config/app_config.dart` reads these
-   values from `.env` when dotenv is enabled.
+3. Locate the Supabase initialization inside `lib/main.dart` and bind these keys.
+   *(Tip: You can securely point these to `dotenv.env['SUPABASE_URL']` from your newly created `.env` file!)*
 {{else if (eq backend.provider "appwrite")}}
 You chose **Appwrite** as your backend architecture.
 
-1. Set `APPWRITE_ENDPOINT` and `APPWRITE_PROJECT_ID` in `.env`.
-2. Set `APPWRITE_DATABASE_ID` and `APPWRITE_BUCKET_ID` when using the generated
-   database or storage services.
+1. Locate the `Appwrite` Initialization code inside `lib/main.dart`.
+2. Ensure you apply your Project ID and Endpoint values to the client configuration.
+   *(Tip: You can securely point these to `dotenv.env['APPWRITE_ENDPOINT']`!)*
 {{else if (eq backend.provider "custom")}}
 You chose to structure your APIs using **Custom Backend**.
 
-Verify that `API_BASE_URL` points to staging or production in `.env`; the
-generated Dio/HTTP service reads it through `AppConfig.baseUrl`.
+Verify that your Base URL pointing to staging/production is correctly initialized inside your globally injected network class.
+   *(Tip: Read this via `dotenv.env['BASE_API_URL']` inside your network initializer!)*
 {{else}}
 *(No remote backend provider selected. The application defaults to managing state via Mock services locally).*
 {{/if}}

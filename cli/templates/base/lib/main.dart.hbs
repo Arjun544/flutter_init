@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:ui' as ui;
 import 'src/imports/core_imports.dart';
 import 'src/imports/packages_imports.dart';
+{{#if extras.flavors}}
 import 'src/flavors.dart';
+{{/if}}
 import 'src/app.dart';
+
 
 Future<void> main() async {
   await runZonedGuarded(_bootstrap, (error, stackTrace) {
@@ -17,8 +20,12 @@ Future<void> main() async {
 }
 
 Future<void> _bootstrap() async {
+{{#if flags.usesFlutterNativeSplash}}
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+{{else}}
+  WidgetsFlutterBinding.ensureInitialized();
+{{/if}}
 
   FlutterError.onError = (details) {
     AppLogger.error(
@@ -43,17 +50,38 @@ Future<void> _bootstrap() async {
 
   AppLogger.info('Application bootstrap started', category: LogCategory.app);
 
+{{#if flags.supportsLocalization}}
   await EasyLocalization.ensureInitialized();
+{{/if}}
+{{#if flags.usesDotenv}}
   await dotenv.load(fileName: '.env', isOptional: true);
+{{/if}}
+{{#if extras.flavors}}
   FlavorConfig.load(Flavor.dev);
+{{/if}}
 
   await AppConfig.init();
   AppLogger.success(
     'Application configuration initialized',
     category: LogCategory.backend,
   );
+{{#if flags.usesHive}}
+  await HiveService.instance.init();
+{{/if}}
 
-  runApp(const LocalizationWrapper(child: StateWrapper(child: App())));
+  runApp(
+{{#if flags.supportsLocalization}}
+    const LocalizationWrapper(
+      child: {{#if (eq stateManagement "none")}}App(){{else}}StateWrapper(
+        child: App(),
+    ){{/if}},
+    ),
+{{else}}
+    {{#if (eq stateManagement "none")}}const App(){{else}}const StateWrapper(
+      child: App(),
+    ){{/if}},
+{{/if}}
+  );
 
   AppLogger.success('Application started', category: LogCategory.app);
 }
