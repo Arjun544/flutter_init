@@ -1,12 +1,9 @@
 {{#if flags.usesDio}}
-import '../imports/core_imports.dart';
 import '../middleware/dio_logging_interceptor.dart';
+import 'package:dio/dio.dart';
 {{/if}}
 {{#if flags.usesHttp}}
 import '../middleware/logging_http_client.dart';
-{{/if}}
-{{#if flags.usesDio}}
-import 'package:dio/dio.dart';
 {{/if}}
 {{#if flags.usesHttp}}
 import 'package:http/http.dart' as http;
@@ -44,6 +41,12 @@ class AppConfig {
   {{#if (eq backend.provider "appwrite")}}
   static late final Client appwriteClient;
   static late final Account appwriteAccount;
+  {{#if flags.usesAppwriteDb}}
+  static String get appwriteDatabaseId => {{#if flags.usesDotenv}}dotenv.get('APPWRITE_DATABASE_ID', fallback: ''){{else}}''{{/if}};
+  {{/if}}
+  {{#if flags.usesAppwriteStorage}}
+  static String get appwriteBucketId => {{#if flags.usesDotenv}}dotenv.get('APPWRITE_BUCKET_ID', fallback: ''){{else}}''{{/if}};
+  {{/if}}
   {{/if}}
   {{#if (eq backend.provider "firebase")}}
   {{#if flags.usesFirebaseAuth}}

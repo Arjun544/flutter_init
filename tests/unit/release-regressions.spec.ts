@@ -100,10 +100,29 @@ describe("release blocker regressions", { timeout: 180_000 }, () => {
         expect(dioService).toContain("operation: 'dio.get'")
         expect(dioInterceptor).toContain("class DioLoggingInterceptor")
         expect(dioInterceptor).toContain("AppLogger.network")
+        expect(dioInterceptor).not.toContain("'durationMs': ?durationMs")
+        expect(dioInterceptor).toContain("if (durationMs != null) 'durationMs': durationMs")
         expect(appConfig).toContain("DioLoggingInterceptor()")
         expect(appConfig).not.toContain("LogInterceptor")
+        expect(appConfig).not.toContain("core_imports.dart")
         expect(routeObserver).toContain("class AppRouteObserver")
         expect(appRouter).toContain("AppRouteObserver()")
+    })
+
+    it("exposes Appwrite database and bucket ids on AppConfig", async () => {
+        const config = buildConfig({ ...base, backend: "appwrite" }, MISC_DEFAULT)
+        const files = await generateToMap(config)
+        const appConfig = getFile(files, "lib/src/config/app_config.dart") ?? ""
+        const pubspec = getPubspecContent(files)
+        const widgetTest = getFile(files, "test/widget_test.dart") ?? ""
+
+        expect(appConfig).toContain("appwriteDatabaseId")
+        expect(appConfig).toContain("appwriteBucketId")
+        expect(appConfig).toContain("APPWRITE_DATABASE_ID")
+        expect(appConfig).toContain("APPWRITE_BUCKET_ID")
+        expect(pubspec).toContain("shared_preferences")
+        expect(widgetTest).toContain("SharedPreferences.setMockInitialValues")
+        expect(widgetTest).toContain("saveLocale: false")
     })
 
     it("keeps auth services free of inline AppLogger started calls", async () => {

@@ -27,7 +27,7 @@ class DioLoggingInterceptor extends Interceptor {
       'method': response.requestOptions.method,
       'path': response.requestOptions.path,
       'statusCode': statusCode,
-      'durationMs': ?durationMs,
+      if (durationMs != null) 'durationMs': durationMs,
     };
     if (statusCode >= 200 && statusCode < 300) {
       AppLogger.network('HTTP response received', context: context);
@@ -56,7 +56,7 @@ class DioLoggingInterceptor extends Interceptor {
         'method': err.requestOptions.method,
         'path': err.requestOptions.path,
         'statusCode': err.response?.statusCode,
-        'durationMs': ?durationMs,
+        if (durationMs != null) 'durationMs': durationMs,
       },
     );
     handler.next(err);

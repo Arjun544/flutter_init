@@ -94,7 +94,7 @@ dependencies:
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
   {{/if}}
-  {{#if flags.usesSharedPreferences}}
+  {{#if (or flags.usesSharedPreferences flags.supportsLocalization)}}
   shared_preferences: ^2.5.4
   {{/if}}
   {{#if flags.usesSecureStorage}}

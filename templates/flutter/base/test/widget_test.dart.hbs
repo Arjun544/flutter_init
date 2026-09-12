@@ -7,18 +7,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:{{snakeCase flags.appSlug}}/src/app.dart';
 {{#if flags.supportsLocalization}}
 import 'package:easy_localization/easy_localization.dart';
-{{#if flags.usesSharedPreferences}}
 import 'package:shared_preferences/shared_preferences.dart';
-{{/if}}
 {{/if}}
 
 void main() {
   testWidgets('App should build', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     {{#if flags.supportsLocalization}}
-    {{#if flags.usesSharedPreferences}}
+    // easy_localization persists locale via SharedPreferences; mock it in tests
+    // so platform channels do not hang when shared_preferences is not selected.
     SharedPreferences.setMockInitialValues({});
-    {{/if}}
     await EasyLocalization.ensureInitialized();
     {{/if}}
 
@@ -29,6 +27,7 @@ void main() {
         supportedLocales: const [{{#each flags.supportedLocales}}Locale('{{this}}'),{{/each}}],
       path: 'assets/translations',
         fallbackLocale: const Locale('{{flags.fallbackLocale}}'),
+        saveLocale: false,
         child: const ProviderScope(child: App()),
       )
       {{else}}
@@ -42,6 +41,7 @@ void main() {
         supportedLocales: const [{{#each flags.supportedLocales}}Locale('{{this}}'),{{/each}}],
       path: 'assets/translations',
         fallbackLocale: const Locale('{{flags.fallbackLocale}}'),
+        saveLocale: false,
       child: const App(),
       )
       {{else}}
