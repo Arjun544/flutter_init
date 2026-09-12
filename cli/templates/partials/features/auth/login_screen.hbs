@@ -34,14 +34,14 @@ class LoginScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hook
     final obscurePassword = useState(true);
 
 {{#if flags.isRiverpod}}
-    final isLoading = ref.watch(authControllerProvider);
+    final isLoading = ref.watch(authControllerProvider).isLoading;
 {{else if flags.isBloc}}
     final isLoading = context.select((AuthBloc bloc) => bloc.state.isLoading);
 {{else if flags.isProvider}}
     final isLoading = context.select((AuthProvider p) => p.isLoading);
 {{else if flags.isGetX}}
     final controller = Get.find<AuthController>();
-    final isLoading = controller.isLoading.value;
+    final isLoading = controller.state.value.isLoading;
 {{else if flags.isMobX}}
     final authStore = useMemoized(() => AuthStore(repository: AuthRepositoryImpl()), []);
     final isLoading = authStore.isLoading;
@@ -136,9 +136,18 @@ class LoginScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hook
 
 {{#if flags.isGetX}}
     return Obx(() => _LoginView(
+      formKey: formKey,
+      emailController: emailController,
+      passwordController: passwordController,
+      obscurePassword: obscurePassword.value,
+      isLoading: controller.state.value.isLoading,
+      onToggleObscure: () => obscurePassword.value = !obscurePassword.value,
+      onLogin: handleLogin,
+      cs: cs,
+      tt: tt,
+    ));
 {{else}}
     return _LoginView(
-{{/if}}
       formKey: formKey,
       emailController: emailController,
       passwordController: passwordController,
@@ -148,8 +157,6 @@ class LoginScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hook
       onLogin: handleLogin,
       cs: cs,
       tt: tt,
-    );
-{{#if flags.isGetX}}
     );
 {{/if}}
   }
@@ -185,7 +192,7 @@ class _LoginScreenState extends {{#if flags.isRiverpod}}ConsumerState<LoginScree
   @override
   Widget build(BuildContext context) {
 {{#if flags.isRiverpod}}
-    final isLoading = ref.watch(authControllerProvider);
+    final isLoading = ref.watch(authControllerProvider).isLoading;
 {{else if flags.isBloc}}
     final isLoading = context.select((AuthBloc bloc) => bloc.state.isLoading);
 {{else if flags.isProvider}}
@@ -271,7 +278,7 @@ class _LoginScreenState extends {{#if flags.isRiverpod}}ConsumerState<LoginScree
 
 {{#if flags.isGetX}}
     return Obx(() {
-      final isLoading = controller.isLoading.value;
+      final isLoading = controller.state.value.isLoading;
       return _LoginView(
         formKey: _formKey,
         emailController: _emailController,

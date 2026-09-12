@@ -1,21 +1,18 @@
-/// Represents the async lifecycle state of any data/operation.
+import '../../utils/async_state.dart';
+
+/// Prefer [RequestState] for new code — it carries success data and [Failure].
 ///
-/// Use this in state classes across all state management patterns (Riverpod,
-/// Bloc, Provider, etc.) to replace ad-hoc boolean flags with a clean enum.
-///
-/// Usage:
 /// ```dart
-/// // In your state class
-/// AppStatus status = AppStatus.initial;
+/// RequestState<User> state = const RequestInitial();
 ///
-/// // In your UI
-/// switch (status) {
-///   AppStatus.initial => const SizedBox.shrink(),
-///   AppStatus.loading => const AppLoading(),
-///   AppStatus.success => YourContentWidget(),
-///   AppStatus.failure => AppErrorWidget(onRetry: _load),
+/// switch (state) {
+///   RequestInitial() => const SizedBox.shrink(),
+///   RequestLoading() => const AppLoading(),
+///   RequestSuccess(:final data) => YourContentWidget(data: data),
+///   RequestFailure(:final failure) => AppErrorWidget(message: failure.message),
 /// }
 /// ```
+@Deprecated('Use RequestState<T> from utils/async_state.dart instead')
 enum AppStatus {
   /// No operation started yet — initial empty state.
   initial,
@@ -31,6 +28,7 @@ enum AppStatus {
 }
 
 /// Extension helpers for [AppStatus].
+@Deprecated('Use RequestState<T> pattern matching instead')
 extension AppStatusX on AppStatus {
   bool get isInitial => this == AppStatus.initial;
   bool get isLoading => this == AppStatus.loading;

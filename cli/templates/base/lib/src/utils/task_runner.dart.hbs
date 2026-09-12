@@ -61,10 +61,7 @@ FutureEither<T> runTask<T>(
         'durationMs': DateTime.now().difference(startedAt).inMilliseconds,
       },
     );
-    final errorMessage = AppErrorHandler.format(error);
-
-    if (error is Failure) return left(error);
-    return left(UnknownFailure(errorMessage, error: error));
+    return left(Failure.fromException(error, stackTrace));
   }
 }
 

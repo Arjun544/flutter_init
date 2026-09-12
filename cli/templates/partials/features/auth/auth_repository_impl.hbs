@@ -3,20 +3,65 @@ import 'package:{{flags.appSnake}}/src/imports/packages_imports.dart';
 
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
+{{#if (or (eq architecture "clean") (eq architecture "feature-first") (eq architecture "layer-first"))}}
+{{#if (eq architecture "layer-first")}}
+import 'package:{{flags.appSnake}}/src/data/datasources/remote/auth_remote_data_source.dart';
+import 'package:{{flags.appSnake}}/src/data/datasources/remote/auth_remote_data_source_impl.dart';
+import 'package:{{flags.appSnake}}/src/data/models/user_model.dart';
+{{else}}
+import 'package:{{flags.appSnake}}/src/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:{{flags.appSnake}}/src/features/auth/data/datasources/auth_remote_data_source_impl.dart';
+import 'package:{{flags.appSnake}}/src/features/auth/data/models/user_model.dart';
+{{/if}}
+{{/if}}
 
 class AuthRepositoryImpl implements AuthRepository {
+{{#if (or (eq architecture "clean") (eq architecture "feature-first") (eq architecture "layer-first"))}}
+  AuthRepositoryImpl({AuthRemoteDataSource? remoteDataSource})
+      : _remoteDataSource =
+            remoteDataSource ?? AuthRemoteDataSourceImpl();
+
+  final AuthRemoteDataSource _remoteDataSource;
+
+  AppUser _toUser(Map<String, dynamic> userData, {String? fallbackEmail, String? fallbackName}) {
+    final model = UserModel.fromJson(userData);
+    final entity = model.toEntity();
+    if (fallbackEmail == null && fallbackName == null) return entity;
+    return AppUser(
+      id: entity.id,
+      email: entity.email.isEmpty ? (fallbackEmail ?? '') : entity.email,
+      name: entity.name ?? fallbackName,
+      photoUrl: entity.photoUrl,
+    );
+  }
+{{else}}
   final AuthService _authService = AuthService.instance;
+
+  AppUser _toUser(Map<String, dynamic> userData, {String? fallbackEmail, String? fallbackName}) {
+    final user = AppUser.fromJson(
+      userData['user'] is Map<String, dynamic>
+          ? userData['user'] as Map<String, dynamic>
+          : userData,
+    );
+    if (fallbackEmail == null && fallbackName == null) return user;
+    return AppUser(
+      id: user.id,
+      email: user.email.isEmpty ? (fallbackEmail ?? '') : user.email,
+      name: user.name ?? fallbackName,
+      photoUrl: user.photoUrl,
+    );
+  }
+{{/if}}
 
   @override
   Stream<AppUser?> get onAuthStateChanged {
+{{#if (or (eq architecture "clean") (eq architecture "feature-first") (eq architecture "layer-first"))}}
+    return _remoteDataSource.authStateChanges.map((userData) {
+{{else}}
     return _authService.authStateChanges.map((userData) {
+{{/if}}
       if (userData == null) return null;
-      return AppUser(
-        id: userData['id'] ?? '',
-        email: userData['email'] ?? '',
-        name: userData['name'],
-        photoUrl: userData['photoUrl'],
-      );
+      return _toUser(userData);
     });
   }
 
@@ -25,30 +70,17 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
   }) async {
+{{#if (or (eq architecture "clean") (eq architecture "feature-first") (eq architecture "layer-first"))}}
+    final result = await _remoteDataSource.login(email: email, password: password);
+{{else}}
     final result = await _authService.login(email: email, password: password);
+{{/if}}
 
     return result.flatMap((userData) {
       if (userData == null) {
         return left(const ServerFailure('Login failed: User record not found'));
       }
-
-{{#if (or (eq backend.provider "firebase") (eq backend.provider "supabase"))}}
-      final user = AppUser(
-        id: userData['id'],
-        email: userData['email'] ?? email,
-        name: userData['name'],
-        photoUrl: userData['photoUrl'],
-      );
-{{else}}
-      final data = userData['user'] ?? userData;
-      final user = AppUser(
-        id: data['id'].toString(), 
-        email: data['email'] ?? email, 
-        name: data['name'],
-      );
-{{/if}}
-
-      return right(user);
+      return right(_toUser(userData, fallbackEmail: email));
     });
   }
 
@@ -58,60 +90,58 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
   }) async {
+{{#if (or (eq architecture "clean") (eq architecture "feature-first") (eq architecture "layer-first"))}}
+    final result = await _remoteDataSource.signUp(
+      name: name,
+      email: email,
+      password: password,
+    );
+{{else}}
     final result = await _authService.signUp(
       name: name,
       email: email,
       password: password,
     );
+{{/if}}
 
     return result.flatMap((userData) {
       if (userData == null) {
         return left(
             const ServerFailure('Sign up failed: User record corrupted'));
       }
-
-{{#if (or (eq backend.provider "firebase") (eq backend.provider "supabase"))}}
-      final user = AppUser(
-        id: userData['id'],
-        email: userData['email'] ?? email,
-        name: name,
-      );
-{{else}}
-      final data = userData['user'] ?? userData;
-      final user = AppUser(
-        id: data['id'].toString(), 
-        email: data['email'] ?? email, 
-        name: name,
-      );
-{{/if}}
-
-      return right(user);
+      return right(_toUser(userData, fallbackEmail: email, fallbackName: name));
     });
   }
 
   @override
   FutureEither<void> forgotPassword({required String email}) {
+{{#if (or (eq architecture "clean") (eq architecture "feature-first") (eq architecture "layer-first"))}}
+    return _remoteDataSource.forgotPassword(email: email);
+{{else}}
     return _authService.forgotPassword(email: email);
+{{/if}}
   }
 
   @override
   FutureEither<void> logout() {
+{{#if (or (eq architecture "clean") (eq architecture "feature-first") (eq architecture "layer-first"))}}
+    return _remoteDataSource.logout();
+{{else}}
     return _authService.logout();
+{{/if}}
   }
 
   @override
   FutureEither<AppUser?> checkAuthState() async {
+{{#if (or (eq architecture "clean") (eq architecture "feature-first") (eq architecture "layer-first"))}}
+    final result = await _remoteDataSource.getCurrentUser();
+{{else}}
     final result = await _authService.getCurrentUser();
+{{/if}}
 
     return result.map((userData) {
       if (userData == null) return null;
-
-      return AppUser(
-        id: userData['id'],
-        email: userData['email'] ?? '',
-        name: userData['name'],
-        photoUrl: userData['photoUrl'],
-      );
+      return _toUser(userData);
     });
   }
-  }
+}

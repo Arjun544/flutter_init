@@ -1,0 +1,57 @@
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
+
+/// Data-layer user DTO. Maps to/from the domain [AppUser] entity.
+class UserModel {
+  const UserModel({
+    required this.id,
+    required this.email,
+    this.name,
+    this.photoUrl,
+  });
+
+  final String id;
+  final String email;
+  final String? name;
+  final String? photoUrl;
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    final source = json['user'] is Map<String, dynamic>
+        ? json['user'] as Map<String, dynamic>
+        : json;
+
+    return switch (source) {
+      {
+        'id': final Object? id,
+        'email': final Object? email,
+      } =>
+        UserModel(
+          id: id?.toString() ?? '',
+          email: email?.toString() ?? '',
+          name: source['name']?.toString(),
+          photoUrl: source['photoUrl']?.toString(),
+        ),
+      _ => const UserModel(id: '', email: ''),
+    };
+  }
+
+  factory UserModel.fromEntity(AppUser user) => UserModel(
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        photoUrl: user.photoUrl,
+      );
+
+  AppUser toEntity() => AppUser(
+        id: id,
+        email: email,
+        name: name,
+        photoUrl: photoUrl,
+      );
+
+  Map<String, Object?> toJson() => {
+        'id': id,
+        'email': email,
+        'name': name,
+        'photoUrl': photoUrl,
+      };
+}

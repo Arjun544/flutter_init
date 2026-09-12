@@ -1,0 +1,13 @@
+import 'package:{{flags.appSnake}}/src/utils/utils.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
+
+class LogoutUseCase implements UseCase<NoParams, void> {
+  LogoutUseCase(this._repository);
+
+  final AuthRepository _repository;
+
+  @override
+  FutureEither<void> call(NoParams params) {
+    return _repository.logout();
+  }
+}

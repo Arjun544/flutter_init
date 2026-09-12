@@ -31,13 +31,21 @@ class SessionListenerWrapper extends ConsumerWidget {
     ref.listen<SessionState>(sessionProvider, (prev, next) {
       AppLogger.provider(
         'Session state changed',
-        context: {'state': next.status.name},
+        context: {
+          'state': switch (next) {
+            SessionUnknown() => 'unknown',
+            SessionAuthenticated() => 'authenticated',
+            SessionUnauthenticated() => 'unauthenticated',
+          },
+        },
       );
-      if (next.status != SessionStatus.unknown) {
-        {{#if flags.usesFlutterNativeSplash}}
-        FlutterNativeSplash.remove();
-        {{/if}}
-        if (next.status == SessionStatus.authenticated) {
+      switch (next) {
+        case SessionUnknown():
+          break;
+        case SessionAuthenticated():
+          {{#if flags.usesFlutterNativeSplash}}
+          FlutterNativeSplash.remove();
+          {{/if}}
           {{#if (eq flags.routerPackage "go_router")}}
           context.go(AppRoutes.home);
           {{else if (eq flags.routerPackage "auto_route")}}
@@ -45,7 +53,10 @@ class SessionListenerWrapper extends ConsumerWidget {
           {{else}}
           Navigator.pushReplacementNamed(context, AppRoutes.home);
           {{/if}}
-        } else if (next.status == SessionStatus.unauthenticated) {
+        case SessionUnauthenticated():
+          {{#if flags.usesFlutterNativeSplash}}
+          FlutterNativeSplash.remove();
+          {{/if}}
           {{#if (eq flags.routerPackage "go_router")}}
           context.go(AppRoutes.onboarding);
           {{else if (eq flags.routerPackage "auto_route")}}
@@ -53,7 +64,6 @@ class SessionListenerWrapper extends ConsumerWidget {
           {{else}}
           Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
           {{/if}}
-        }
       }
     });
 
@@ -68,13 +78,15 @@ class SessionListenerWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<SessionBloc, SessionState>(
-      listenWhen: (prev, next) => prev.status != next.status,
+      listenWhen: (prev, next) => prev.runtimeType != next.runtimeType,
       listener: (context, state) {
-        if (state.status != SessionStatus.unknown) {
-          {{#if flags.usesFlutterNativeSplash}}
-          FlutterNativeSplash.remove();
-          {{/if}}
-          if (state.status == SessionStatus.authenticated) {
+        switch (state) {
+          case SessionUnknown():
+            break;
+          case SessionAuthenticated():
+            {{#if flags.usesFlutterNativeSplash}}
+            FlutterNativeSplash.remove();
+            {{/if}}
             {{#if (eq flags.routerPackage "go_router")}}
             context.go(AppRoutes.home);
             {{else if (eq flags.routerPackage "auto_route")}}
@@ -82,7 +94,10 @@ class SessionListenerWrapper extends StatelessWidget {
             {{else}}
             Navigator.pushReplacementNamed(context, AppRoutes.home);
             {{/if}}
-          } else if (state.status == SessionStatus.unauthenticated) {
+          case SessionUnauthenticated():
+            {{#if flags.usesFlutterNativeSplash}}
+            FlutterNativeSplash.remove();
+            {{/if}}
             {{#if (eq flags.routerPackage "go_router")}}
             context.go(AppRoutes.onboarding);
             {{else if (eq flags.routerPackage "auto_route")}}
@@ -90,7 +105,6 @@ class SessionListenerWrapper extends StatelessWidget {
             {{else}}
             Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
             {{/if}}
-          }
         }
       },
       child: child,
@@ -114,18 +128,22 @@ class _SessionListenerWrapperState extends State<SessionListenerWrapper> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final session = Get.find<SessionController>();
-      _worker = ever(session.status, (status) {
-        if (status != SessionStatus.unknown) {
-          {{#if flags.usesFlutterNativeSplash}}
-          FlutterNativeSplash.remove();
-          {{/if}}
-          if (status == SessionStatus.authenticated) {
+      _worker = ever(session.state, (SessionState next) {
+        switch (next) {
+          case SessionUnknown():
+            break;
+          case SessionAuthenticated():
+            {{#if flags.usesFlutterNativeSplash}}
+            FlutterNativeSplash.remove();
+            {{/if}}
             Get.offAllNamed(AppRoutes.home);
-          } else if (status == SessionStatus.unauthenticated) {
+          case SessionUnauthenticated():
+            {{#if flags.usesFlutterNativeSplash}}
+            FlutterNativeSplash.remove();
+            {{/if}}
             Get.offAllNamed(AppRoutes.onboarding);
-          }
         }
-      }, condition: () => session.status.value != SessionStatus.unknown);
+      }, condition: () => !session.state.value.isUnknown);
     });
   }
 
@@ -157,13 +175,15 @@ class _SessionListenerWrapperState extends State<SessionListenerWrapper> {
     super.didChangeDependencies();
     final sessionStore = Provider.of<SessionStore>(context, listen: false);
     _disposer = reaction(
-      (_) => sessionStore.status,
-      (SessionStatus status) {
-        if (status != SessionStatus.unknown) {
-          {{#if flags.usesFlutterNativeSplash}}
-          FlutterNativeSplash.remove();
-          {{/if}}
-          if (status == SessionStatus.authenticated) {
+      (_) => sessionStore.state,
+      (SessionState next) {
+        switch (next) {
+          case SessionUnknown():
+            break;
+          case SessionAuthenticated():
+            {{#if flags.usesFlutterNativeSplash}}
+            FlutterNativeSplash.remove();
+            {{/if}}
             {{#if (eq flags.routerPackage "go_router")}}
             context.go(AppRoutes.home);
             {{else if (eq flags.routerPackage "auto_route")}}
@@ -171,7 +191,10 @@ class _SessionListenerWrapperState extends State<SessionListenerWrapper> {
             {{else}}
             Navigator.pushReplacementNamed(context, AppRoutes.home);
             {{/if}}
-          } else if (status == SessionStatus.unauthenticated) {
+          case SessionUnauthenticated():
+            {{#if flags.usesFlutterNativeSplash}}
+            FlutterNativeSplash.remove();
+            {{/if}}
             {{#if (eq flags.routerPackage "go_router")}}
             context.go(AppRoutes.onboarding);
             {{else if (eq flags.routerPackage "auto_route")}}
@@ -179,7 +202,6 @@ class _SessionListenerWrapperState extends State<SessionListenerWrapper> {
             {{else}}
             Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
             {{/if}}
-          }
         }
       },
       fireImmediately: true,
@@ -211,13 +233,15 @@ class _SessionListenerWrapperState extends State<SessionListenerWrapper> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final session = Provider.of<SessionProvider>(context);
-    if (session.status != SessionStatus.unknown) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        {{#if flags.usesFlutterNativeSplash}}
-        FlutterNativeSplash.remove();
-        {{/if}}
-        if (session.status == SessionStatus.authenticated) {
+    switch (session.state) {
+      case SessionUnknown():
+        break;
+      case SessionAuthenticated():
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          {{#if flags.usesFlutterNativeSplash}}
+          FlutterNativeSplash.remove();
+          {{/if}}
           {{#if (eq flags.routerPackage "go_router")}}
           context.go(AppRoutes.home);
           {{else if (eq flags.routerPackage "auto_route")}}
@@ -225,7 +249,13 @@ class _SessionListenerWrapperState extends State<SessionListenerWrapper> {
           {{else}}
           Navigator.pushReplacementNamed(context, AppRoutes.home);
           {{/if}}
-        } else if (session.status == SessionStatus.unauthenticated) {
+        });
+      case SessionUnauthenticated():
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          {{#if flags.usesFlutterNativeSplash}}
+          FlutterNativeSplash.remove();
+          {{/if}}
           {{#if (eq flags.routerPackage "go_router")}}
           context.go(AppRoutes.onboarding);
           {{else if (eq flags.routerPackage "auto_route")}}
@@ -233,8 +263,7 @@ class _SessionListenerWrapperState extends State<SessionListenerWrapper> {
           {{else}}
           Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
           {{/if}}
-        }
-      });
+        });
     }
   }
 

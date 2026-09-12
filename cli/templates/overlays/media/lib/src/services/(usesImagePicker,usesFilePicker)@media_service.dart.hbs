@@ -51,7 +51,11 @@ class MediaService {
       );
 
       return file != null ? File(file.path) : null;
-    });
+    },
+      operation: 'media.pickImage',
+      category: LogCategory.app,
+      context: {'source': source.name},
+    );
   }
 
   /// Pick multiple images from gallery.
@@ -77,7 +81,10 @@ class MediaService {
       );
 
       return files.map((file) => File(file.path)).toList();
-    });
+    },
+      operation: 'media.pickMultiImage',
+      category: LogCategory.app,
+    );
   }
 
   /// Pick a video from gallery or camera.
@@ -108,7 +115,11 @@ class MediaService {
       );
 
       return file != null ? File(file.path) : null;
-    });
+    },
+      operation: 'media.pickVideo',
+      category: LogCategory.app,
+      context: {'source': source.name},
+    );
   }
   {{/if}}
 
@@ -142,7 +153,10 @@ class MediaService {
           .where((path) => path != null)
           .map((path) => File(path!))
           .toList();
-    });
+    },
+      operation: 'media.pickFiles',
+      category: LogCategory.app,
+    );
   }
   {{/if}}
 }

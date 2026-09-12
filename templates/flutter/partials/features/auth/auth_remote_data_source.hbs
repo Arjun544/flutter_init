@@ -1,0 +1,23 @@
+import 'package:{{flags.appSnake}}/src/utils/utils.dart';
+
+/// Remote auth contract — hides AuthService / SDK details from repositories.
+abstract class AuthRemoteDataSource {
+  Stream<Map<String, dynamic>?> get authStateChanges;
+
+  FutureEither<Map<String, dynamic>?> login({
+    required String email,
+    required String password,
+  });
+
+  FutureEither<Map<String, dynamic>?> signUp({
+    required String name,
+    required String email,
+    required String password,
+  });
+
+  FutureEither<void> forgotPassword({required String email});
+
+  FutureEither<void> logout();
+
+  FutureEither<Map<String, dynamic>?> getCurrentUser();
+}

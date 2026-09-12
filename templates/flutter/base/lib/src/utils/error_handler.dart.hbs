@@ -1,14 +1,15 @@
 class AppErrorHandler {
-  static String format(dynamic error) {
+  static String format(Object? error) {
+    if (error == null) return 'An unexpected error occurred';
     if (error is String) return error;
 
-    // Add logic for common exceptions (e.g., DioException if using Dio)
-    // For now, basic error message extraction
     try {
-      if (error?.message != null) return error.message;
-      if (error?.toString() != null) return error.toString();
+      final dynamic dynamicError = error;
+      if (dynamicError.message is String) {
+        return dynamicError.message as String;
+      }
     } catch (_) {}
 
-    return 'An unexpected error occurred';
+    return error.toString();
   }
 }

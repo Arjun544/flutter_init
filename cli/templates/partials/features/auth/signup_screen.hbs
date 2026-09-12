@@ -37,14 +37,14 @@ class SignupScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hoo
     final obscureConfirmPassword = useState(true);
 
 {{#if flags.isRiverpod}}
-    final isLoading = ref.watch(authControllerProvider);
+    final isLoading = ref.watch(authControllerProvider).isLoading;
 {{else if flags.isBloc}}
     final isLoading = context.select((AuthBloc bloc) => bloc.state.isLoading);
 {{else if flags.isProvider}}
     final isLoading = context.select((AuthProvider p) => p.isLoading);
 {{else if flags.isGetX}}
     final controller = Get.find<AuthController>();
-    final isLoading = controller.isLoading.value;
+    final isLoading = controller.state.value.isLoading;
 {{else if flags.isMobX}}
     final authStore = useMemoized(() => AuthStore(repository: AuthRepositoryImpl()), []);
     final isLoading = authStore.isLoading;
@@ -146,9 +146,22 @@ class SignupScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hoo
 
 {{#if flags.isGetX}}
     return Obx(() => _SignupView(
+      formKey: formKey,
+      nameController: nameController,
+      emailController: emailController,
+      passwordController: passwordController,
+      confirmPasswordController: confirmPasswordController,
+      obscurePassword: obscurePassword.value,
+      obscureConfirmPassword: obscureConfirmPassword.value,
+      isLoading: controller.state.value.isLoading,
+      onToggleObscure: () => obscurePassword.value = !obscurePassword.value,
+      onToggleConfirmObscure: () => obscureConfirmPassword.value = !obscureConfirmPassword.value,
+      onSignup: handleSignup,
+      cs: cs,
+      tt: tt,
+    ));
 {{else}}
     return _SignupView(
-{{/if}}
       formKey: formKey,
       nameController: nameController,
       emailController: emailController,
@@ -162,8 +175,6 @@ class SignupScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hoo
       onSignup: handleSignup,
       cs: cs,
       tt: tt,
-    );
-{{#if flags.isGetX}}
     );
 {{/if}}
   }
@@ -204,7 +215,7 @@ class _SignupScreenState extends {{#if flags.isRiverpod}}ConsumerState<SignupScr
   @override
   Widget build(BuildContext context) {
 {{#if flags.isRiverpod}}
-    final isLoading = ref.watch(authControllerProvider);
+    final isLoading = ref.watch(authControllerProvider).isLoading;
 {{else if flags.isBloc}}
     final isLoading = context.select((AuthBloc bloc) => bloc.state.isLoading);
 {{else if flags.isProvider}}
@@ -295,7 +306,7 @@ class _SignupScreenState extends {{#if flags.isRiverpod}}ConsumerState<SignupScr
 
 {{#if flags.isGetX}}
     return Obx(() {
-      final isLoading = controller.isLoading.value;
+      final isLoading = controller.state.value.isLoading;
       return _SignupView(
         formKey: _formKey,
         nameController: _nameController,
