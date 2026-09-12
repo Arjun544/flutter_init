@@ -14,7 +14,7 @@ export function CliCommand({ className }: CliCommandProps) {
 
   return (
     <div className={cn(
-      "pointer-events-auto inline-flex items-center gap-3 pl-4 pr-2 py-1.5 rounded-full bg-white border border-zinc-200/80 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.05)] hover:border-zinc hover:shadow-[0_4px_20px_-4px_rgba(99,102,241,0.15)] transition-all duration-300 select-none",
+      "pointer-events-auto inline-flex items-center gap-3 pl-4 pr-2 py-1.5 rounded-full bg-white smooth-shadow-ring-sm hover:smooth-shadow-ring-md hover:shadow-indigo-500/15 transition-all duration-300 select-none",
       className
     )}>
       {/* Terminal Icon */}

@@ -89,7 +89,7 @@ export function CodeEditorWorkspace() {
   if (!isHydrated) {
     return (
       <div className="flex h-dvh items-center justify-center bg-background px-6 text-sm text-muted-foreground">
-        <div className="flex items-center gap-3 rounded-xl border border-border/50 bg-card/50 px-4 py-3 shadow-sm">
+        <div className="flex items-center gap-3 rounded-xl bg-card/50 px-4 py-3 smooth-shadow-ring-sm">
           <Spinner className="size-5 text-primary" />
           <div className="flex flex-col gap-0.5">
             <span className="font-medium text-foreground">Restoring session</span>

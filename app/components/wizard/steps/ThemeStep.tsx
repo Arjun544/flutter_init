@@ -2,23 +2,26 @@
 
 import {
     CustomFontEntry,
-    FontStyle,
-    FontWeight,
     FONT_MAX_SIZE_BYTES,
     SUPPORTED_FONT_EXTENSIONS,
     ThemePreset,
     deriveFontFamily,
-    fontStyleSchema,
-    fontWeightSchema,
     themePresetOptions,
 } from "@/app/lib/config/schema"
+import { StepGrid, StepPanel, StepSection } from "@/app/components/wizard/StepPanel"
 import { useWizard } from "@/app/lib/state/useWizardStore"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import {
     AlertCircleIcon,
@@ -29,23 +32,9 @@ import {
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import * as React from "react"
-
-// ─── Constants ────────────────────────────────────────────────────────────────
+import { cn } from "@/lib/utils"
 
 const ACCEPTED_EXTS = SUPPORTED_FONT_EXTENSIONS.join(",")
-const FONT_WEIGHTS: { value: FontWeight; label: string }[] = [
-    { value: "100", label: "100 — Thin" },
-    { value: "200", label: "200 — ExtraLight" },
-    { value: "300", label: "300 — Light" },
-    { value: "400", label: "400 — Regular" },
-    { value: "500", label: "500 — Medium" },
-    { value: "600", label: "600 — SemiBold" },
-    { value: "700", label: "700 — Bold" },
-    { value: "800", label: "800 — ExtraBold" },
-    { value: "900", label: "900 — Black" },
-]
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getExt(name: string) {
     const i = name.lastIndexOf(".")
@@ -62,18 +51,15 @@ function formatBytes(bytes: number) {
         : `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-// ─── ThemeStep ────────────────────────────────────────────────────────────────
-
 export function ThemeStep() {
-    const { config, updateConfig, setSelectedItem, addFontFile, removeFontFile, fontFiles } = useWizard()
+    const { config, updateConfig, setSelectedItem, addFontFile, removeFontFile } =
+        useWizard()
     const { theme } = config
     const customFonts = theme.customFonts ?? []
 
     const [dragOver, setDragOver] = React.useState(false)
     const [errors, setErrors] = React.useState<string[]>([])
     const fileInputRef = React.useRef<HTMLInputElement>(null)
-
-    // ── File processing ──────────────────────────────────────────────────────
 
     function processFiles(files: FileList | File[]) {
         const arr = Array.from(files)
@@ -83,7 +69,7 @@ export function ThemeStep() {
             if (!isSupported(file.name)) {
                 const ext = getExt(file.name) || "(no extension)"
                 newErrors.push(
-                    `"${file.name}" — unsupported format ${ext}. Flutter supports .ttf, .otf, .ttc only (not .woff/.woff2 on desktop).`
+                    `"${file.name}" — unsupported format ${ext}. Flutter supports .ttf, .otf, .ttc only.`
                 )
                 continue
             }
@@ -106,8 +92,6 @@ export function ThemeStep() {
         if (newErrors.length > 0) setErrors((prev) => [...prev, ...newErrors])
     }
 
-    // ── Drag handlers ─────────────────────────────────────────────────────────
-
     function onDragOver(e: React.DragEvent) {
         e.preventDefault()
         setDragOver(true)
@@ -129,306 +113,311 @@ export function ThemeStep() {
     function onFileInput(e: React.ChangeEvent<HTMLInputElement>) {
         if (e.target.files && e.target.files.length > 0) {
             processFiles(e.target.files)
-            e.target.value = "" // reset so same file can be re-added after remove
-        }
-    }
-
-    // ── Per-font update ───────────────────────────────────────────────────────
-
-    function updateFontMeta(fileName: string, patch: Partial<CustomFontEntry>) {
-        const file = fontFiles.get(fileName)
-        const existing = customFonts.find((f) => f.fileName === fileName)
-        if (!existing) return
-        const updated = { ...existing, ...patch }
-        if (file) {
-            addFontFile(file, updated) // re-registers with updated metadata
-        } else {
-            // file blob not in memory (page was refreshed) — update metadata only
-            updateConfig((prev) => ({
-                ...prev,
-                theme: {
-                    ...prev.theme,
-                    customFonts: (prev.theme.customFonts ?? []).map((f) =>
-                        f.fileName === fileName ? updated : f
-                    ),
-                },
-            }))
+            e.target.value = ""
         }
     }
 
     return (
-        <Card className="border-border/40 bg-background/60 shadow-xl backdrop-blur-xl transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
-            <CardHeader>
-                <CardTitle className="bg-linear-to-br from-foreground to-muted-foreground bg-clip-text text-transparent text-xl font-bold">UI &amp; Theme</CardTitle>
-                <CardDescription>
-                    Choose your design system, primary color, dark mode, and custom fonts.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-
-                {/* ── Theme + Color ── */}
-                <div className="grid gap-6 md:grid-cols-2">
-                    <div className="space-y-2 group">
-                        <Label className="transition-colors group-focus-within:text-primary">Theme</Label>
-                        <Select
-                            value={theme.preset}
-                            onValueChange={(value) =>
-                                updateConfig({ theme: { ...theme, preset: value as ThemePreset } })
-                            }
-                        >
-                            <SelectTrigger className="w-full bg-background/50 backdrop-blur-sm transition-all focus:ring-2 focus:ring-primary/20 hover:border-primary/40">
-                                <SelectValue placeholder="Select theme" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-background/90 backdrop-blur-xl border-border/50">
-                                {themePresetOptions.map((option) => (
-                                    <SelectItem key={option.value} value={option.value}>
-                                        <div className="flex items-center justify-between w-full pr-6">
-                                            <div className="flex flex-col py-0.5 text-left">
-                                                <span className="font-medium">{option.label}</span>
-                                                {theme.preset !== option.value && (
-                                                    <span className="text-[10px] text-muted-foreground font-normal line-clamp-1">{option.description}</span>
-                                                )}
+        <StepPanel
+            title="UI & theme"
+            description="Set the design system, primary color, dark mode behavior, and optional custom fonts."
+        >
+            <StepSection title="Appearance" description="Core look-and-feel for the generated app.">
+                <FieldGroup className="w-full">
+                    <div className="grid w-full gap-6 md:grid-cols-2">
+                        <Field>
+                            <FieldLabel>Theme</FieldLabel>
+                            <Select
+                                value={theme.preset}
+                                onValueChange={(value) =>
+                                    updateConfig({
+                                        theme: { ...theme, preset: value as ThemePreset },
+                                    })
+                                }
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select theme" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {themePresetOptions.map((option) => (
+                                        <SelectItem key={option.value} value={option.value}>
+                                            <div className="flex w-full items-center justify-between gap-3 pr-4">
+                                                <div className="flex flex-col py-0.5 text-left">
+                                                    <span className="font-medium">{option.label}</span>
+                                                    {theme.preset !== option.value ? (
+                                                        <span className="line-clamp-1 text-[10px] font-normal text-muted-foreground">
+                                                            {option.description}
+                                                        </span>
+                                                    ) : null}
+                                                </div>
+                                                {theme.preset !== option.value ? (
+                                                    <button
+                                                        type="button"
+                                                        onPointerDown={(e) => {
+                                                            e.preventDefault()
+                                                            e.stopPropagation()
+                                                            setSelectedItem(`theme_${option.value}`)
+                                                        }}
+                                                        onClick={(e) => {
+                                                            e.preventDefault()
+                                                            e.stopPropagation()
+                                                            setSelectedItem(`theme_${option.value}`)
+                                                        }}
+                                                        className="z-10 cursor-pointer rounded-md p-1 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
+                                                        title="View details"
+                                                    >
+                                                        <HugeiconsIcon
+                                                            icon={InformationCircleIcon}
+                                                            size={16}
+                                                        />
+                                                    </button>
+                                                ) : null}
                                             </div>
-                                            {theme.preset !== option.value && (
-                                                <button
-                                                    type="button"
-                                                    onPointerDown={(e) => {
-                                                        e.preventDefault()
-                                                        e.stopPropagation()
-                                                        setSelectedItem(`theme_${option.value}`)
-                                                    }}
-                                                    onClick={(e) => {
-                                                        e.preventDefault()
-                                                        e.stopPropagation()
-                                                        setSelectedItem(`theme_${option.value}`)
-                                                    }}
-                                                    className="p-1 -mr-2 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden [&_svg]:pointer-events-auto z-10 cursor-pointer"
-                                                    title="View details"
-                                                >
-                                                    <HugeiconsIcon icon={InformationCircleIcon} size={16} />
-                                                </button>
-                                            )}
-                                        </div>
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </Field>
 
-                    <div className="space-y-2 group">
-                        <Label htmlFor="primaryColor" className="transition-colors group-focus-within:text-primary">Primary color</Label>
-                        <div className="flex items-center gap-3">
-                            <div className="relative flex-1">
+                        <Field>
+                            <FieldLabel htmlFor="primaryColor">Primary color</FieldLabel>
+                            <div className="flex items-center gap-3">
+                                <div className="relative flex-1">
+                                    <Input
+                                        id="primaryColor"
+                                        value={theme.primaryColor ?? ""}
+                                        onChange={(e) =>
+                                            updateConfig({
+                                                theme: {
+                                                    ...theme,
+                                                    primaryColor: e.target.value,
+                                                },
+                                            })
+                                        }
+                                        placeholder="#6750A4"
+                                        className="pl-10 font-mono"
+                                    />
+                                    <div
+                                        className="absolute top-1/2 left-3 size-4 -translate-y-1/2 rounded-full border border-border"
+                                        style={{
+                                            backgroundColor: theme.primaryColor ?? "#6750A4",
+                                        }}
+                                    />
+                                </div>
                                 <Input
-                                    id="primaryColor"
-                                    value={theme.primaryColor ?? ""}
+                                    type="color"
+                                    className="h-10 w-14 cursor-pointer p-1"
+                                    value={theme.primaryColor ?? "#6750A4"}
                                     onChange={(e) =>
-                                        updateConfig({ theme: { ...theme, primaryColor: e.target.value } })
+                                        updateConfig({
+                                            theme: {
+                                                ...theme,
+                                                primaryColor: e.target.value,
+                                            },
+                                        })
                                     }
-                                    placeholder="#6750A4"
-                                    className="pl-10 font-mono bg-background/50 backdrop-blur-sm transition-all focus:ring-2 focus:ring-primary/20"
-                                />
-                                <div
-                                    className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border border-border"
-                                    style={{ backgroundColor: theme.primaryColor ?? "#6750A4" }}
+                                    aria-label="Pick primary color"
                                 />
                             </div>
-                            <Input
-                                type="color"
-                                className="h-10 w-16 p-1 cursor-pointer hover:scale-105 transition-transform"
-                                value={theme.primaryColor ?? "#6750A4"}
-                                onChange={(e) =>
-                                    updateConfig({ theme: { ...theme, primaryColor: e.target.value } })
-                                }
-                            />
-                        </div>
+                        </Field>
                     </div>
-                </div>
+                </FieldGroup>
+            </StepSection>
 
-                {/* ── Dark Mode ── */}
-                <div className="space-y-4 rounded-xl border border-border/40 bg-card/30 p-5 backdrop-blur-sm transition-all hover:bg-card/50 hover:border-primary/20 click-scale">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="font-semibold text-foreground/90">Dark mode</p>
-                            <p className="text-sm text-muted-foreground">
-                                Support system and manual toggle.
-                            </p>
+            <Separator />
+
+            <StepSection title="Dark mode" description="Enable dark theme support and system sync.">
+                <div className="grid w-full gap-3 sm:grid-cols-2">
+                    <label className="flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-lg border border-border/50 px-3.5 py-3 transition-colors hover:bg-muted/40">
+                        <div className="flex flex-col gap-0.5">
+                            <span className="text-sm font-medium text-foreground">Enable dark mode</span>
+                            <span className="text-xs text-muted-foreground">
+                                Generate light and dark color schemes.
+                            </span>
                         </div>
                         <Switch
                             checked={theme.darkMode.enabled}
                             onCheckedChange={(checked) =>
-                                updateConfig({ theme: { ...theme, darkMode: { ...theme.darkMode, enabled: checked } } })
+                                updateConfig({
+                                    theme: {
+                                        ...theme,
+                                        darkMode: { ...theme.darkMode, enabled: checked },
+                                    },
+                                })
                             }
-                            className="data-[state=checked]:bg-primary"
                         />
-                    </div>
-                    <div className={`flex items-center justify-between transition-opacity duration-300 ${!theme.darkMode.enabled ? 'opacity-50 pointer-events-none' : ''}`}>
-                        <p className="text-sm text-muted-foreground">Follow system</p>
+                    </label>
+                    <label
+                        className={cn(
+                            "flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-lg border border-border/50 px-3.5 py-3 transition-colors hover:bg-muted/40",
+                            !theme.darkMode.enabled && "pointer-events-none opacity-50"
+                        )}
+                    >
+                        <div className="flex flex-col gap-0.5">
+                            <span className="text-sm font-medium text-foreground">Follow system</span>
+                            <span className="text-xs text-muted-foreground">
+                                Match the device light/dark preference.
+                            </span>
+                        </div>
                         <Switch
                             checked={theme.darkMode.system}
                             onCheckedChange={(checked) =>
-                                updateConfig({ theme: { ...theme, darkMode: { ...theme.darkMode, system: checked } } })
+                                updateConfig({
+                                    theme: {
+                                        ...theme,
+                                        darkMode: { ...theme.darkMode, system: checked },
+                                    },
+                                })
                             }
                             disabled={!theme.darkMode.enabled}
                         />
-                    </div>
+                    </label>
                 </div>
+            </StepSection>
 
-                {/* ── Custom Fonts ── */}
-                <div className="space-y-4">
-                    <div>
-                        <p className="font-semibold text-foreground/90">Custom fonts</p>
-                        <p className="text-sm text-muted-foreground">
-                            Drop font files to bundle them.
-                        </p>
-                        <p className="text-xs text-muted-foreground/70 mt-1">
-                            Supported formats: <span className="font-mono">.ttf · .otf · .ttc</span>
-                        </p>
-                        <div className="flex items-center gap-2 mt-3 px-3 py-2 rounded-lg bg-muted border border-border text-xs">
-                            <HugeiconsIcon icon={AlertCircleIcon} size={15} />
-                            <span>FlutterInit does not persist your fonts. You will need to select them again if you refresh the page.</span>
-                        </div>
-                    </div>
+            <Separator />
 
-                    {/* Error Banner */}
-                    {errors.length > 0 && (
-                        <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 space-y-1 animate-in fade-in slide-in-from-top-2 duration-200">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-destructive font-medium text-sm">
-                                    <HugeiconsIcon icon={AlertCircleIcon} size={15} />
-                                    <span>{errors.length === 1 ? "1 file rejected" : `${errors.length} files rejected`}</span>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setErrors([])}
-                                    className="text-destructive/60 hover:text-destructive transition-colors"
-                                    aria-label="Dismiss errors"
-                                >
-                                    <HugeiconsIcon icon={Cancel01Icon} size={14} />
-                                </button>
-                            </div>
-                            <ul className="text-xs text-destructive/80 space-y-0.5 pl-1">
-                                {errors.map((e, i) => <li key={i}>{e}</li>)}
+            <StepSection
+                title="Custom fonts"
+                description="Bundle .ttf, .otf, or .ttc files with the project. Max 10 MB each."
+            >
+                <Alert>
+                    <HugeiconsIcon icon={AlertCircleIcon} />
+                    <AlertTitle>Fonts are session-only</AlertTitle>
+                    <AlertDescription>
+                        FlutterInit does not persist uploaded fonts. Re-select them after a refresh.
+                    </AlertDescription>
+                </Alert>
+
+                {errors.length > 0 ? (
+                    <Alert variant="destructive">
+                        <HugeiconsIcon icon={AlertCircleIcon} />
+                        <AlertTitle className="flex items-center justify-between gap-2">
+                            <span>
+                                {errors.length === 1
+                                    ? "1 file rejected"
+                                    : `${errors.length} files rejected`}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={() => setErrors([])}
+                                className="cursor-pointer text-destructive/70 transition-colors hover:text-destructive"
+                                aria-label="Dismiss errors"
+                            >
+                                <HugeiconsIcon icon={Cancel01Icon} size={14} />
+                            </button>
+                        </AlertTitle>
+                        <AlertDescription>
+                            <ul className="mt-1 list-disc pl-4">
+                                {errors.map((e, i) => (
+                                    <li key={i}>{e}</li>
+                                ))}
                             </ul>
-                        </div>
-                    )}
+                        </AlertDescription>
+                    </Alert>
+                ) : null}
 
-                    {/* Drop Zone */}
+                <div
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Drop font files here or click to browse"
+                    onDragOver={onDragOver}
+                    onDragLeave={onDragLeave}
+                    onDrop={onDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click()
+                    }}
+                    className={cn(
+                        "flex w-full cursor-pointer flex-col items-start gap-3 rounded-lg border border-dashed px-5 py-6 transition-colors duration-150 select-none sm:flex-row sm:items-center",
+                        dragOver
+                            ? "border-primary bg-primary/10"
+                            : "border-border/60 hover:border-primary/40 hover:bg-muted/30"
+                    )}
+                >
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        multiple
+                        accept={ACCEPTED_EXTS}
+                        className="sr-only"
+                        onChange={onFileInput}
+                        aria-label="Select font files"
+                        tabIndex={-1}
+                    />
                     <div
-                        role="button"
-                        tabIndex={0}
-                        aria-label="Drop font files here or click to browse"
-                        onDragOver={onDragOver}
-                        onDragLeave={onDragLeave}
-                        onDrop={onDrop}
-                        onClick={() => fileInputRef.current?.click()}
-                        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click() }}
-                        className={[
-                            "relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 cursor-pointer",
-                            "transition-all duration-200 select-none",
+                        className={cn(
+                            "flex size-11 shrink-0 items-center justify-center rounded-lg transition-colors",
                             dragOver
-                                ? "border-primary bg-primary/10 scale-[1.01]"
-                                : "border-border/50 hover:border-primary/40 hover:bg-muted/30 bg-card/20",
-                        ].join(" ")}
+                                ? "bg-primary/20 text-primary"
+                                : "bg-muted text-muted-foreground"
+                        )}
                     >
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            multiple
-                            accept={ACCEPTED_EXTS}
-                            className="sr-only"
-                            onChange={onFileInput}
-                            aria-label="Select font files"
-                            tabIndex={-1}
-                        />
-                        <div className={[
-                            "flex h-12 w-12 items-center justify-center rounded-full transition-colors duration-200",
-                            dragOver ? "bg-primary/20 text-primary" : "bg-muted/50 text-muted-foreground",
-                        ].join(" ")}>
-                            <HugeiconsIcon icon={CloudUploadIcon} size={22} />
-                        </div>
-                        <div className="text-center">
-                            <p className="text-sm font-medium text-foreground/80">
-                                {dragOver ? "Drop to add fonts" : "Drag & drop font files here"}
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                                or <span className="underline underline-offset-2 text-primary">click to browse</span>
-                                {" "}· .ttf · .otf · .ttc · max 10 MB each
-                            </p>
-                        </div>
+                        <HugeiconsIcon icon={CloudUploadIcon} size={20} />
                     </div>
-
-                    {/* Font Cards */}
-                    {customFonts.length > 0 && (
-                        <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                            {customFonts.map((font) => (
-                                <FontCard
-                                    key={font.fileName}
-                                    font={font}
-                                    onRemove={() => removeFontFile(font.fileName)}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    <div className="min-w-0 flex-1 text-left">
+                        <p className="text-sm font-medium text-foreground">
+                            {dragOver ? "Drop to add fonts" : "Drag & drop font files here"}
+                        </p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                            or{" "}
+                            <span className="text-primary underline underline-offset-2">
+                                click to browse
+                            </span>{" "}
+                            · .ttf · .otf · .ttc · max 10 MB each
+                        </p>
+                    </div>
                 </div>
 
-            </CardContent>
-        </Card>
+                {customFonts.length > 0 ? (
+                    <StepGrid cols={2}>
+                        {customFonts.map((font) => (
+                            <FontRow
+                                key={font.fileName}
+                                font={font}
+                                onRemove={() => removeFontFile(font.fileName)}
+                            />
+                        ))}
+                    </StepGrid>
+                ) : null}
+            </StepSection>
+        </StepPanel>
     )
 }
 
-// ─── FontCard ─────────────────────────────────────────────────────────────────
-
-interface FontCardProps {
-    font: CustomFontEntry
-    onRemove: () => void
-}
-
-function FontCard({ font, onRemove }: FontCardProps) {
+function FontRow({ font, onRemove }: { font: CustomFontEntry; onRemove: () => void }) {
     const ext = getExt(font.fileName).replace(".", "").toUpperCase()
 
     return (
-        <div className="group relative rounded-xl border border-border/30 bg-card/30 p-3 transition-all hover:border-primary/20 hover:bg-card/50 animate-in fade-in slide-in-from-bottom-1 duration-200">
-            {/* Remove button */}
+        <div className="group relative flex items-center gap-3 rounded-lg border border-border/50 px-3.5 py-3 transition-colors hover:bg-muted/40">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                <HugeiconsIcon icon={File01Icon} size={16} />
+            </div>
+            <div className="min-w-0 flex-1 pr-8">
+                <div className="flex items-center gap-2">
+                    <p className="truncate text-sm font-medium text-foreground">{font.fileName}</p>
+                    <Badge variant="outline" className="h-4 px-1 font-mono text-[9px]">
+                        {ext}
+                    </Badge>
+                </div>
+                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+                    <span>
+                        Family <span className="text-foreground/80">{font.family}</span>
+                    </span>
+                    <span>
+                        Weight <span className="font-mono text-foreground/80">{font.weight}</span>
+                    </span>
+                    {font.style === "italic" ? <span className="italic">Italic</span> : null}
+                </div>
+            </div>
             <button
                 type="button"
                 onClick={onRemove}
                 aria-label={`Remove ${font.fileName}`}
-                className="absolute top-1/2 -translate-y-1/2 right-3 flex h-7 w-7 items-center cursor-pointer justify-center rounded-full text-muted-foreground/40 opacity-0 group-hover:opacity-100 transition-all hover:bg-destructive/10 hover:text-destructive focus:opacity-100"
+                className="absolute top-1/2 right-2.5 flex size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive focus:opacity-100"
             >
                 <HugeiconsIcon icon={Cancel01Icon} size={14} />
             </button>
-
-            <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/5 text-primary/60">
-                    <HugeiconsIcon icon={File01Icon} size={18} />
-                </div>
-                <div className="min-w-0 flex-1 pr-8">
-                    <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium text-foreground/90 truncate">{font.fileName}</p>
-                        <Badge variant="outline" className="text-[9px] h-3.5 px-1 font-mono border-muted-foreground/20 text-muted-foreground/70">
-                            {ext}
-                        </Badge>
-                    </div>
-                    <div className="flex items-center gap-x-3 gap-y-1 mt-1 flex-wrap">
-                        <div className="flex items-center gap-1">
-                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-semibold">Family</span>
-                            <span className="text-xs text-foreground/70">{font.family}</span>
-                        </div>
-                        <div className="flex items-center gap-1 border-l border-border/50 pl-3">
-                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-semibold">Weight</span>
-                            <span className="text-xs text-foreground/70 font-mono">{font.weight}</span>
-                        </div>
-                        {font.style === "italic" && (
-                            <div className="flex items-center gap-1 border-l border-border/50 pl-3">
-                                <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-semibold italic">Italic</span>
-                            </div>
-                        )}
-                        
-                    </div>
-                </div>
-            </div>
         </div>
     )
 }
-

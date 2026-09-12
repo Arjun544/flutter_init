@@ -26,7 +26,7 @@ export function FeaturedPost({
   return (
     <article
       className={cn(
-        'group relative overflow-hidden rounded-3xl border border-zinc-200/80 bg-white shadow-xs hover:border-zinc-300 transition-all duration-400',
+        'group relative overflow-hidden rounded-3xl bg-white smooth-shadow-ring-xs transition-all duration-400',
         fillHeight && 'h-full',
       )}
     >
@@ -62,7 +62,7 @@ export function FeaturedPost({
             >
               <div className="text-center px-8">
                 <div
-                  className="mx-auto mb-4 size-16 rounded-2xl flex items-center justify-center shadow-lg"
+                  className="mx-auto mb-4 size-16 rounded-2xl flex items-center justify-center smooth-shadow-lg"
                   style={{
                     background:
                       post.kind === 'guide'
@@ -82,7 +82,7 @@ export function FeaturedPost({
 
           {/* Featured badge */}
           {!hideMeta && post.featured && (
-            <div className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-white/90 backdrop-blur-sm px-3 py-1 text-[11px] font-bold text-zinc-800 border border-zinc-200/80 shadow-sm">
+            <div className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-white/90 backdrop-blur-sm px-3 py-1 text-[11px] font-bold text-zinc-800 smooth-shadow-ring-sm">
               <span className="size-1.5 rounded-full bg-primary" />
               Featured
             </div>

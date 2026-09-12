@@ -40,10 +40,10 @@ const NodeSwitch = ({
       style={{ top, left }}
       onClick={onToggle}
     >
-      <div className={`flex items-center py-2 px-3 rounded-2xl transition-all duration-300 border backdrop-blur-xl shadow-xl
+      <div className={`flex items-center py-2 px-3 rounded-2xl transition-all duration-300 backdrop-blur-xl
         ${active
-          ? 'bg-white border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-primary/5'
-          : 'bg-white/70 hover:bg-white/95 border-white/40 shadow-zinc-200/20'}
+          ? 'bg-white smooth-shadow-ring-xl smooth-ring-primary/5'
+          : 'bg-white/70 hover:bg-white/95 smooth-shadow-ring-md shadow-zinc-200/20'}
       `}>
         {/* Icon container */}
         <div className="relative w-8 h-8 flex items-center justify-center shrink-0">
@@ -59,7 +59,7 @@ const NodeSwitch = ({
             initial={false}
             animate={{ opacity: active ? 1 : 0 }}
             transition={{ duration: 0.3 }}
-            className={`absolute inset-0 rounded-lg border border-white/20 shadow-sm ${bgClass}`}
+            className={`absolute inset-0 rounded-lg smooth-shadow-ring-sm ${bgClass}`}
           />
 
           {/* Icon wrapper with subtle scale animation */}
@@ -209,7 +209,7 @@ export function MobileNodePattern() {
       <div className="absolute top-[325px] left-1/2 -translate-x-1/2 -translate-y-1/2 z-30">
         <div className="relative">
           <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-150 animate-pulse" />
-          <div className="relative w-20 h-20 bg-linear-to-tr from-primary via-primary/90 to-primary/80 rounded-[1.75rem] shadow-[0_20px_40px_-10px_hsl(var(--primary)/0.5)] flex items-center justify-center transform hover:scale-105 transition-all duration-500 border border-white/30 overflow-hidden">
+          <div className="relative w-20 h-20 bg-linear-to-tr from-primary via-primary/90 to-primary/80 rounded-[1.75rem] smooth-shadow-ring-2xl shadow-primary/50 flex items-center justify-center transform hover:scale-105 transition-all duration-500 overflow-hidden">
             <div className="absolute inset-0 bg-linear-to-br from-white/20 to-transparent pointer-events-none" />
             <div className="relative animate-float">
               <HugeiconsIcon icon={Folder01Icon} size={40} color='#ffffff' className="drop-shadow-lg" />

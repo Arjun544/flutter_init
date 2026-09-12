@@ -1,11 +1,12 @@
 "use client"
 
 import { useWizard } from "@/app/lib/state/useWizardStore"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ToggleRow } from "../ToggleRow"
+import { StepGrid, StepPanel, StepSection } from "@/app/components/wizard/StepPanel"
+import { ToggleRow } from "@/app/components/wizard/ToggleRow"
+import { Badge } from "@/components/ui/badge"
 
 export function IconsStep() {
-    const { config, updateConfig, next, prev } = useWizard()
+    const { config, updateConfig } = useWizard()
     const { icons } = config
 
     const handleToggle = (
@@ -27,31 +28,37 @@ export function IconsStep() {
         icons.iconsax_plus && "Iconsax Plus",
         icons.flutter_remix && "Flutter Remix",
         icons.hugeicons && "Hugeicons",
-    ]
-        .filter(Boolean)
-        .join(", ")
+    ].filter(Boolean) as string[]
 
     return (
-        <Card className="border-border/40 bg-background/60 shadow-xl backdrop-blur-xl transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
-            <CardHeader>
-                <CardTitle className="bg-linear-to-br from-foreground to-muted-foreground bg-clip-text text-transparent text-xl font-bold">
-                    Icons &amp; icon packs
-                </CardTitle>
-                <CardDescription>
-                    Choose which icon packages to include in your app.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-2">
+        <StepPanel
+            title="Icons"
+            description="Include Material by default, then optionally add one extra icon pack."
+            actions={
+                <div className="flex flex-wrap items-center gap-1.5">
+                    {selectedIcons.map((name) => (
+                        <Badge key={name} variant="secondary" className="font-medium">
+                            {name}
+                        </Badge>
+                    ))}
+                </div>
+            }
+        >
+            <StepSection
+                title="Icon packs"
+                description="Only one third-party pack can be active at a time."
+            >
+                <StepGrid cols={2}>
                     <ToggleRow
                         label="Default Flutter icons"
+                        description="Material icons ship with every Flutter project."
                         checked
-                        onCheckedChange={() => { }}
+                        onCheckedChange={() => {}}
                         disabled
                     />
                     <ToggleRow
                         label="Iconsax Plus"
-                        description="Clean icons in linear/bold styles."
+                        description="Clean icons in linear and bold styles."
                         checked={icons.iconsax_plus}
                         onCheckedChange={(value) => handleToggle("iconsax_plus", value)}
                     />
@@ -63,16 +70,12 @@ export function IconsStep() {
                     />
                     <ToggleRow
                         label="Hugeicons"
-                        description="3,800+ icons in 5 unique styles."
+                        description="3,800+ icons across five styles."
                         checked={icons.hugeicons}
                         onCheckedChange={(value) => handleToggle("hugeicons", value)}
                     />
-                </div>
-                <p className="text-sm text-muted-foreground">
-                    Selected: <span className="font-medium text-foreground/90">{selectedIcons}</span>
-                </p>
-            </CardContent>
-        </Card>
+                </StepGrid>
+            </StepSection>
+        </StepPanel>
     )
 }
-

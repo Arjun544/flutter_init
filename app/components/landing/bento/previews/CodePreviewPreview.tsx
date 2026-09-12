@@ -83,11 +83,11 @@ export function CodePreviewPreview() {
   return (
     <div
       className={cn(
-        "flex h-full min-h-35 flex-col overflow-hidden rounded-xl border bg-white transition-all duration-500 ease-out",
+        "flex h-full min-h-35 flex-col overflow-hidden rounded-xl bg-white transition-all duration-500 ease-out",
         visible ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0",
         isHovered
-          ? "border-teal-200 shadow-sm shadow-teal-100/60"
-          : "border-zinc-200/70"
+          ? "smooth-shadow-ring-sm shadow-teal-100/60"
+          : "border border-zinc-200/70"
       )}
     >
       {/* Title bar */}
@@ -140,7 +140,7 @@ export function CodePreviewPreview() {
               >
                 <span
                   className={cn(
-                    "size-1.5 shrink-0 rounded-[2px] transition-colors duration-300",
+                    "size-1.5 shrink-0 rounded-xs transition-colors duration-300",
                     active && isHovered ? "bg-teal-500" : "bg-zinc-300"
                   )}
                 />
