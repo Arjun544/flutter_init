@@ -42,8 +42,8 @@ class AppLoading extends StatelessWidget {
             Text(
               message!,
               style: context.theme.textTheme.bodyMedium?.copyWith(
-                    color: cs.onSurfaceVariant,
-                  ),
+                color: cs.onSurfaceVariant,
+              ),
               textAlign: TextAlign.center,
             ),
           ],

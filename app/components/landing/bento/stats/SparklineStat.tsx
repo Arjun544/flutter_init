@@ -112,7 +112,7 @@ export function SparklineStat({
                   isBarHovered ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-1 scale-90"
                 )}
               >
-                <div className="bg-zinc-900/95 dark:bg-zinc-50/98 text-white dark:text-zinc-950 text-[10px] font-bold py-1 px-2 rounded-md shadow-lg backdrop-blur-xs whitespace-nowrap border border-white/10 dark:border-zinc-200/50">
+                <div className="bg-zinc-900/95 dark:bg-zinc-50/98 text-white dark:text-zinc-950 text-[10px] font-bold py-1 px-2 rounded-md smooth-shadow-ring-lg backdrop-blur-xs whitespace-nowrap">
                   {getTooltipValue(h)}
                 </div>
                 {/* Arrow */}

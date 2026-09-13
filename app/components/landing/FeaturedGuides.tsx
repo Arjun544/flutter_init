@@ -91,7 +91,7 @@ export async function FeaturedGuides() {
         <div className="flex justify-center">
           <Link
             href="/blogs"
-            className="group inline-flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 bg-white px-5 text-sm font-semibold text-zinc-700 shadow-xs transition-all duration-300 hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
+            className="group inline-flex h-12 items-center gap-2 rounded-2xl bg-white px-5 text-sm font-semibold text-zinc-700 smooth-shadow-ring-xs transition-all duration-300 hover:bg-zinc-50 hover:text-zinc-900 hover:smooth-shadow-ring-sm"
           >
             Browse all posts
             <HugeiconsIcon

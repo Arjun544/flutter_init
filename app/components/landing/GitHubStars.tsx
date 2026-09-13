@@ -30,7 +30,7 @@ export async function GitHubStars({ variant = 'default' }: { variant?: 'default'
         href="https://github.com/Arjun544/flutter_init"
         target="_blank"
         rel="noopener noreferrer"
-        className="group relative flex items-center gap-2 h-9 px-3 rounded-lg bg-white border border-zinc-200 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] hover:border-primary/30 hover:shadow-[0_4px_12px_-3px_rgba(0,0,0,0.08)] hover:shadow-primary/5 hover:scale-[1.01] transition-all duration-200 overflow-hidden"
+        className="group relative flex items-center gap-2 h-9 px-3 rounded-lg bg-white smooth-shadow-ring-sm hover:smooth-shadow-ring-md hover:shadow-primary/5 hover:scale-[1.01] transition-all duration-200 overflow-hidden"
       >
         <div className="flex items-center gap-1.5">
           <HugeiconsIcon
@@ -70,7 +70,7 @@ export async function GitHubStars({ variant = 'default' }: { variant?: 'default'
       href="https://github.com/Arjun544/flutter_init"
       target="_blank"
       rel="noopener noreferrer"
-      className="group relative flex items-center gap-4 h-14 px-6 rounded-2xl bg-white border border-zinc-200 shadow-[0_8px_25px_-5px_rgba(0,0,0,0.05)] hover:border-primary/30 hover:shadow-[0_15px_35px_-5px_rgba(0,0,0,0.1)] hover:shadow-primary/5 hover:scale-[1.02] transition-all duration-300 sm:w-auto overflow-hidden"
+      className="group relative flex items-center gap-4 h-14 px-6 rounded-2xl bg-white smooth-shadow-ring-lg hover:smooth-shadow-ring-xl hover:shadow-primary/5 hover:scale-[1.02] transition-all duration-300 sm:w-auto overflow-hidden"
     >
       <div className="flex items-center">
         <HugeiconsIcon
@@ -105,7 +105,7 @@ export async function GitHubStars({ variant = 'default' }: { variant?: 'default'
 export function GitHubStarsSkeleton({ variant = 'default' }: { variant?: 'default' | 'sm' }) {
   if (variant === 'sm') {
     return (
-      <div className="flex items-center gap-2.5 h-9 px-3 rounded-lg bg-white border border-zinc-200 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)] w-30 animate-pulse">
+      <div className="flex items-center gap-2.5 h-9 px-3 rounded-lg bg-white smooth-shadow-ring-sm w-30 animate-pulse">
         <div className="flex items-center gap-1.5">
           <div className="w-4 h-4 rounded-full bg-zinc-100" />
           <div className="w-10 h-3 bg-zinc-100 rounded" />
@@ -117,7 +117,7 @@ export function GitHubStarsSkeleton({ variant = 'default' }: { variant?: 'defaul
   }
 
   return (
-    <div className="flex items-center gap-4 h-14 px-6 rounded-2xl bg-white border border-zinc-200 shadow-[0_8px_25px_-5px_rgba(0,0,0,0.05)] w-full sm:w-auto animate-pulse">
+    <div className="flex items-center gap-4 h-14 px-6 rounded-2xl bg-white smooth-shadow-ring-lg w-full sm:w-auto animate-pulse">
       <div className="flex items-center">
         <div className="w-6 h-6 rounded-full bg-zinc-100" />
       </div>

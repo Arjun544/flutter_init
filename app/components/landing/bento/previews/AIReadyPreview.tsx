@@ -91,11 +91,11 @@ export function AIReadyPreview() {
           <div
             key={file.name}
             className={cn(
-              "rounded-xl border px-2.5 py-2 transition-all duration-500 ease-out",
+              "rounded-xl px-2.5 py-2 transition-all duration-500 ease-out",
               visible > i ? "opacity-100 translate-x-0" : "opacity-0 translate-x-3",
               isActive
-                ? cn(c.border, c.bg, "scale-[1.02] shadow-sm")
-                : "border-zinc-200/60 bg-zinc-50/50 grayscale opacity-70 scale-100"
+                ? cn(c.bg, "scale-[1.02] smooth-shadow-ring-sm")
+                : "border border-zinc-200/60 bg-zinc-50/50 grayscale opacity-70 scale-100"
             )}
             style={{ transitionDelay: visible > i ? `${i * 40}ms` : '0ms' }}
           >

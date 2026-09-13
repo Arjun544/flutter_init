@@ -17,7 +17,8 @@ extension ContextExtension on BuildContext {
 
   /// Semantic/custom colors (success, warning, info).
   AppColorsExtension get appColors =>
-      theme.extension<AppColorsExtension>() ?? (isDarkMode ? AppPalettes.dark : AppPalettes.light);
+      theme.extension<AppColorsExtension>() ??
+      (isDarkMode ? AppPalettes.dark : AppPalettes.light);
 
   /// Design tokens (spacing, border radii, elevation defaults).
   AppDesignTokens get designTokens =>
@@ -112,8 +113,8 @@ extension ContextExtension on BuildContext {
     final bg = switch (type) {
       SnackBarType.success => appColors.success,
       SnackBarType.warning => appColors.warning,
-      SnackBarType.error   => colors.error,
-      SnackBarType.info    => colors.inverseSurface,
+      SnackBarType.error => colors.error,
+      SnackBarType.info => colors.inverseSurface,
     };
     ScaffoldMessenger.of(this)
       ..clearSnackBars()

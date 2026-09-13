@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   compress: true,
+  cacheComponents: true,
+  reactCompiler: true,
+  partialPrefetching: true,
   // Enable MDX as a page extension so Next.js can route .mdx files directly
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   images: {
@@ -16,6 +19,10 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
+    // Dynamic segments are not client-cached by default, so returning to a
+    // route re-suspends and replays its skeleton. This caches route subsets
+    // seeded from real navigations so going back is instant.
+    cachedNavigations: true,
     optimizePackageImports: [
       'lucide-react',
       '@hugeicons/react',

@@ -66,6 +66,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: tier2-failure-logs
+          name: tier2-layer2-failure-logs
           path: tests/results/
           retention-days: 7

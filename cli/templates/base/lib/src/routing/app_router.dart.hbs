@@ -1,5 +1,7 @@
 {{#if (eq flags.routerPackage "go_router")}}
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:{{flags.appSnake}}/src/middleware/app_route_observer.dart';
 import 'package:{{flags.appSnake}}/src/routing/global_navigator.dart';
 import 'package:{{flags.appSnake}}/src/routing/app_routes.dart';
 
@@ -42,6 +44,7 @@ import 'package:{{flags.appSnake}}/src/features/onboarding/presentation/screens/
 final GoRouter appRouter = GoRouter(
   navigatorKey: rootNavigatorKey,
   initialLocation: AppRoutes.onboarding,
+  observers: <NavigatorObserver>[AppRouteObserver()],
   routes: <RouteBase>[
     GoRoute(
       path: AppRoutes.onboarding,
@@ -151,24 +154,24 @@ class AppRouter {
     GetPage(
       name: AppRoutes.onboarding,
       page: () => const OnboardingPage(),
-    ),
+        ),
     GetPage(
       name: AppRoutes.login,
       page: () => const LoginScreen(),
-    ),
+        ),
     GetPage(
       name: AppRoutes.signup,
       page: () => const SignupScreen(),
-    ),
+        ),
     GetPage(
       name: AppRoutes.forgotPassword,
       page: () => const ForgotPasswordScreen(),
-    ),
+        ),
     GetPage(
       name: AppRoutes.home,
       page: () => const HomePage(),
-    ),
-  ];
+        ),
+      ];
 }
 {{else}}
 import 'package:flutter/material.dart';

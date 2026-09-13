@@ -1,0 +1,23 @@
+import 'package:firebase_database/firebase_database.dart';
+import '../config/app_config.dart';
+import '../utils/utils.dart';
+
+class FirebaseRealtimeDbService {
+  FirebaseRealtimeDbService._();
+  static final instance = FirebaseRealtimeDbService._();
+
+  FirebaseDatabase get _database => AppConfig.realtimeDb;
+
+  FutureEither<Object?> read(String path) {
+    return runTask(() async {
+      final snapshot = await _database.ref(path).get();
+      return snapshot.value;
+    }, operation: 'realtimeDb.read', category: LogCategory.database, context: {'path': path}, requiresNetwork: true);
+  }
+
+  FutureEither<void> write(String path, Object? value) {
+    return runTask(() async {
+      await _database.ref(path).set(value);
+    }, operation: 'realtimeDb.write', category: LogCategory.database, context: {'path': path}, requiresNetwork: true);
+  }
+}

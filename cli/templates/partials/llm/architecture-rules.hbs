@@ -17,16 +17,20 @@ lib/src/
 
 - `domain/` is pure Dart — no Flutter imports, no imports from `data/`.
 - `data/` implements contracts from `domain/` — never the reverse.
-- Entities are not models — no `fromJson`/`toJson` on domain entities.
-- Use cases expose a single responsibility (typically one public `call()`).
-- `presentation/` talks to use cases or state layer — not datasources directly.
+- Prefer `UserModel` (data) for JSON; map to `AppUser` via `toEntity()`. Entity factories like `empty()` / `fromJson` are for convenience at boundaries.
+- Use cases implement `UseCase<Params, Result>` with a single `call()` — see `domain/usecases/`.
+- Remote IO goes through abstract datasources (`AuthRemoteDataSource`) that repositories depend on.
+- `presentation/` talks to use cases or repositories — not datasources directly.
 {{/if}}
 
 {{#if (eq architecture "feature-first")}}
 ```text
 lib/src/
-├── features/<feature>/   # model, service, state, view per feature
-├── shared/               # cross-feature widgets & utils only
+├── features/<feature>/
+│   ├── data/          # datasources, models, repository impls
+│   ├── domain/        # entities, repo contracts, use cases
+│   └── presentation/  # screens, widgets, state ({{stateManagement}})
+├── shared/            # cross-feature widgets & utils only
 ├── routing/
 ├── services/
 └── theme/
@@ -36,6 +40,7 @@ lib/src/
 
 - Each feature is self-contained — no imports from another feature's internals.
 - Shared code lives only under `lib/src/shared/`.
+- Same domain/data split as Clean: abstract repos + datasources, `UseCase<Params, Result>`, entity vs model.
 {{/if}}
 
 {{#if (eq architecture "mvc")}}
@@ -77,7 +82,7 @@ lib/src/
 ```text
 lib/src/
 ├── presentation/   # screens, providers/blocs, widgets
-├── domain/         # entities, repo contracts
+├── domain/         # entities, repo contracts, use cases
 ├── data/           # models, datasources, repository impls
 ├── routing/
 ├── services/
@@ -87,6 +92,17 @@ lib/src/
 **Rules**
 
 - `domain/` has no Flutter or `data/` imports.
-- `data/` implements `domain/` contracts only.
+- `data/` implements `domain/` contracts only (`AuthRemoteDataSource`, `AuthRepository`).
+- Use cases live under `domain/usecases/` and implement `UseCase<Params, Result>`.
 - `presentation/` depends on domain abstractions — not concrete datasources.
 {{/if}}
+
+## Dart growth patterns (all architectures)
+
+- **Sealed types** for variants: `Failure`, `SessionState`, `RequestState<T>`, auth events/states. Prefer exhaustive `switch` over `if (x is Y)`.
+- **Abstract contracts + `implements`**: repositories and datasources hide services/SDKs.
+- **Generics**: `FutureEither<T>`, `RequestState<T>`, `UseCase<Params, Result>`.
+- **Mixins**: `StreamSubscriptionsMixin` for cancelling stream listeners in notifiers/blocs.
+- **Factories**: `AppUser.fromJson` / `Failure.fromException` / `UserModel.toEntity()`.
+- **Records**: use for small param bundles (e.g. `LoginParams = ({String email, String password})`).
+- Do **not** add Freezed unless the user opts in — language sealed classes are the default.

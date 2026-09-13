@@ -3,7 +3,7 @@ import '../../imports/imports.dart';
 
 /// Shows a highly customizable bottom sheet with premium features like backdrop blur.
 ///
-/// This helper uses the [rootNavigatorKey] to display the sheet 
+/// This helper uses the [rootNavigatorKey] to display the sheet
 /// without needing a local [BuildContext].
 Future<T?> showAppSheet<T>({
   required Widget child,

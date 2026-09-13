@@ -7,9 +7,9 @@ import { useWizard } from "@/app/lib/state/useWizardStore"
 import { buildGenerateForm } from "@/app/components/wizard/code-editor/buildGenerateForm"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
+import { Spinner } from "@/components/ui/spinner"
 import {
     Sidebar,
     SidebarContent,
@@ -17,7 +17,6 @@ import {
     SidebarGroup,
     SidebarHeader,
     SidebarInset,
-    SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarProvider,
@@ -25,58 +24,82 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
-import { ArrowLeft02Icon, ArrowRight02Icon, SourceCodeIcon, Tick01Icon } from "@hugeicons/core-free-icons"
+import {
+    AiImageIcon,
+    ArrowLeft02Icon,
+    ArrowRight02Icon,
+    CloudIcon,
+    Database01Icon,
+    Globe02Icon,
+    Layers01Icon,
+    CurvyUpDownDirectionIcon,
+    PackageIcon,
+    SourceCodeIcon,
+    Tick01Icon,
+    WrenchIcon,
+} from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import Image from "next/image"
 import * as React from "react"
 import { PackageInfoPanel } from "./PackageInfoPanel"
 import { StepContent } from "./StepContent"
 import Link from "next/link"
+import { Highlight, HighlightItem } from "@/components/animate-ui/primitives/effects/highlight"
 
 const steps: Record<
     StepId,
-    { title: string; description: string; actionLabel?: string }
+    { title: string; description: string; actionLabel?: string; icon: typeof SourceCodeIcon }
 > = {
     basics: {
         title: "Project basics",
         description: "Set the app name and identifiers.",
+        icon: SourceCodeIcon,
     },
     theme: {
         title: "UI & theme",
         description: "Choose theming, primary color, and dark mode.",
+        icon: AiImageIcon,
     },
     icons: {
         title: "Icons",
         description: "Select which icon packs to include.",
+        icon: PackageIcon,
     },
     architecture: {
         title: "Architecture",
         description: "Choose how features are organized.",
+        icon: Layers01Icon,
     },
     state: {
         title: "State Management",
         description: "Pick one state management strategy.",
+        icon: Database01Icon,
     },
     navigation: {
         title: "Navigation",
         description: "Select routing strategy.",
+        icon: CurvyUpDownDirectionIcon,
     },
     backend: {
         title: "Backend & Auth",
         description: "Configure backend integrations and auth.",
+        icon: CloudIcon,
     },
     localization: {
         title: "Localization",
         description: "Setup easily with easy_localization.",
+        icon: Globe02Icon,
     },
     misc: {
         title: "Miscellaneous",
         description: "Configure additional packages and settings.",
+        icon: WrenchIcon,
     },
     generate: {
         title: "Generate",
         description: "Review choices and download the scaffold.",
         actionLabel: "Generate ZIP",
+        icon: Tick01Icon,
     },
 }
 
@@ -111,8 +134,15 @@ export function WizardShell() {
             })
 
             if (!response.ok) {
-                const body = await response.json().catch(() => ({}))
-                throw new Error((body as any)?.error ?? "Failed to generate project")
+                const body: unknown = await response.json().catch(() => ({}))
+                const message =
+                    typeof body === "object" &&
+                    body !== null &&
+                    "error" in body &&
+                    typeof body.error === "string"
+                        ? body.error
+                        : "Failed to generate project"
+                throw new Error(message)
             }
 
             const blob = await response.blob()
@@ -145,19 +175,34 @@ export function WizardShell() {
 
     if (!isHydrated) {
         return (
-            <main className="mx-auto flex min-h-dvh items-center justify-center p-6 bg-background relative overflow-hidden">
-                <div className="absolute inset-0 bg-linear-to-tr from-primary/10 via-background to-background -z-10" />
-                <Card className="w-full max-w-xl border-border/40 bg-background/60 backdrop-blur-xl shadow-2xl">
-                    <CardHeader>
-                        <CardTitle className="bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">Loading wizard</CardTitle>
-                        <CardDescription>
-                            Restoring your previous selections…
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Progress value={40} className="h-2 bg-primary/10" aria-label="Restoring session" />
-                    </CardContent>
-                </Card>
+            <main className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-background px-6">
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-primary/5 via-background/0 to-background/0" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,var(--tw-gradient-stops))] from-secondary/10 via-background/0 to-background/0" />
+                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px] mask-[radial-gradient(ellipse_50%_40%_at_50%_50%,#000_60%,transparent_100%)]" />
+
+                <div className="relative z-10 flex w-full max-w-xs flex-col items-center text-center">
+                    <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 smooth-shadow-ring-sm smooth-ring-primary/20">
+                        <Image
+                            src="/logo.svg"
+                            alt=""
+                            width={28}
+                            height={28}
+                            className="size-7"
+                            priority
+                        />
+                    </div>
+
+                    <div className="mt-6 space-y-1.5">
+                        <p className="text-base font-semibold tracking-tight text-foreground">
+                            Restoring your wizard
+                        </p>
+                        <p className="text-sm leading-relaxed text-muted-foreground">
+                            Loading previous selections…
+                        </p>
+                    </div>
+
+                    <Spinner className="mt-8 size-5 text-primary" aria-label="Restoring session" />
+                </div>
             </main>
         )
     }
@@ -190,7 +235,7 @@ export function WizardShell() {
                             variant="outline"
                             asChild
                             disabled={!isValid || isGenerating}
-                            className="hidden lg:inline-flex h-10 px-4 border-border/40 bg-background/50 shadow-xs cursor-pointer"
+                            className="hidden rounded-xl lg:inline-flex h-10 px-4 border-border/40 bg-background/50 smooth-shadow-xs cursor-pointer"
                         >
                             <Link
                                 href={isValid ? "/create/code" : "#"}
@@ -207,7 +252,7 @@ export function WizardShell() {
                             variant="outline"
                             onClick={handleBack}
                             disabled={stepIndex === 0 || isGenerating}
-                            className="h-10 px-4 border-border/40 bg-background/50 shadow-sm cursor-pointer"
+                            className="h-10 px-4 border-border/40 bg-background/50 rounded-xl smooth-shadow-sm cursor-pointer"
                         >
                             <HugeiconsIcon icon={ArrowLeft02Icon} className="size-4 mr-1.5 hidden sm:block" />
                             <span className="hidden sm:inline">Back</span>
@@ -217,8 +262,8 @@ export function WizardShell() {
                             onClick={handleNext}
                             disabled={isGenerating || (step === "generate" && !isValid)}
                             className={cn(
-                                "h-10 px-5 shadow-sm cursor-pointer min-w-25",
-                                stepIndex === stepOrder.length - 1 && "bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 font-semibold text-primary-foreground"
+                                "h-10 px-5 rounded-xl border-0 bg-clip-border smooth-shadow-sm cursor-pointer min-w-25",
+                                stepIndex === stepOrder.length - 1 && "bg-primary hover:bg-primary/90 smooth-shadow-lg shadow-primary/25 font-semibold text-primary-foreground"
                             )}
                         >
                             {isGenerating ? (
@@ -237,10 +282,11 @@ export function WizardShell() {
                 </header>
 
                 <div className="flex-1 overflow-auto selection:bg-primary/20">
-                    <main className="mx-auto max-w-4xl p-4 sm:p-6 lg:p-10 pb-32">
-                        {/* Step Content Area */}
-                        <div className="relative fade-in animate-in slide-in-from-bottom-2 duration-500">
-                            <h1 className="sr-only">Flutter Project Configuration Wizard - {steps[step].title}</h1>
+                    <main className="w-full p-4 sm:p-6 lg:p-8 xl:px-10 pb-28">
+                        <div className="w-full max-w-350">
+                            <h1 className="sr-only">
+                                Flutter Project Configuration Wizard - {steps[step].title}
+                            </h1>
                             <StepContent step={step} error={error} isGenerating={isGenerating} />
                         </div>
                     </main>
@@ -252,7 +298,7 @@ export function WizardShell() {
                     disabled={!isValid || isGenerating}
                     className={cn(
                         "lg:hidden fixed z-40 bottom-6 right-4 h-12 gap-2 rounded-xl px-5",
-                        "bg-primary text-primary-foreground shadow-lg",
+                        "bg-primary text-primary-foreground smooth-shadow-lg",
                         "hover:bg-primary/90 active:scale-[0.98] transition-transform",
                         (!isValid || isGenerating) && "opacity-50"
                     )}
@@ -287,83 +333,141 @@ function WizardSidebar() {
 
     return (
         <Sidebar variant="sidebar" className="border-r border-border/40 bg-background/50 backdrop-blur-xl">
-            <SidebarHeader className="p-4 border-b border-border/40">
+            <SidebarHeader className="border-b border-border/40 p-4">
                 <div className="flex items-center gap-3">
-                    <Link href={"/"}>
+                    <Link
+                        href="/"
+                        className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 smooth-shadow-ring-sm smooth-ring-primary/20 transition-transform duration-200 hover:scale-105"
+                    >
                         <Image
                             src="/logo.svg"
                             alt="FlutterInit Logo"
                             width={24}
                             height={24}
-                            className="h-6 w-6"
+                            className="size-6"
                             priority
-                        /></Link>
-                    <Badge variant="outline" className="ml-auto bg-background/50 backdrop-blur-sm border-primary/20 text-primary hover:bg-transparent">
-                        {cliPackage.version}
+                        />
+                    </Link>
+                    <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold tracking-tight text-foreground">
+                            FlutterInit
+                        </p>
+                        <p className="truncate text-[11px] text-muted-foreground">
+                            Project Generator
+                        </p>
+                    </div>
+                    <Badge
+                        variant="outline"
+                        className="ml-auto shrink-0 border-primary/20 bg-background/60 px-2 py-0.5 text-[10px] font-mono text-primary"
+                    >
+                        v{cliPackage.version}
                     </Badge>
                 </div>
             </SidebarHeader>
 
-            <SidebarContent className="px-2 py-4 no-scrollbar">
-                <SidebarGroup>
-                    <SidebarMenu>
-                        {stepOrder.map((id, index) => {
+            <SidebarContent className="no-scrollbar px-3 py-5">
+                <SidebarGroup className="p-0">
+                    <div className="mb-3 flex items-center justify-between px-2">
+                        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/70">
+                            Build your app
+                        </span>
+                        <span className="font-mono text-[10px] text-muted-foreground/60">
+                            {String(stepIndex + 1).padStart(2, "0")} / {String(stepOrder.length).padStart(2, "0")}
+                        </span>
+                    </div>
+                    <Highlight
+                        as="ul"
+                        mode="parent"
+                        value={step}
+                        controlledItems
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                        className="pointer-events-none rounded-2xl bg-primary/10 smooth-shadow-ring-sm smooth-ring-primary/15 shadow-primary/5 dark:bg-primary/15"
+                        containerClassName="relative flex w-full flex-col gap-1"
+                    >
+                        {stepOrder.map((id) => {
                             const isActive = id === step
                             const isCompleted = stepOrder.indexOf(id) < stepIndex
 
                             return (
-                                <SidebarMenuItem key={id}>
-                                    <SidebarMenuButton
-                                        isActive={isActive}
-                                        onClick={() => {
-                                            setStep(id)
-                                            if (isMobile) setOpenMobile(false)
-                                        }}
-                                        size="lg"
-                                        className={cn(
-                                            "w-full justify-start h-auto py-3 px-3 relative transition-all duration-300 rounded-xl",
-                                            isActive ? "bg-primary/10 ring-1 ring-primary/20 text-primary hover:bg-primary/15 hover:text-primary" : "text-muted-foreground hover:bg-muted/50"
-                                        )}
-                                    >
-                                        <div
+                                <HighlightItem key={id} value={id} asChild>
+                                    <SidebarMenuItem className="relative z-10">
+                                        <SidebarMenuButton
+                                            isActive={isActive}
+                                            onClick={() => {
+                                                setStep(id)
+                                                if (isMobile) setOpenMobile(false)
+                                            }}
+                                            size="lg"
                                             className={cn(
-                                                "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold transition-colors border shadow-xs",
+                                                "h-auto min-h-14 w-full justify-start gap-3 rounded-2xl border border-transparent bg-transparent px-3 py-2.5 transition-colors duration-200 hover:bg-transparent focus-visible:ring-2 focus-visible:ring-primary/40",
                                                 isActive
-                                                    ? "bg-primary text-primary-foreground border-primary"
-                                                    : isCompleted
-                                                        ? "bg-muted text-muted-foreground border-transparent"
-                                                        : "bg-transparent border-input text-muted-foreground"
+                                                    ? "text-foreground"
+                                                    : "text-muted-foreground hover:text-foreground",
                                             )}
                                         >
-                                            {isCompleted ? <HugeiconsIcon icon={Tick01Icon} className="size-4" strokeWidth={2.5} /> : index + 1}
-                                        </div>
-                                        <div className="flex flex-col items-start min-w-0">
-                                            <span className={cn("text-sm transition-colors", isActive ? "font-bold text-foreground" : "font-medium")}>
-                                                {steps[id].title}
-                                            </span>
-                                            {isActive && (
-                                                <span className="text-xs opacity-80 text-left whitespace-normal leading-snug pt-0.5 animate-in fade-in slide-in-from-top-1 duration-300">
-                                                    {steps[id].description}
-                                                </span>
-                                            )}
-                                        </div>
-                                        {isActive && (
-                                            <div className="absolute absolute-y-center left-0 w-1 h-6 bg-primary rounded-r-full -ml-px" />
-                                        )}
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
+                                            <div
+                                                className={cn(
+                                                    "flex size-9 shrink-0 items-center justify-center rounded-xl text-[10px] font-semibold transition-all duration-300",
+                                                    isActive
+                                                        ? "bg-primary text-primary-foreground smooth-shadow-ring-md shadow-primary/20"
+                                                        : isCompleted
+                                                            ? "border border-primary/20 bg-primary/10 text-primary"
+                                                            : "border border-border/80 bg-background/40 text-muted-foreground",
+                                                )}
+                                            >
+                                                {isCompleted ? (
+                                                    <HugeiconsIcon icon={Tick01Icon} size={17} strokeWidth={2.5} />
+                                                ) : (
+                                                    <HugeiconsIcon
+                                                        icon={steps[id].icon}
+                                                        size={isActive ? 17 : 15}
+                                                        strokeWidth={isActive ? 2 : 1.8}
+                                                    />
+                                                )}
+                                            </div>
+                                            <div className="flex min-w-0 flex-1 flex-col items-start gap-0.5">
+                                                <div className="flex w-full items-center gap-2">
+                                                    <span
+                                                        className={cn(
+                                                            "truncate text-sm leading-tight transition-colors",
+                                                            isActive ? "font-semibold" : "font-medium",
+                                                        )}
+                                                    >
+                                                        {steps[id].title}
+                                                    </span>
+                                                </div>
+                                                {isActive ? (
+                                                    <span className="line-clamp-2 text-left text-[11px] leading-snug text-muted-foreground animate-in fade-in slide-in-from-top-1 duration-300">
+                                                        {steps[id].description}
+                                                    </span>
+                                                ) : isCompleted ? (
+                                                    <span className="text-[10px] font-medium text-primary/70">
+                                                        Complete
+                                                    </span>
+                                                ) : null}
+                                            </div>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                </HighlightItem>
                             )
                         })}
-                    </SidebarMenu>
+                    </Highlight>
                 </SidebarGroup>
             </SidebarContent>
 
-            <SidebarFooter className="p-4 border-t border-border/40">
-                <div className="flex justify-between text-xs font-medium text-muted-foreground mb-2 px-1">
-                    <span>Progress</span>
-                    <span>{Math.round(progress)}%</span>
+            <SidebarFooter className="border-t border-border/40 p-3">
+                <div className="rounded-2xl bg-card/40 p-3.5 smooth-shadow-ring-sm backdrop-blur-sm">
+                    <div className="mb-2.5 flex items-end justify-between gap-3">
+                        <div>
+                            <p className="text-xs font-semibold text-foreground">Setup progress</p>
+                            <p className="mt-0.5 text-[10px] text-muted-foreground">Your choices are saved locally.</p>
+                        </div>
+                        <span className="font-mono text-sm font-semibold tabular-nums text-primary">
+                            {Math.round(progress)}%
+                        </span>
+                    </div>
+                    <Progress value={progress} className="h-1.5 bg-muted/70" aria-label="Wizard progress" />
                 </div>
-                <Progress value={progress} className="h-2 bg-muted/50" aria-label="Wizard progress" />
             </SidebarFooter>
         </Sidebar>
     )

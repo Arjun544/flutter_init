@@ -36,26 +36,26 @@ class SignupScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hoo
     final obscurePassword = useState(true);
     final obscureConfirmPassword = useState(true);
 
-    {{#if flags.isRiverpod}}
-    final isLoading = ref.watch(authControllerProvider);
-    {{else if flags.isBloc}}
+{{#if flags.isRiverpod}}
+    final isLoading = ref.watch(authControllerProvider).isLoading;
+{{else if flags.isBloc}}
     final isLoading = context.select((AuthBloc bloc) => bloc.state.isLoading);
-    {{else if flags.isProvider}}
+{{else if flags.isProvider}}
     final isLoading = context.select((AuthProvider p) => p.isLoading);
-    {{else if flags.isGetX}}
+{{else if flags.isGetX}}
     final controller = Get.find<AuthController>();
-    final isLoading = controller.isLoading.value;
-    {{else if flags.isMobX}}
+    final isLoading = controller.state.value.isLoading;
+{{else if flags.isMobX}}
     final authStore = useMemoized(() => AuthStore(repository: AuthRepositoryImpl()), []);
     final isLoading = authStore.isLoading;
-    {{else if flags.isNoneState}}
+{{else if flags.isNoneState}}
     final viewModel = useMemoized(() => AuthViewModel(repository: AuthRepositoryImpl()), []);
     useListenable(viewModel);
     final isLoading = viewModel.isLoading;
-    {{else}}
+{{else}}
     final isLoadingState = useState(false);
     final isLoading = isLoadingState.value;
-    {{/if}}
+{{/if}}
 
     final cs = context.theme.colorScheme;
     final tt = context.theme.textTheme;
@@ -63,51 +63,51 @@ class SignupScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hoo
     Future<void> handleSignup() async {
       if (!(formKey.currentState?.validate() ?? false)) return;
 
-      {{#if flags.isRiverpod}}
+{{#if flags.isRiverpod}}
       ref.read(authControllerProvider.notifier).signUp(
         context: context, 
         name: nameController.text,
         email: emailController.text, 
         password: passwordController.text,
-      );
-      {{else if flags.isBloc}}
+          );
+{{else if flags.isBloc}}
       context.read<AuthBloc>().add(
-        SignUpRequested(
+            SignUpRequested(
           context: context, 
           name: nameController.text,
           email: emailController.text, 
           password: passwordController.text,
-        ),
-      );
-      {{else if flags.isProvider}}
+          ),
+          );
+{{else if flags.isProvider}}
       context.read<AuthProvider>().signUp(
         context: context, 
         name: nameController.text,
         email: emailController.text, 
         password: passwordController.text,
-      );
-      {{else if flags.isGetX}}
+          );
+{{else if flags.isGetX}}
       controller.signUp(
         context: context, 
         name: nameController.text,
         email: emailController.text, 
         password: passwordController.text,
-      );
-      {{else if flags.isMobX}}
+          );
+{{else if flags.isMobX}}
       authStore.signUp(
         context: context, 
         name: nameController.text.trim(),
         email: emailController.text.trim(), 
         password: passwordController.text.trim(),
-      );
-      {{else if flags.isNoneState}}
+          );
+{{else if flags.isNoneState}}
       viewModel.signUp(
         context: context, 
         name: nameController.text.trim(),
         email: emailController.text.trim(), 
         password: passwordController.text.trim(),
-      );
-      {{else}}
+          );
+{{else}}
       isLoadingState.value = true;
       try {
         final result = await AuthService.instance.signUp(
@@ -124,13 +124,13 @@ class SignupScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hoo
           },
           (user) {
             if (context.mounted) {
-              {{#if (eq flags.routerPackage "go_router")}}
+{{#if (eq flags.routerPackage "go_router")}}
               context.go(AppRoutes.home);
-              {{else if (eq flags.routerPackage "auto_route")}}
+{{else if (eq flags.routerPackage "auto_route")}}
               context.replaceRoute(const HomeRoute());
-              {{else}}
+{{else}}
               Navigator.pushReplacementNamed(context, AppRoutes.home);
-              {{/if}}
+{{/if}}
             }
           },
         );
@@ -141,14 +141,27 @@ class SignupScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hoo
       } finally {
         isLoadingState.value = false;
       }
-      {{/if}}
+{{/if}}
     }
 
-    {{#if flags.isGetX}}
+{{#if flags.isGetX}}
     return Obx(() => _SignupView(
-    {{else}}
+      formKey: formKey,
+      nameController: nameController,
+      emailController: emailController,
+      passwordController: passwordController,
+      confirmPasswordController: confirmPasswordController,
+      obscurePassword: obscurePassword.value,
+      obscureConfirmPassword: obscureConfirmPassword.value,
+      isLoading: controller.state.value.isLoading,
+      onToggleObscure: () => obscurePassword.value = !obscurePassword.value,
+      onToggleConfirmObscure: () => obscureConfirmPassword.value = !obscureConfirmPassword.value,
+      onSignup: handleSignup,
+      cs: cs,
+      tt: tt,
+    ));
+{{else}}
     return _SignupView(
-    {{/if}}
       formKey: formKey,
       nameController: nameController,
       emailController: emailController,
@@ -163,22 +176,20 @@ class SignupScreen extends {{#if flags.isRiverpod}}HookConsumerWidget{{else}}Hoo
       cs: cs,
       tt: tt,
     );
-    {{#if flags.isGetX}}
-    );
-    {{/if}}
+{{/if}}
   }
-}
+  }
 {{else}}
 class SignupScreen extends {{#if flags.isRiverpod}}ConsumerStatefulWidget{{else}}StatefulWidget{{/if}} {
   const SignupScreen({super.key});
 
   @override
-  {{#if flags.isRiverpod}}
+{{#if flags.isRiverpod}}
   ConsumerState<SignupScreen> createState() => _SignupScreenState();
-  {{else}}
+{{else}}
   State<SignupScreen> createState() => _SignupScreenState();
-  {{/if}}
-}
+{{/if}}
+  }
 
 class _SignupScreenState extends {{#if flags.isRiverpod}}ConsumerState<SignupScreen>{{else}}State<SignupScreen>{{/if}} {
   final _formKey = GlobalKey<FormState>();
@@ -188,9 +199,9 @@ class _SignupScreenState extends {{#if flags.isRiverpod}}ConsumerState<SignupScr
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  {{#if (or flags.isNoneState flags.isMobX)}}
+{{#if (or flags.isNoneState flags.isMobX)}}
   bool _isLoading = false;
-  {{/if}}
+{{/if}}
 
   @override
   void dispose() {
@@ -203,61 +214,61 @@ class _SignupScreenState extends {{#if flags.isRiverpod}}ConsumerState<SignupScr
 
   @override
   Widget build(BuildContext context) {
-    {{#if flags.isRiverpod}}
-    final isLoading = ref.watch(authControllerProvider);
-    {{else if flags.isBloc}}
+{{#if flags.isRiverpod}}
+    final isLoading = ref.watch(authControllerProvider).isLoading;
+{{else if flags.isBloc}}
     final isLoading = context.select((AuthBloc bloc) => bloc.state.isLoading);
-    {{else if flags.isProvider}}
+{{else if flags.isProvider}}
     final isLoading = context.select((AuthProvider p) => p.isLoading);
-    {{else if flags.isGetX}}
+{{else if flags.isGetX}}
     final controller = Get.find<AuthController>();
-    {{else if flags.isMobX}}
+{{else if flags.isMobX}}
     final isLoading = _isLoading;
-    {{else}}
+{{else}}
     final isLoading = _isLoading;
-    {{/if}}
+{{/if}}
 
     final cs = context.theme.colorScheme;
     final tt = context.theme.textTheme;
 
     Future<void> handleSignup() async {
       if (!(_formKey.currentState?.validate() ?? false)) return;
-      
-      {{#if (or flags.isNoneState flags.isMobX)}}
-      setState(() => _isLoading = true);
-      {{/if}}
 
-      {{#if flags.isRiverpod}}
+{{#if (or flags.isNoneState flags.isMobX)}}
+      setState(() => _isLoading = true);
+{{/if}}
+
+{{#if flags.isRiverpod}}
       ref.read(authControllerProvider.notifier).signUp(
         context: context, 
         name: _nameController.text,
         email: _emailController.text, 
         password: _passwordController.text,
-      );
-      {{else if flags.isBloc}}
+          );
+{{else if flags.isBloc}}
       context.read<AuthBloc>().add(
-        SignUpRequested(
+            SignUpRequested(
           context: context, 
-          name: _nameController.text,
+              name: _nameController.text,
           email: _emailController.text, 
-          password: _passwordController.text,
-        ),
-      );
-      {{else if flags.isProvider}}
+              password: _passwordController.text,
+          ),
+          );
+{{else if flags.isProvider}}
       context.read<AuthProvider>().signUp(
         context: context, 
         name: _nameController.text,
         email: _emailController.text, 
         password: _passwordController.text,
-      );
-      {{else if flags.isGetX}}
+          );
+{{else if flags.isGetX}}
       controller.signUp(
         context: context, 
         name: _nameController.text,
         email: _emailController.text, 
         password: _passwordController.text,
-      );
-      {{else}}
+          );
+{{else}}
       try {
         final result = await AuthService.instance.signUp(
           name: _nameController.text.trim(),
@@ -273,13 +284,13 @@ class _SignupScreenState extends {{#if flags.isRiverpod}}ConsumerState<SignupScr
           },
           (user) {
             if (context.mounted) {
-              {{#if (eq flags.routerPackage "go_router")}}
+{{#if (eq flags.routerPackage "go_router")}}
               context.go(AppRoutes.home);
-              {{else if (eq flags.routerPackage "auto_route")}}
+{{else if (eq flags.routerPackage "auto_route")}}
               context.replaceRoute(const HomeRoute());
-              {{else}}
+{{else}}
               Navigator.pushReplacementNamed(context, AppRoutes.home);
-              {{/if}}
+{{/if}}
             }
           },
         );
@@ -290,12 +301,12 @@ class _SignupScreenState extends {{#if flags.isRiverpod}}ConsumerState<SignupScr
       } finally {
         if (context.mounted) setState(() => _isLoading = false);
       }
-      {{/if}}
+{{/if}}
     }
 
-    {{#if flags.isGetX}}
+{{#if flags.isGetX}}
     return Obx(() {
-      final isLoading = controller.isLoading.value;
+      final isLoading = controller.state.value.isLoading;
       return _SignupView(
         formKey: _formKey,
         nameController: _nameController,
@@ -310,9 +321,9 @@ class _SignupScreenState extends {{#if flags.isRiverpod}}ConsumerState<SignupScr
         onSignup: handleSignup,
         cs: cs,
         tt: tt,
-      );
+          );
     });
-    {{else}}
+{{else}}
     return _SignupView(
       formKey: _formKey,
       nameController: _nameController,
@@ -322,15 +333,17 @@ class _SignupScreenState extends {{#if flags.isRiverpod}}ConsumerState<SignupScr
       obscurePassword: _obscurePassword,
       obscureConfirmPassword: _obscureConfirmPassword,
       isLoading: isLoading,
-      onToggleObscure: () => setState(() => _obscurePassword = !_obscurePassword),
-      onToggleConfirmObscure: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+      onToggleObscure: () =>
+          setState(() => _obscurePassword = !_obscurePassword),
+      onToggleConfirmObscure: () =>
+          setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
       onSignup: handleSignup,
       cs: cs,
       tt: tt,
     );
-    {{/if}}
+{{/if}}
   }
-}
+  }
 {{/if}}
 
 class _SignupView extends StatelessWidget {
@@ -377,7 +390,8 @@ class _SignupView extends StatelessWidget {
                 SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
                 Text(
                   {{#if flags.supportsLocalization}}'auth.sign_up'.tr(){{else}}'Create Account'{{/if}},
-                  style: tt.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style:
+                      tt.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: {{res 'AppSpacing.sm' 'h' flags.usesScreenutil}}),
                 Text(
@@ -426,10 +440,12 @@ class _SignupView extends StatelessWidget {
                         obscureText: obscurePassword,
                         prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.lock{{else}}Icons.lock_outline{{/if}}),
                         suffixIcon: IconButton(
-                          icon: Icon(obscurePassword ? Icons.visibility_off : Icons.visibility),
+                          icon: Icon(obscurePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility),
                           onPressed: onToggleObscure,
-                        ),
-                         validator: (v) {
+                          ),
+                        validator: (v) {
                           if (AppUtils.isBlank(v)) {
                             return {{#if flags.supportsLocalization}}'auth.password_required'.tr(){{else}}'Password is required'{{/if}};
                           }
@@ -447,10 +463,12 @@ class _SignupView extends StatelessWidget {
                         obscureText: obscureConfirmPassword,
                         prefixIcon: const Icon({{#if flags.usesIconsaxPlus}}IconsaxPlusBold.lock{{else}}Icons.lock_outline{{/if}}),
                         suffixIcon: IconButton(
-                          icon: Icon(obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
+                          icon: Icon(obscureConfirmPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility),
                           onPressed: onToggleConfirmObscure,
-                        ),
-                         validator: (v) {
+                          ),
+                        validator: (v) {
                           if (AppUtils.isBlank(v)) {
                             return {{#if flags.supportsLocalization}}'auth.confirm_password_required'.tr(){{else}}'Confirm password is required'{{/if}};
                           }
@@ -469,25 +487,26 @@ class _SignupView extends StatelessWidget {
                         isFullWidth: false,
                       ),
                     ],
-                  ),
+                    ),
                 ),
                 SizedBox(height: {{res 'AppSpacing.xxxl' 'h' flags.usesScreenutil}}),
                 InkWell(
                   onTap: () {
-                    {{#if (eq flags.routerPackage "go_router")}}
+{{#if (eq flags.routerPackage "go_router")}}
                     context.push(AppRoutes.login);
-                    {{else if (eq flags.routerPackage "auto_route")}}
+{{else if (eq flags.routerPackage "auto_route")}}
                     context.pushRoute(const LoginRoute());
-                    {{else if flags.isGetX}}
+{{else if flags.isGetX}}
                     Get.toNamed(AppRoutes.login);
-                    {{else}}
+{{else}}
                     Navigator.pushNamed(context, AppRoutes.login);
-                    {{/if}}
+{{/if}}
                   },
                   child: RichText(
                     text: TextSpan(
                       text: {{#if flags.supportsLocalization}}'auth.already_have_account'.tr(){{else}}'Already have an account? '{{/if}},
-                      style: tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                      style:
+                          tt.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
                       children: [
                         TextSpan(
                           text: {{#if flags.supportsLocalization}}'auth.log_in'.tr(){{else}}'Log In'{{/if}},
@@ -495,17 +514,17 @@ class _SignupView extends StatelessWidget {
                             color: cs.primary,
                             fontWeight: FontWeight.bold,
                           ),
-                        ),
+                          ),
                       ],
                     ),
-                  ),
+                    ),
                 ),
                 SizedBox(height: {{res 'AppSpacing.xl' 'h' flags.usesScreenutil}}),
               ],
-            ),
           ),
-        ),
+          ),
+          ),
       ),
     );
   }
-}
+  }

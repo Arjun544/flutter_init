@@ -98,35 +98,6 @@ flutter test
 
 ---
 
-{{#if flags.usesPermissionHandler}}
-## Native Permissions
-
-This project uses `permission_handler` to manage runtime permissions.
-
-Configured permissions:
-{{#if flags.usesCamera}}- Camera and photo library (Android + iOS){{/if}}
-{{#if flags.usesImagePicker}}- Image picker (camera + gallery access){{/if}}
-{{#if flags.usesFilePicker}}- File system / document picker{{/if}}
-{{#if flags.usesGeolocator}}- Location (fine + coarse on Android, WhenInUse + Always on iOS){{/if}}
-{{#if flags.usesNotifications}}- Local notifications (POST_NOTIFICATIONS on Android 13+){{/if}}
-
-### Permission Request Pattern
-
-Always check permission status before requesting:
-
-```dart
-final status = await Permission.camera.status;
-if (status.isDenied) {
-  await Permission.camera.request();
-}
-```
-
-Never request permissions on app launch. Request contextually — when the
-user triggers the feature that needs the permission.
-
----
-
-{{/if}}
 ## Hard limits
 
 - Do not disable `flutter_lints` rules without an explanatory comment.

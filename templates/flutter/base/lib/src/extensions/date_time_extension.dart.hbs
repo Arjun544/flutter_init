@@ -6,7 +6,9 @@ extension DateTimeExtension on DateTime {
 
   bool get isYesterday {
     final yesterday = DateTime.now().subtract(const Duration(days: 1));
-    return year == yesterday.year && month == yesterday.month && day == yesterday.day;
+    return year == yesterday.year &&
+        month == yesterday.month &&
+        day == yesterday.day;
   }
 
   bool isSameDay(DateTime other) {
@@ -35,6 +37,6 @@ extension DateTimeExtension on DateTime {
       return '${difference.inMinutes} minutes ago';
     } else {
       return 'just now';
-    }
   }
-}
+  }
+  }

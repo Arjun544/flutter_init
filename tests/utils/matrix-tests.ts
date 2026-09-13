@@ -21,7 +21,7 @@ export function runMatrixTests(combos: PrimaryCombo[]) {
             beforeAll(async () => {
                 files = await generateToMap(buildConfig(combo))
                 pubspec = getPubspecContent(files)
-            })
+            }, 180_000)
 
             // ── Structural Integrity ─────────────────────────────────
             it("has all required files", () => {

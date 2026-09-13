@@ -27,11 +27,11 @@ export function FeatureCard({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border bg-white",
+        "group relative overflow-hidden rounded-2xl bg-white",
         "transition-[transform,box-shadow,border-color] duration-450 ease-[cubic-bezier(0.16,1,0.3,1)]",
         isHovered
-          ? "border-zinc-300 shadow-2xl shadow-zinc-200/50"
-          : "border-zinc-100",
+          ? "smooth-shadow-ring-2xl shadow-zinc-200/50"
+          : "border border-zinc-100",
         "flex flex-col",
         className
       )}

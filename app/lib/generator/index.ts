@@ -5,6 +5,11 @@ import path from "node:path"
 import JSZip from "jszip"
 
 import { CustomFontEntry, ScaffoldConfig, scaffoldConfigSchema } from "../config/schema"
+import { formatGeneratedProject } from "@/shared/format-generated"
+import {
+    deriveGeneratorCapabilities,
+    selectOverlayKeys,
+} from "@/shared/generator-contract"
 
 import { createHandlebarsEnvironment } from "./handlebars"
 
@@ -46,6 +51,7 @@ type TemplateContext = ScaffoldConfig & {
         hasDarkMode: boolean
         isCupertino: boolean
         isCustomTheme: boolean
+        isMaterial3: boolean
         usesFlutterHooks: boolean
         usesImagePicker: boolean
         usesFilePicker: boolean
@@ -58,11 +64,17 @@ type TemplateContext = ScaffoldConfig & {
         usesGeolocator: boolean
         usesFirebaseAuth: boolean
         usesFirebaseFirestore: boolean
+        usesFirebaseRealtimeDb: boolean
         usesFirebaseStorage: boolean
+        usesFirebaseAnalytics: boolean
+        usesFirebaseCrashlytics: boolean
         usesSupabaseAuth: boolean
         usesSupabaseDb: boolean
+        usesSupabaseEdgeFunctions: boolean
         usesAppwriteAuth: boolean
         usesAppwriteDb: boolean
+        usesAppwriteStorage: boolean
+        requiresCodeGeneration: boolean
         /** True when at least one custom font was uploaded */
         hasCustomFonts: boolean
         /**
@@ -82,7 +94,16 @@ type TemplateContext = ScaffoldConfig & {
     }
 }
 
-export async function generateFlutterScaffold(input: unknown, fontEntries: File[] = []) {
+export type GenerateScaffoldOptions = {
+    /** Skip post-render `dart format` (Layer 1 content tests; keeps CI/local fast when Dart is on PATH). */
+    skipFormat?: boolean
+}
+
+export async function generateFlutterScaffold(
+    input: unknown,
+    fontEntries: File[] = [],
+    options: GenerateScaffoldOptions = {},
+) {
     const config = scaffoldConfigSchema.parse(input)
     const context = buildTemplateContext(config)
 
@@ -97,6 +118,11 @@ export async function generateFlutterScaffold(input: unknown, fontEntries: File[
     )
 
     try {
+        await copyPlatformScaffold(
+            path.join(templatesRoot, "platforms"),
+            workingDir,
+            config,
+        )
         await composeLayers([baseDir, ...overlayDirs], workingDir, hbs, context)
 
         if (context.flags.supportsLocalization) {
@@ -124,12 +150,32 @@ export async function generateFlutterScaffold(input: unknown, fontEntries: File[
         if (fontEntries.length > 0) {
             const fontsDir = path.join(workingDir, "assets", "fonts")
             await fs.mkdir(fontsDir, { recursive: true })
+            const configuredFontNames = new Set(
+                (config.theme.customFonts ?? []).map((font) => font.fileName),
+            )
 
             for (const fontFile of fontEntries) {
                 const safeName = path.basename(fontFile.name) // strip any path component
+                if (!configuredFontNames.has(safeName)) {
+                    throw new Error(`Uploaded font "${safeName}" is not declared in the configuration`)
+                }
                 const destPath = path.join(fontsDir, safeName)
                 const buffer = Buffer.from(await fontFile.arrayBuffer())
                 await fs.writeFile(destPath, buffer)
+            }
+        }
+
+        // Best-effort format when Dart is on PATH (local/dev/CI). Production
+        // web hosts typically skip this; SETUP.md documents `dart format .`
+        // after flutter pub get for download users. Layer 1 tests pass
+        // skipFormat so content assertions stay fast with Dart installed.
+        if (!options.skipFormat) {
+            const formatResult = await formatGeneratedProject(workingDir)
+            if (!formatResult.skipped && !formatResult.success) {
+                console.warn(
+                    "dart format failed on generated scaffold:",
+                    formatResult.stderr || formatResult.stdout,
+                )
             }
         }
 
@@ -137,6 +183,71 @@ export async function generateFlutterScaffold(input: unknown, fontEntries: File[
         return zipBuffer
     } finally {
         await fs.rm(workingDir, { recursive: true, force: true }).catch(() => { })
+    }
+}
+
+type PlatformScaffoldEntry = { relativePath: string; data: Buffer; isText: boolean }
+let platformScaffoldCache: Promise<PlatformScaffoldEntry[]> | undefined
+
+async function loadPlatformScaffold(sourceDir: string): Promise<PlatformScaffoldEntry[]> {
+    const textExtensions = new Set([
+        ".cc", ".cpp", ".h", ".hpp", ".java", ".json", ".kt", ".plist",
+        ".properties", ".rb", ".rc", ".storyboard", ".swift", ".txt",
+        ".xcscheme", ".xcconfig", ".xml", ".yaml", ".yml", ".gradle",
+        ".kts", ".cmake", ".html", ".md", ".manifest", ".pbxproj",
+    ])
+    const result: PlatformScaffoldEntry[] = []
+
+    async function walk(currentSource: string) {
+        const entries = await fs.readdir(currentSource, { withFileTypes: true })
+        for (const entry of entries) {
+            const sourcePath = path.join(currentSource, entry.name)
+            const relativePath = path.relative(sourceDir, sourcePath)
+            if (entry.isDirectory()) {
+                await walk(sourcePath)
+                continue
+            }
+            result.push({
+                relativePath,
+                data: await fs.readFile(sourcePath),
+                isText: textExtensions.has(path.extname(entry.name).toLowerCase()),
+            })
+        }
+    }
+
+    await fs.access(sourceDir)
+    await walk(sourceDir)
+    return result
+}
+
+async function copyPlatformScaffold(
+    sourceDir: string,
+    targetDir: string,
+    config: ScaffoldConfig,
+) {
+    const projectName = config.appName.trim().replace(/\s+/g, "_").toLowerCase()
+    platformScaffoldCache ??= loadPlatformScaffold(sourceDir)
+    const entries = await platformScaffoldCache
+
+    for (const entry of entries) {
+        const renderedRelativePath = entry.relativePath.replaceAll(
+            "platform_seed",
+            projectName,
+        )
+        const targetPath = path.join(targetDir, renderedRelativePath)
+        await fs.mkdir(path.dirname(targetPath), { recursive: true })
+
+        if (!entry.isText) {
+            await fs.writeFile(targetPath, entry.data)
+            continue
+        }
+
+        const rendered = entry.data
+            .toString("utf8")
+            .replaceAll("com.example.platform_seed", config.packageId)
+            .replaceAll("platform_seed_android", `${projectName}_android`)
+            .replaceAll("platform_seed", projectName)
+        await fs.writeFile(targetPath, rendered, "utf8")
     }
 }
 
@@ -168,6 +279,17 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
     const fontFamilies = Array.from(familyMap.entries()).map(([family, fonts]) => ({ family, fonts }))
     // First unique family becomes the app-wide fontFamily in ThemeData
     const primaryFontFamily = fontFamilies.length > 0 ? fontFamilies[0].family : ""
+    const capabilities = deriveGeneratorCapabilities({
+        stateManagement: config.stateManagement,
+        navigation: config.navigation,
+        backend: {
+            provider: config.backend.provider,
+            options: config.backend.provider === "none" ? undefined : config.backend.options,
+        },
+        localizationEnabled: config.localization.enabled,
+        usesDotenv: config.misc.usesDotenv,
+        usesHive: config.misc.usesHive,
+    })
 
     return {
         ...config,
@@ -182,10 +304,10 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             isGetX: config.stateManagement === "getx",
             isMobX: config.stateManagement === "mobx",
             isNoneState: config.stateManagement === "none",
-            usesFirebase: config.backend.provider === "firebase",
-            usesSupabase: config.backend.provider === "supabase",
-            usesAppwrite: config.backend.provider === "appwrite",
-            usesCustomBackend: config.backend.provider === "custom",
+            usesFirebase: capabilities.usesFirebase,
+            usesSupabase: capabilities.usesSupabase,
+            usesAppwrite: capabilities.usesAppwrite,
+            usesCustomBackend: capabilities.usesCustomBackend,
             usesDio: config.misc.usesDio,
             usesHttp: config.misc.usesHttp,
             usesHive: config.misc.usesHive,
@@ -205,6 +327,7 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             hasDarkMode: config.theme.darkMode.enabled,
             isCupertino: config.theme.preset === "cupertino",
             isCustomTheme: config.theme.preset === "custom",
+            isMaterial3: config.theme.preset === "material3",
             usesIconsaxPlus: config.icons.iconsax_plus,
             usesFlutterRemix: config.icons.flutter_remix,
             usesHugeicons: config.icons.hugeicons,
@@ -218,13 +341,19 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             usesDeviceInfoPlus: config.misc.usesDeviceInfoPlus,
             usesAppVersionUpdate: config.misc.usesAppVersionUpdate,
             usesGeolocator: config.misc.usesGeolocator,
-            usesFirebaseAuth: config.backend.provider === "firebase" ? (config.backend.options.authEmail || config.backend.options.authGoogle || config.backend.options.authPhone) : false,
-            usesFirebaseFirestore: config.backend.provider === "firebase" ? config.backend.options.firestore : false,
-            usesFirebaseStorage: config.backend.provider === "firebase" ? config.backend.options.storage : false,
-            usesSupabaseAuth: config.backend.provider === "supabase" ? config.backend.options.auth : false,
-            usesSupabaseDb: config.backend.provider === "supabase" ? config.backend.options.database : false,
-            usesAppwriteAuth: config.backend.provider === "appwrite" ? config.backend.options.auth : false,
-            usesAppwriteDb: config.backend.provider === "appwrite" ? config.backend.options.database : false,
+            usesFirebaseAuth: capabilities.usesFirebaseAuth,
+            usesFirebaseFirestore: capabilities.usesFirebaseFirestore,
+            usesFirebaseRealtimeDb: capabilities.usesFirebaseRealtimeDb,
+            usesFirebaseStorage: capabilities.usesFirebaseStorage,
+            usesFirebaseAnalytics: capabilities.usesFirebaseAnalytics,
+            usesFirebaseCrashlytics: capabilities.usesFirebaseCrashlytics,
+            usesSupabaseAuth: capabilities.usesSupabaseAuth,
+            usesSupabaseDb: capabilities.usesSupabaseDatabase,
+            usesSupabaseEdgeFunctions: capabilities.usesSupabaseEdgeFunctions,
+            usesAppwriteAuth: capabilities.usesAppwriteAuth,
+            usesAppwriteDb: capabilities.usesAppwriteDatabase,
+            usesAppwriteStorage: capabilities.usesAppwriteStorage,
+            requiresCodeGeneration: capabilities.requiresCodeGeneration,
             hasCustomFonts: fontFamilies.length > 0,
             primaryFontFamily,
             fontFamilies,
@@ -237,50 +366,63 @@ async function resolveOverlayDirs(
     config: ScaffoldConfig
 ): Promise<string[]> {
     const overlays: string[] = []
+    const selection = selectOverlayKeys({
+        architecture: config.architecture,
+        stateManagement: config.stateManagement,
+        navigation: config.navigation,
+        backend: {
+            provider: config.backend.provider,
+            options: config.backend.provider === "none" ? undefined : config.backend.options,
+        },
+        localizationEnabled: config.localization.enabled,
+        usesDotenv: config.misc.usesDotenv,
+        usesHive: config.misc.usesHive,
+        usesDio: config.misc.usesDio,
+        usesHttp: config.misc.usesHttp,
+        usesCachedNetworkImage: config.misc.usesCachedNetworkImage,
+        usesSecureStorage: config.misc.usesSecureStorage,
+        usesSharedPreferences: config.misc.usesSharedPreferences,
+        usesPathProvider: config.misc.usesPathProvider,
+        usesSharePlus: config.misc.usesSharePlus,
+        usesPermissionHandler: config.misc.usesPermissionHandler,
+        usesUrlLauncher: config.misc.usesUrlLauncher,
+        usesGeolocator: config.misc.usesGeolocator,
+        usesImagePicker: config.misc.usesImagePicker,
+        usesFilePicker: config.misc.usesFilePicker,
+        usesDeviceInfoPlus: config.misc.usesDeviceInfoPlus,
+        usesAppVersionUpdate: config.misc.usesAppVersionUpdate,
+    })
     const candidates: Array<[string, boolean]> = [
-        [path.join(root, "overlays", "architecture", config.architecture), true],
-        [path.join(root, "overlays", "state", config.stateManagement), true],
-        [path.join(root, "overlays", "backend", config.backend.provider), true],
+        [path.join(root, "overlays", "architecture", selection.architecture), true],
+        [path.join(root, "overlays", "state", selection.state), true],
+        [path.join(root, "overlays", "backend", selection.backend), true],
         [
             path.join(root, "overlays", "routing", "go_router"),
-            config.navigation === "go_router",
+            selection.routing === "go_router",
         ],
         [
             path.join(root, "overlays", "routing", "auto_route"),
-            config.navigation === "auto_route",
+            selection.routing === "auto_route",
         ],
-        [path.join(root, "overlays", "networking", "dio"), config.misc.usesDio],
+        [path.join(root, "overlays", "networking", "dio"), selection.networking === "dio"],
         [
             path.join(root, "overlays", "networking", "http"),
-            config.misc.usesHttp && !config.misc.usesDio,
+            selection.networking === "http",
         ],
         [
             path.join(root, "overlays", "networking", "cached_image"),
-            config.misc.usesCachedNetworkImage,
+            selection.cachedImage,
         ],
-        [path.join(root, "overlays", "extras", "localization"), config.localization.enabled],
-        [path.join(root, "overlays", "storage", "secure_storage"), config.misc.usesSecureStorage],
-        [path.join(root, "overlays", "storage", "hive"), config.misc.usesHive],
-        [path.join(root, "overlays", "storage", "shared_preferences"), config.misc.usesSharedPreferences],
-        [path.join(root, "overlays", "utilities", "path_provider"), config.misc.usesPathProvider],
-        [path.join(root, "overlays", "utilities", "share_plus"), config.misc.usesSharePlus],
-        [path.join(root, "overlays", "utilities", "permission_handler"), config.misc.usesPermissionHandler],
-        [path.join(root, "overlays", "utilities", "url_launcher"), config.misc.usesUrlLauncher],
-        [path.join(root, "overlays", "utilities", "geolocator"), config.misc.usesGeolocator],
+        [path.join(root, "overlays", "extras", "localization"), selection.localization],
+        ...selection.storage.map((name) => [path.join(root, "overlays", "storage", name), true] as [string, boolean]),
+        ...selection.utilities.map((name) => [path.join(root, "overlays", "utilities", name), true] as [string, boolean]),
         [
             path.join(root, "overlays", "media"),
-            config.misc.usesImagePicker || config.misc.usesFilePicker,
+            selection.media,
         ],
-        [
-            path.join(root, "overlays", "device", "device_info"),
-            config.misc.usesDeviceInfoPlus,
-        ],
-        [
-            path.join(root, "overlays", "device", "app_version_update"),
-            config.misc.usesAppVersionUpdate,
-        ],
-        [path.join(root, "overlays", "extras", "flavors"), true],
-        [path.join(root, "overlays", "extras", "dotenv"), config.misc.usesDotenv],
+        ...selection.device.map((name) => [path.join(root, "overlays", "device", name), true] as [string, boolean]),
+        [path.join(root, "overlays", "extras", "flavors"), selection.flavors],
+        [path.join(root, "overlays", "extras", "dotenv"), selection.dotenv],
     ]
 
     for (const [candidate, enabled] of candidates) {

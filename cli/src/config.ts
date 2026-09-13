@@ -5,13 +5,14 @@
 
 export type Architecture = 'clean' | 'mvvm' | 'feature-first' | 'mvc' | 'layer-first'
 
-export type StateManager = 'riverpod' | 'bloc' | 'provider' | 'mobx' | 'getx'
+export type StateManager = 'riverpod' | 'bloc' | 'provider' | 'mobx' | 'getx' | 'none'
 
 export type Backend = 'firebase' | 'supabase' | 'appwrite' | 'custom' | 'none'
 
-export type Navigation = 'gorouter' | 'autoroute' | 'none'
+export type Navigation = 'gorouter' | 'autoroute' | 'getx' | 'none'
 
 export type ThemeMode = 'light' | 'dark' | 'both'
+export type ThemePreset = 'material3' | 'cupertino' | 'custom'
 
 export interface FlutterInitConfig {
   projectName: string       // validated: lowercase, underscores only e.g. my_app
@@ -20,8 +21,10 @@ export interface FlutterInitConfig {
   architecture: Architecture
   stateManager: StateManager
   backend: Backend
+  backendOptions?: Record<string, boolean>
   navigation: Navigation
   themeMode: ThemeMode
+  themePreset?: ThemePreset
   primaryColor: string      // hex string e.g. #6750A4
   outputDir: string         // resolved absolute path (cwd/projectName)
 
@@ -85,6 +88,7 @@ export const STATE_LABELS: Record<StateManager, string> = {
   'provider': 'Provider',
   'mobx': 'MobX',
   'getx': 'GetX',
+  'none': 'None (setState)',
 }
 
 export const BACKEND_LABELS: Record<Backend, string> = {
@@ -98,6 +102,7 @@ export const BACKEND_LABELS: Record<Backend, string> = {
 export const NAVIGATION_LABELS: Record<Navigation, string> = {
   'gorouter': 'GoRouter',
   'autoroute': 'AutoRoute',
+  'getx': 'GetX Routing',
   'none': 'Navigator 2.0',
 }
 
@@ -105,4 +110,10 @@ export const THEME_LABELS: Record<ThemeMode, string> = {
   'light': 'Light only',
   'dark': 'Dark only',
   'both': 'Both (system)',
+}
+
+export const THEME_PRESET_LABELS: Record<ThemePreset, string> = {
+  'material3': 'Material 3',
+  'cupertino': 'Cupertino',
+  'custom': 'Custom Material',
 }

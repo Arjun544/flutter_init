@@ -1,0 +1,35 @@
+import 'dart:typed_data';
+import 'package:firebase_storage/firebase_storage.dart';
+import '../config/app_config.dart';
+import '../utils/utils.dart';
+
+class FirebaseStorageService {
+  FirebaseStorageService._();
+  static final instance = FirebaseStorageService._();
+
+  FirebaseStorage get _storage => AppConfig.storage;
+
+  FutureEither<String> uploadBytes(String path, Uint8List bytes) {
+    return runTask(
+      () async {
+        final reference = _storage.ref(path);
+        await reference.putData(bytes);
+        return reference.getDownloadURL();
+      },
+      operation: 'firebaseStorage.uploadBytes',
+      category: LogCategory.backend,
+      context: {'path': path, 'bytes': bytes.length},
+      requiresNetwork: true,
+    );
+  }
+
+  FutureEither<void> delete(String path) {
+    return runTask(
+      () => _storage.ref(path).delete(),
+      operation: 'firebaseStorage.delete',
+      category: LogCategory.backend,
+      context: {'path': path},
+      requiresNetwork: true,
+    );
+  }
+}

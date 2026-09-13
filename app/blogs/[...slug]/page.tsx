@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 import rehypeSlug from 'rehype-slug'
+import { Suspense } from 'react'
 import { getAllPosts } from '@/lib/blog/getAllPosts'
 import { getPostBySlug } from '@/lib/blog/getPostBySlug'
 import { getRelatedPosts } from '@/lib/blog/getRelatedPosts'
@@ -23,8 +24,6 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 import { AUTHORS } from '@/lib/blog/authors'
-
-export const revalidate = 3600
 
 // ── Static params ────────────────────────────────────────────────────────────
 
@@ -78,9 +77,7 @@ export async function generateMetadata({
 
 const mdxOptions = {
   remarkPlugins: [remarkGfm],
-  rehypePlugins: [
-    rehypeSlug,
-  ] as any[],
+  rehypePlugins: [rehypeSlug],
 }
 
 // ── ToC helpers ──────────────────────────────────────────────────────────────
@@ -108,7 +105,31 @@ function extractTocItems(content: string): TocItem[] {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-export default async function BlogPostPage({
+export default function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ slug: string[] }>
+}) {
+  return (
+    <Suspense fallback={<BlogPostSkeleton />}>
+      <BlogPostContent params={params} />
+    </Suspense>
+  )
+}
+
+function BlogPostSkeleton() {
+  return (
+    <main className="min-h-screen bg-white">
+      <div className="mx-auto max-w-6xl px-6 py-8 md:px-8">
+        <div className="h-5 w-24 animate-pulse rounded bg-zinc-100" />
+        <div className="mt-12 h-12 max-w-3xl animate-pulse rounded bg-zinc-100" />
+        <div className="mt-6 h-5 max-w-2xl animate-pulse rounded bg-zinc-100" />
+      </div>
+    </main>
+  )
+}
+
+async function BlogPostContent({
   params,
 }: {
   params: Promise<{ slug: string[] }>

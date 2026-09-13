@@ -50,23 +50,21 @@ const NodeSwitch = ({
 
       <div className={`
         relative flex items-center py-2 px-3
-        rounded-[1rem] sm:rounded-[1.1rem]
-        border backdrop-blur-2xl
+        rounded-3xl sm:rounded-[1.1rem]
+        backdrop-blur-2xl
         transition-all duration-300 ease-out
         group-hover/node:scale-[1.035] group-hover/node:-translate-y-0.5
         ${active
           ? [
               'bg-white/95',
-              'border-zinc-200/80',
-              'shadow-[0_2px_4px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.06)]',
-              'ring-1 ring-primary/8',
+              'smooth-shadow-ring-lg',
+              'smooth-ring-primary/8',
             ].join(' ')
           : [
               'bg-white/75',
-              'border-white/50',
-              'shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_12px_rgba(0,0,0,0.05)]',
-              'hover:bg-white/95 hover:border-zinc-200/70',
-              'hover:shadow-[0_2px_6px_rgba(0,0,0,0.06),0_8px_20px_rgba(0,0,0,0.08)]',
+              'smooth-shadow-ring-sm',
+              'hover:bg-white/95',
+              'hover:smooth-shadow-ring-md',
             ].join(' ')}
       `}>
         {/* Icon container */}
@@ -76,14 +74,14 @@ const NodeSwitch = ({
             initial={false}
             animate={{ opacity: active ? 0 : 1 }}
             transition={{ duration: 0.3 }}
-            className="absolute inset-0 rounded-[0.6rem] sm:rounded-[0.65rem] bg-zinc-50 border border-zinc-200/80 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]"
+            className="absolute inset-0 rounded-[0.6rem] sm:rounded-[0.65rem] bg-zinc-50 smooth-shadow-ring-xs"
           />
           {/* Active state background & border & shadow */}
           <motion.div
             initial={false}
             animate={{ opacity: active ? 1 : 0 }}
             transition={{ duration: 0.3 }}
-            className={`absolute inset-0 rounded-[0.6rem] sm:rounded-[0.65rem] border border-white/25 shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_2px_8px_rgba(0,0,0,0.15)] ${bgClass}`}
+            className={`absolute inset-0 rounded-[0.6rem] sm:rounded-[0.65rem] smooth-shadow-ring-sm ${bgClass}`}
           />
 
           {/* Icon wrapper with subtle scale animation */}
@@ -131,7 +129,7 @@ const NodeSwitch = ({
             checked={active}
             onCheckedChange={onToggle}
             aria-label={`Toggle ${label}`}
-            className={`cursor-pointer transition-all duration-300 ${active ? 'data-[state=checked]:bg-primary shadow-[0_0_0_2px_hsl(var(--primary)/0.15)]' : ''}`}
+            className={`cursor-pointer transition-all duration-300 ${active ? 'data-[state=checked]:bg-primary ring-2 ring-primary/15' : ''}`}
           />
         </div>
       </div>
@@ -154,7 +152,7 @@ export function NodePattern() {
   };
 
   return (
-    <div className="relative w-full max-w-[1000px] mx-auto h-[260px] sm:h-[340px] mb-6 sm:mb-10 mt-6 z-20">
+    <div className="relative w-full max-w-250 mx-auto h-65 sm:h-85 mb-6 sm:mb-10 mt-6 z-20">
       <svg
         viewBox="0 0 800 400"
         preserveAspectRatio="none"
@@ -270,12 +268,12 @@ export function NodePattern() {
           <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse" />
           <div className="absolute inset-0 bg-primary/10 blur-xl rounded-full scale-125" />
 
-          <div className="relative w-16 h-16 sm:w-20 sm:h-20 bg-linear-to-tr from-primary via-primary/90 to-primary/80 rounded-[1.25rem] sm:rounded-[1.75rem] shadow-[0_20px_40px_-8px_hsl(var(--primary)/0.5)] flex items-center justify-center transform hover:scale-105 transition-all duration-500 border border-white/30 group overflow-hidden">
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20 bg-linear-to-tr from-primary via-primary/90 to-primary/80 rounded-4xl sm:rounded-[1.75rem] smooth-shadow-ring-2xl shadow-primary/50 flex items-center justify-center transform hover:scale-105 transition-all duration-500 group overflow-hidden">
             {/* Glossy overlay */}
             <div className="absolute inset-0 bg-linear-to-br from-white/20 to-transparent pointer-events-none" />
 
             <div className="relative animate-float">
-              <HugeiconsIcon icon={Folder01Icon} size={32} color='#ffffff' className="sm:size-[38px] drop-shadow-lg" />
+              <HugeiconsIcon icon={Folder01Icon} size={32} color='#ffffff' className="sm:size-9.5 drop-shadow-lg" />
             </div>
 
             {/* Shine effect on hover */}

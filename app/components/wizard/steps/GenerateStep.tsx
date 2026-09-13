@@ -1,78 +1,107 @@
 "use client"
 
+import { StepPanel, StepSection } from "@/app/components/wizard/StepPanel"
+import { SummaryItem, SummaryTagItem } from "@/app/components/wizard/SummaryItem"
 import { useWizard } from "@/app/lib/state/useWizardStore"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import * as React from "react"
-import { SummaryItem, SummaryTagItem } from "../SummaryItem"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircleIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 
-export function GenerateStep({ error, isGenerating }: { error: string | null, isGenerating: boolean }) {
+export function GenerateStep({
+    error,
+    isGenerating,
+}: {
+    error: string | null
+    isGenerating: boolean
+}) {
     const { config } = useWizard()
 
     return (
-        <Card className="border-border/40 bg-background/60 shadow-xl backdrop-blur-xl transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
-            <CardHeader>
-                <CardTitle className="bg-linear-to-br from-foreground to-muted-foreground bg-clip-text text-transparent text-xl font-bold">Review & Generate</CardTitle>
-                <CardDescription>
-                    Confirm your selections before generating the ZIP.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="space-y-3">
-                    <SummaryItem
-                        label="App name"
-                        value={config.appName}
-                        error={config.appName !== "" && !/^[a-z][a-z0-9_]*$/.test(config.appName)}
-                    />
-                    <SummaryItem
-                        label="Package ID"
-                        value={config.packageId}
-                        error={config.packageId !== "" && !/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(config.packageId)}
-                    />
-                    <SummaryItem label="Theme" value={config.theme.preset} />
-                    <SummaryItem label="Architecture" value={config.architecture} />
-                    <SummaryItem label="State" value={config.stateManagement} />
-                    <SummaryItem label="Navigation" value={config.navigation} />
-                    <SummaryItem label="Backend" value={config.backend.provider} />
-                    <SummaryTagItem
-                        label="Icons"
-                        tags={[
-                            "Default",
-                            config.icons.iconsax_plus && "Iconsax Plus",
-                            config.icons.flutter_remix && "Flutter Remix",
-                            config.icons.hugeicons && "Hugeicons",
-                        ].filter(Boolean) as string[]}
-                    />
-                    <SummaryTagItem
-                        label="Misc"
-                        tags={[
-                            config.misc.usesScreenutil && "Screenutil",
-                            config.misc.usesDio && "Dio",
-                            config.misc.usesHttp && "HTTP",
-                            config.misc.usesHive && "Hive",
-                            config.misc.usesSharedPreferences && "Shared Pref",
-                            config.misc.usesSecureStorage && "Secure Storage",
-                            config.misc.usesCachedNetworkImage && "Cached Image",
-                            config.misc.usesFlutterSvg && "SVG",
-                            config.misc.usesSkeletonizer && "Skeletonizer",
-                            config.misc.usesFlutterHooks && "Hooks",
-                            config.misc.usesImagePicker && "Image Picker",
-                            config.misc.usesFilePicker && "File Picker",
-                            config.misc.usesUrlLauncher && "Url Launcher",
-                            config.misc.usesPermissionHandler && "Permissions",
-                            config.misc.usesDeviceInfoPlus && "Device Info",
-                            config.misc.usesAppVersionUpdate && "App Version",
-                            "Dotenv",
+        <StepPanel
+            title="Review & generate"
+            description={
+                isGenerating
+                    ? "Building your Flutter scaffold…"
+                    : "Confirm your selections, then generate the ZIP from the header."
+            }
+        >
+            {error ? (
+                <Alert variant="destructive">
+                    <HugeiconsIcon icon={AlertCircleIcon} />
+                    <AlertTitle>Generation failed</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            ) : null}
 
-                        ].filter(Boolean) as string[]}
-                    />
-                </div>
-
-                {error ? (
-                    <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive border border-destructive/20">
-                        Error: {error}
+            <div className="grid w-full gap-8 lg:grid-cols-2">
+                <StepSection title="Project" description="Identity and core stack.">
+                    <div className="w-full">
+                        <SummaryItem
+                            label="App name"
+                            value={config.appName}
+                            error={
+                                config.appName !== "" &&
+                                !/^[a-z][a-z0-9_]*$/.test(config.appName)
+                            }
+                        />
+                        <SummaryItem
+                            label="Package ID"
+                            value={config.packageId}
+                            error={
+                                config.packageId !== "" &&
+                                !/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(
+                                    config.packageId
+                                )
+                            }
+                        />
+                        <SummaryItem label="Theme" value={config.theme.preset} />
+                        <SummaryItem label="Architecture" value={config.architecture} />
+                        <SummaryItem label="State" value={config.stateManagement} />
+                        <SummaryItem label="Navigation" value={config.navigation} />
+                        <SummaryItem label="Backend" value={config.backend.provider} />
                     </div>
-                ) : null}
-            </CardContent>
-        </Card>
+                </StepSection>
+
+                <StepSection title="Extras" description="Icons and utility packages.">
+                    <div className="w-full">
+                        <SummaryTagItem
+                            label="Icons"
+                            tags={
+                                [
+                                    "Default",
+                                    config.icons.iconsax_plus && "Iconsax Plus",
+                                    config.icons.flutter_remix && "Flutter Remix",
+                                    config.icons.hugeicons && "Hugeicons",
+                                ].filter(Boolean) as string[]
+                            }
+                        />
+                        <SummaryTagItem
+                            label="Packages"
+                            tags={
+                                [
+                                    config.misc.usesScreenutil && "Screenutil",
+                                    config.misc.usesDio && "Dio",
+                                    config.misc.usesHttp && "HTTP",
+                                    config.misc.usesHive && "Hive",
+                                    config.misc.usesSharedPreferences && "Shared Pref",
+                                    config.misc.usesSecureStorage && "Secure Storage",
+                                    config.misc.usesCachedNetworkImage && "Cached Image",
+                                    config.misc.usesFlutterSvg && "SVG",
+                                    config.misc.usesSkeletonizer && "Skeletonizer",
+                                    config.misc.usesFlutterHooks && "Hooks",
+                                    config.misc.usesImagePicker && "Image Picker",
+                                    config.misc.usesFilePicker && "File Picker",
+                                    config.misc.usesUrlLauncher && "Url Launcher",
+                                    config.misc.usesPermissionHandler && "Permissions",
+                                    config.misc.usesDeviceInfoPlus && "Device Info",
+                                    config.misc.usesAppVersionUpdate && "App Version",
+                                    "Dotenv",
+                                ].filter(Boolean) as string[]
+                            }
+                        />
+                    </div>
+                </StepSection>
+            </div>
+        </StepPanel>
     )
 }

@@ -4,7 +4,8 @@
 // usage descriptions required by selected packages.
 //
 // Runs after flutter create (files exist) but before flutter pub get.
-// All steps are non-fatal: a failure logs instructions and continues.
+// Native configuration is part of the generated-project contract and fails
+// generation when the expected files cannot be updated.
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { log } from '@clack/prompts'
@@ -54,7 +55,9 @@ async function configureAndroid(config: FlutterInitConfig): Promise<void> {
 
     // 4-space indent — standard AndroidManifest.xml convention
     const permissionsBlock = unique
-      .map(p => `    <uses-permission android:name="${p}"/>`)
+      .map(p => p === 'android.permission.READ_EXTERNAL_STORAGE'
+        ? `    <uses-permission android:name="${p}" android:maxSdkVersion="32"/>`
+        : `    <uses-permission android:name="${p}"/>`)
       .join('\n')
 
     // Inject before <application — always the correct position in AndroidManifest.xml.
@@ -69,7 +72,7 @@ async function configureAndroid(config: FlutterInitConfig): Promise<void> {
     log.warn(`AndroidManifest.xml configuration failed: ${(err as Error).message}`)
     log.warn(`File path: ${manifestPath}`)
     logManualAndroidInstructions(config)
-    return
+    throw err
   }
 
   await configureAndroidBuildGradle(config)
@@ -109,13 +112,7 @@ export function buildAndroidPermissions(config: FlutterInitConfig): string[] {
     permissions.push(
       'android.permission.CAMERA',
       'android.permission.READ_EXTERNAL_STORAGE',
-      'android.permission.WRITE_EXTERNAL_STORAGE',
-    )
-  }
-
-  if (config.usesFilePicker) {
-    permissions.push(
-      'android.permission.READ_EXTERNAL_STORAGE',
+      'android.permission.READ_MEDIA_IMAGES',
     )
   }
 
@@ -171,7 +168,7 @@ async function configureIos(config: FlutterInitConfig): Promise<void> {
     log.warn(`Info.plist configuration failed: ${(err as Error).message}`)
     log.warn(`File path: ${plistPath}`)
     logManualIosInstructions(config)
-    return
+    throw err
   }
 
   await configureIosPodfile(config)
@@ -216,11 +213,7 @@ export function buildIosPlistEntries(config: FlutterInitConfig): string[] {
 
   if (config.usesFilePicker) {
     // file_picker on iOS does not require plist entries for the document
-    // picker. Entries are only needed when accessing the photo library.
-    entries.push(
-      '\t<key>NSPhotoLibraryUsageDescription</key>',
-      '\t<string>This app requires photo library access</string>',
-    )
+    // picker, so no photo-library permission is requested.
   }
 
   if (config.usesGeolocator) {
@@ -238,7 +231,7 @@ export function buildIosPlistEntries(config: FlutterInitConfig): string[] {
     // Block intentionally empty; kept for future additions.
   }
 
-  // Deduplicate by key — camera + filePicker both need NSPhotoLibraryUsageDescription.
+  // Deduplicate by key when multiple selected features share a declaration.
   return deduplicatePlistEntries(entries)
 }
 

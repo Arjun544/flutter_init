@@ -73,12 +73,12 @@ describe("Theme Flags", () => {
 
         it("when fonts are provided, fonts block is properly constructed in pubspec", () => {
             expect(customFontPubspec).toMatch(/^  fonts:/m)
-            expect(customFontPubspec).toMatch(/- family: Inter/g)
-            expect(customFontPubspec).toMatch(/- asset: assets\/fonts\/Inter-Regular.ttf/g)
-            expect(customFontPubspec).toMatch(/- asset: assets\/fonts\/Inter-Bold.ttf/g)
+            expect(customFontPubspec).toMatch(/- family: "Inter"/g)
+            expect(customFontPubspec).toMatch(/- asset: "assets\/fonts\/Inter-Regular.ttf"/g)
+            expect(customFontPubspec).toMatch(/- asset: "assets\/fonts\/Inter-Bold.ttf"/g)
             expect(customFontPubspec).toMatch(/weight: 700/g)
-            expect(customFontPubspec).toMatch(/- family: Roboto/g)
-            expect(customFontPubspec).toMatch(/- asset: assets\/fonts\/Roboto-Italic.ttf/g)
+            expect(customFontPubspec).toMatch(/- family: "Roboto"/g)
+            expect(customFontPubspec).toMatch(/- asset: "assets\/fonts\/Roboto-Italic.ttf"/g)
             expect(customFontPubspec).toMatch(/style: italic/g)
         })
 

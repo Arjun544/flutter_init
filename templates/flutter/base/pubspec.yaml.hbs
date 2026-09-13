@@ -59,7 +59,7 @@ dependencies:
   # Backend – Firebase
   {{#if (eq backend.provider "firebase")}}
   firebase_core: ^4.5.0
-  {{#if backend.options.authEmail}}
+  {{#if flags.usesFirebaseAuth}}
   firebase_auth: ^6.2.0
   {{/if}}
   {{#if backend.options.firestore}}
@@ -94,7 +94,7 @@ dependencies:
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
   {{/if}}
-  {{#if flags.usesSharedPreferences}}
+  {{#if (or flags.usesSharedPreferences flags.supportsLocalization)}}
   shared_preferences: ^2.5.4
   {{/if}}
   {{#if flags.usesSecureStorage}}
@@ -233,10 +233,10 @@ flutter:
   {{#if flags.hasCustomFonts}}
   fonts:
     {{#each flags.fontFamilies}}
-    - family: {{this.family}}
+    - family: "{{this.family}}"
       fonts:
         {{#each this.fonts}}
-        - asset: assets/fonts/{{this.fileName}}
+        - asset: "assets/fonts/{{this.fileName}}"
           {{#if (eq this.style "italic")}}
           style: italic
           {{/if}}

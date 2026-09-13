@@ -1,20 +1,20 @@
 "use client"
 
 import { BackendProvider, backendOptions, defaultBackendConfig } from "@/app/lib/config/schema"
+import { OptionTile } from "@/app/components/wizard/OptionTile"
+import { StepGrid, StepPanel, StepSection } from "@/app/components/wizard/StepPanel"
+import { ToggleRow } from "@/app/components/wizard/ToggleRow"
 import { useWizard } from "@/app/lib/state/useWizardStore"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ToggleRow } from "../ToggleRow"
-import { InformationCircleIcon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
+import { RadioGroup } from "@/components/ui/radio-group"
+import { Separator } from "@/components/ui/separator"
 
 export function BackendStep() {
-    const { config, updateConfig, next, prev, setSelectedItem } = useWizard()
+    const { config, updateConfig, setSelectedItem } = useWizard()
 
     const handleProviderChange = (provider: BackendProvider) => {
-        const updates: any = {
+        const updates: Record<string, unknown> = {
             backend: defaultBackendConfig(provider),
         }
 
@@ -35,180 +35,162 @@ export function BackendStep() {
     const toggleOption = (key: string, value: boolean | string) => {
         if (backend.provider === "none") return
         const options = {
-            ...(backend as any).options,
+            ...(backend as { options?: Record<string, unknown> }).options,
             [key]: value,
         }
-        updateConfig({ backend: { ...backend, options } as any })
+        updateConfig({ backend: { ...backend, options } as typeof backend })
     }
 
+    const options = (backend as { options?: Record<string, boolean | string> }).options ?? {}
+
     return (
-        <Card className="border-border/40 bg-background/60 shadow-xl backdrop-blur-xl transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
-            <CardHeader>
-                <CardTitle className="bg-linear-to-br from-foreground to-muted-foreground bg-clip-text text-transparent text-xl font-bold">Backend & Auth</CardTitle>
-                <CardDescription>
-                    Choose a backend and toggle the integrations you need.
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="space-y-2 group">
-                    <Label className="transition-colors group-focus-within:text-primary">Backend Provider</Label>
-                    <Select
-                        value={backend.provider}
-                        onValueChange={(value) => handleProviderChange(value as BackendProvider)}
+        <StepPanel
+            title="Backend & auth"
+            description="Choose a backend provider, then enable the services your scaffold should wire up."
+        >
+            <StepSection title="Provider">
+                <RadioGroup
+                    value={backend.provider}
+                    onValueChange={(value) => handleProviderChange(value as BackendProvider)}
+                    className="w-full"
+                >
+                    <StepGrid cols={3}>
+                        {backendOptions.map((option) => (
+                            <OptionTile
+                                key={option.value}
+                                value={option.value}
+                                label={option.label}
+                                description={option.description}
+                                selected={backend.provider === option.value}
+                                onInfo={() => setSelectedItem(option.value)}
+                            />
+                        ))}
+                    </StepGrid>
+                </RadioGroup>
+            </StepSection>
+
+            {backend.provider !== "none" ? (
+                <>
+                    <Separator />
+                    <StepSection
+                        title="Integrations"
+                        description="Toggle the packages and auth flows to include."
                     >
-                        <SelectTrigger className="w-full bg-background/50 backdrop-blur-sm border-border/60 focus:ring-2 focus:ring-primary/20 hover:border-primary/40">
-                            <SelectValue placeholder="Select backend" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-background/90 backdrop-blur-xl border-border/50">
-                            {backendOptions.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                    <div className="flex items-center justify-between w-full pr-6">
-                                        <div className="flex flex-col py-0.5">
-                                            <span className="font-medium">{option.label}</span>
-                                            {backend.provider !== option.value && (
-                                                <span className="text-[10px] text-muted-foreground font-normal line-clamp-1">{option.description}</span>
-                                            )}
-                                        </div>
-                                        {backend.provider !== option.value && (
-                                            <button
-                                                type="button"
-                                                onPointerDown={(e) => {
-                                                    e.preventDefault()
-                                                    e.stopPropagation()
-                                                    setSelectedItem(option.value)
-                                                }}
-                                                onClick={(e) => {
-                                                    e.preventDefault()
-                                                    e.stopPropagation()
-                                                    setSelectedItem(option.value)
-                                                }}
-                                                className="p-1 -mr-2 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden [&_svg]:pointer-events-auto z-10 cursor-pointer"
-                                                title="View details"
-                                            >
-                                                <HugeiconsIcon icon={InformationCircleIcon} size={16} />
-                                            </button>
-                                        )}
-                                    </div>
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
+                        {backend.provider === "firebase" ? (
+                            <StepGrid cols={2}>
+                                <ToggleRow
+                                    label="Email auth"
+                                    infoKey="firebase_auth_email"
+                                    checked={Boolean(options.authEmail)}
+                                    onCheckedChange={(value) => toggleOption("authEmail", value)}
+                                />
+                                <ToggleRow
+                                    label="Google auth"
+                                    infoKey="firebase_auth_google"
+                                    checked={Boolean(options.authGoogle)}
+                                    onCheckedChange={(value) => toggleOption("authGoogle", value)}
+                                />
+                                <ToggleRow
+                                    label="Phone auth"
+                                    infoKey="firebase_auth_phone"
+                                    checked={Boolean(options.authPhone)}
+                                    onCheckedChange={(value) => toggleOption("authPhone", value)}
+                                />
+                                <ToggleRow
+                                    label="Firestore"
+                                    infoKey="firebase_firestore"
+                                    checked={Boolean(options.firestore)}
+                                    onCheckedChange={(value) => toggleOption("firestore", value)}
+                                />
+                                <ToggleRow
+                                    label="Realtime DB"
+                                    infoKey="firebase_realtime_db"
+                                    checked={Boolean(options.realtimeDb)}
+                                    onCheckedChange={(value) => toggleOption("realtimeDb", value)}
+                                />
+                                <ToggleRow
+                                    label="Storage"
+                                    infoKey="firebase_storage"
+                                    checked={Boolean(options.storage)}
+                                    onCheckedChange={(value) => toggleOption("storage", value)}
+                                />
+                                <ToggleRow
+                                    label="Analytics"
+                                    infoKey="firebase_analytics"
+                                    checked={Boolean(options.analytics)}
+                                    onCheckedChange={(value) => toggleOption("analytics", value)}
+                                />
+                                <ToggleRow
+                                    label="Crashlytics"
+                                    infoKey="firebase_crashlytics"
+                                    checked={Boolean(options.crashlytics)}
+                                    onCheckedChange={(value) => toggleOption("crashlytics", value)}
+                                />
+                            </StepGrid>
+                        ) : null}
 
-                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                    {backend.provider === "firebase" && (
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <ToggleRow
-                                label="Email auth"
-                                infoKey="firebase_auth_email"
-                                checked={(backend as any).options.authEmail}
-                                onCheckedChange={(value) => toggleOption("authEmail", value)}
-                            />
-                            <ToggleRow
-                                label="Google auth"
-                                infoKey="firebase_auth_google"
-                                checked={(backend as any).options.authGoogle}
-                                onCheckedChange={(value) => toggleOption("authGoogle", value)}
-                            />
-                            <ToggleRow
-                                label="Phone auth"
-                                infoKey="firebase_auth_phone"
-                                checked={(backend as any).options.authPhone}
-                                onCheckedChange={(value) => toggleOption("authPhone", value)}
-                            />
-                            <ToggleRow
-                                label="Firestore"
-                                infoKey="firebase_firestore"
-                                checked={(backend as any).options.firestore}
-                                onCheckedChange={(value) => toggleOption("firestore", value)}
-                            />
-                            <ToggleRow
-                                label="Realtime DB"
-                                infoKey="firebase_realtime_db"
-                                checked={(backend as any).options.realtimeDb}
-                                onCheckedChange={(value) => toggleOption("realtimeDb", value)}
-                            />
-                            <ToggleRow
-                                label="Storage"
-                                infoKey="firebase_storage"
-                                checked={(backend as any).options.storage}
-                                onCheckedChange={(value) => toggleOption("storage", value)}
-                            />
-                            <ToggleRow
-                                label="Analytics"
-                                infoKey="firebase_analytics"
-                                checked={(backend as any).options.analytics}
-                                onCheckedChange={(value) => toggleOption("analytics", value)}
-                            />
-                            <ToggleRow
-                                label="Crashlytics"
-                                infoKey="firebase_crashlytics"
-                                checked={(backend as any).options.crashlytics}
-                                onCheckedChange={(value) => toggleOption("crashlytics", value)}
-                            />
-                        </div>
-                    )}
+                        {backend.provider === "supabase" ? (
+                            <StepGrid cols={3}>
+                                <ToggleRow
+                                    label="Auth"
+                                    infoKey="supabase_auth"
+                                    checked={Boolean(options.auth)}
+                                    onCheckedChange={(value) => toggleOption("auth", value)}
+                                />
+                                <ToggleRow
+                                    label="Database"
+                                    infoKey="supabase_database"
+                                    checked={Boolean(options.database)}
+                                    onCheckedChange={(value) => toggleOption("database", value)}
+                                />
+                                <ToggleRow
+                                    label="Edge functions"
+                                    infoKey="supabase_edge_functions"
+                                    checked={Boolean(options.edgeFunctions)}
+                                    onCheckedChange={(value) =>
+                                        toggleOption("edgeFunctions", value)
+                                    }
+                                />
+                            </StepGrid>
+                        ) : null}
 
-                    {backend.provider === "supabase" && (
-                        <div className="grid gap-4 md:grid-cols-3">
-                            <ToggleRow
-                                label="Auth"
-                                infoKey="supabase_auth"
-                                checked={(backend as any).options.auth}
-                                onCheckedChange={(value) => toggleOption("auth", value)}
-                            />
-                            <ToggleRow
-                                label="Database"
-                                infoKey="supabase_database"
-                                checked={(backend as any).options.database}
-                                onCheckedChange={(value) => toggleOption("database", value)}
-                            />
-                            <ToggleRow
-                                label="Edge functions"
-                                infoKey="supabase_edge_functions"
-                                checked={(backend as any).options.edgeFunctions}
-                                onCheckedChange={(value) => toggleOption("edgeFunctions", value)}
-                            />
-                        </div>
-                    )}
+                        {backend.provider === "appwrite" ? (
+                            <StepGrid cols={3}>
+                                <ToggleRow
+                                    label="Auth"
+                                    infoKey="appwrite_auth"
+                                    checked={Boolean(options.auth)}
+                                    onCheckedChange={(value) => toggleOption("auth", value)}
+                                />
+                                <ToggleRow
+                                    label="Database"
+                                    infoKey="appwrite_database"
+                                    checked={Boolean(options.database)}
+                                    onCheckedChange={(value) => toggleOption("database", value)}
+                                />
+                                <ToggleRow
+                                    label="Storage"
+                                    infoKey="appwrite_storage"
+                                    checked={Boolean(options.storage)}
+                                    onCheckedChange={(value) => toggleOption("storage", value)}
+                                />
+                            </StepGrid>
+                        ) : null}
 
-                    {backend.provider === "appwrite" && (
-                        <div className="grid gap-4 md:grid-cols-3">
-                            <ToggleRow
-                                label="Auth"
-                                infoKey="appwrite_auth"
-                                checked={(backend as any).options.auth}
-                                onCheckedChange={(value) => toggleOption("auth", value)}
-                            />
-                            <ToggleRow
-                                label="Database"
-                                infoKey="appwrite_database"
-                                checked={(backend as any).options.database}
-                                onCheckedChange={(value) => toggleOption("database", value)}
-                            />
-                            <ToggleRow
-                                label="Storage"
-                                infoKey="appwrite_storage"
-                                checked={(backend as any).options.storage}
-                                onCheckedChange={(value) => toggleOption("storage", value)}
-                            />
-                        </div>
-                    )}
-
-                    {backend.provider === "custom" && (
-                        <div className="space-y-2 group">
-                            <Label htmlFor="baseUrl" className="transition-colors group-focus-within:text-primary">Base URL (Local/Remote)</Label>
-                            <Input
-                                id="baseUrl"
-                                placeholder="https://api.example.com"
-                                value={(backend as any).options.baseUrl ?? ""}
-                                onChange={(e) => toggleOption("baseUrl", e.target.value)}
-                                className="bg-background/50 backdrop-blur-sm transition-all focus:ring-2 focus:ring-primary/20"
-                            />
-                        </div>
-                    )}
-                </div>
-            </CardContent>
-        </Card>
+                        {backend.provider === "custom" ? (
+                            <Field className="max-w-xl">
+                                <FieldLabel htmlFor="baseUrl">Base URL</FieldLabel>
+                                <Input
+                                    id="baseUrl"
+                                    placeholder="https://api.example.com"
+                                    value={String(options.baseUrl ?? "")}
+                                    onChange={(e) => toggleOption("baseUrl", e.target.value)}
+                                />
+                            </Field>
+                        ) : null}
+                    </StepSection>
+                </>
+            ) : null}
+        </StepPanel>
     )
 }

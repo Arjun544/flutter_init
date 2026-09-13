@@ -10,6 +10,41 @@ import '../../{{#if (eq architecture "layer-first")}}data/repositories/{{else if
 import '../../{{#if (eq architecture "layer-first")}}presentation/providers/session_store.dart{{else if (eq architecture "mvc")}}controllers/auth/session_store.dart{{else if (eq architecture "mvvm")}}ui/auth/stores/session_store.dart{{else}}features/auth/presentation/providers/session_store.dart{{/if}}';
 {{/if}}
 
+{{#if flags.isRiverpod}}
+/// State middleware: logs meaningful Riverpod updates (skips noisy init spam).
+base class AppProviderObserver extends ProviderObserver {
+  @override
+  void didUpdateProvider(
+    ProviderObserverContext context,
+    Object? previousValue,
+    Object? newValue,
+  ) {
+    AppLogger.provider(
+      'Riverpod provider updated',
+      context: {
+        'provider': context.provider.toString(),
+        'previousType': previousValue.runtimeType.toString(),
+        'newType': newValue.runtimeType.toString(),
+      },
+    );
+  }
+
+  @override
+  void providerDidFail(
+    ProviderObserverContext context,
+    Object error,
+    StackTrace stackTrace,
+  ) {
+    AppLogger.provider(
+      'Riverpod provider failed',
+      context: {'provider': context.provider.toString()},
+      error: error,
+      stackTrace: stackTrace,
+    );
+  }
+}
+{{/if}}
+
 /// A wrapper to initialize the chosen State Management library.
 class StateWrapper extends StatelessWidget {
   final Widget child;
@@ -22,7 +57,10 @@ class StateWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     {{#if flags.isRiverpod}}
-    return ProviderScope(child: child);
+    return ProviderScope(
+      observers: [AppProviderObserver()],
+      child: child,
+    );
     {{else if flags.isProvider}}
     return MultiProvider(
       providers: [
@@ -33,7 +71,8 @@ class StateWrapper extends StatelessWidget {
     {{else if flags.isBloc}}
     return MultiBlocProvider(
       providers: [
-        BlocProvider<SessionBloc>(create: (_) => SessionBloc(repository: AuthRepositoryImpl())),
+        BlocProvider<SessionBloc>(
+            create: (_) => SessionBloc(repository: AuthRepositoryImpl())),
       ],
       child: child,
     );

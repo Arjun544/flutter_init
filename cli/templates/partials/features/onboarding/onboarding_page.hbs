@@ -59,14 +59,14 @@ class OnboardingPage extends HookWidget {
       onGetStarted: onGetStarted,
     );
   }
-}
+  }
 {{else}}
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
 
   @override
   State<OnboardingPage> createState() => _OnboardingPageState();
-}
+  }
 
 class _OnboardingPageState extends State<OnboardingPage> {
   late final PageController _pageController;
@@ -134,7 +134,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       onGetStarted: _onGetStarted,
     );
   }
-}
+  }
 {{/if}}
 
 class _OnboardingView extends StatelessWidget {
@@ -179,7 +179,7 @@ class _OnboardingView extends StatelessWidget {
                   fontSize: {{res 22 'sp' flags.usesScreenutil}},
                 ),
               ),
-            ),
+              ),
 
             // PageView
             Expanded(
@@ -196,17 +196,18 @@ class _OnboardingView extends StatelessWidget {
                           child: Padding(
                             padding: EdgeInsets.symmetric(
                               horizontal: {{res 'AppSpacing.lg' 'w' flags.usesScreenutil}},
-                            ),
-                            child: onboardingData[index]['pageWidget'] as Widget,
+                              ),
+                            child:
+                                onboardingData[index]['pageWidget'] as Widget,
                           ),
-                        ),
+                          ),
                       ),
-                      
+
                       // Text Section
                       Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: {{res 'AppSpacing.xl' 'w' flags.usesScreenutil}},
-                        ),
+                          ),
                         child: Column(
                           children: [
                             Text(
@@ -218,7 +219,7 @@ class _OnboardingView extends StatelessWidget {
                                 height: 1.2,
                                 fontSize: {{res 24 'sp' flags.usesScreenutil}},
                               ),
-                            ),
+                              ),
                             SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
                             Text(
                               onboardingData[index]['subtitle'] as String,
@@ -228,16 +229,16 @@ class _OnboardingView extends StatelessWidget {
                                 height: 1.5,
                                 fontSize: {{res 14 'sp' flags.usesScreenutil}},
                               ),
-                            ),
+                              ),
                           ],
-                        ),
+                          ),
                       ),
                       {{#if flags.usesScreenutil}}SizedBox(height: 40.h){{else}}const SizedBox(height: 40){{/if}},
                     ],
                   );
                 },
               ),
-            ),
+              ),
 
             // Bottom Section: Dots and Button
             Padding(
@@ -255,10 +256,10 @@ class _OnboardingView extends StatelessWidget {
                   {{#if flags.usesScreenutil}}SizedBox(height: AppSpacing.md){{else}}const SizedBox(height: 16){{/if}},
                 ],
               ),
-            ),
+              ),
           ],
         ),
-      ),
+        ),
     );
   }
-}
+  }

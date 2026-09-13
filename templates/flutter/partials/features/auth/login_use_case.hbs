@@ -1,0 +1,18 @@
+import 'package:{{flags.appSnake}}/src/utils/utils.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/entities/user.dart{{else if (eq architecture "mvc")}}models/user_model.dart{{else if (eq architecture "mvvm")}}data/models/user_model.dart{{else}}features/auth/domain/entities/user.dart{{/if}}';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}domain/repositories/{{else if (eq architecture "mvc")}}services/{{else if (eq architecture "mvvm")}}data/repositories/{{else}}features/auth/domain/repositories/{{/if}}auth_repository.dart';
+
+/// Record-shaped login credentials.
+typedef LoginParams = ({String email, String password});
+
+class LoginUseCase implements UseCase<LoginParams, AppUser> {
+  LoginUseCase(this._repository);
+
+  final AuthRepository _repository;
+
+  @override
+  FutureEither<AppUser> call(LoginParams params) {
+    final (:email, :password) = params;
+    return _repository.login(email: email, password: password);
+  }
+}

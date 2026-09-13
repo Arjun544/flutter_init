@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:ui' as ui;
 import 'src/imports/core_imports.dart';
 import 'src/imports/packages_imports.dart';
 {{#if extras.flavors}}
@@ -7,37 +9,79 @@ import 'src/app.dart';
 
 
 Future<void> main() async {
-  {{#if flags.usesFlutterNativeSplash}}
+  await runZonedGuarded(_bootstrap, (error, stackTrace) {
+    AppLogger.error(
+      'Unhandled asynchronous error',
+      error: error,
+      stackTrace: stackTrace,
+      category: LogCategory.app,
+    );
+  });
+}
+
+Future<void> _bootstrap() async {
+{{#if flags.usesFlutterNativeSplash}}
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  {{else}}
+{{else}}
   WidgetsFlutterBinding.ensureInitialized();
-  {{/if}}
-  
-  {{#if flags.supportsLocalization}}
+{{/if}}
+
+  FlutterError.onError = (details) {
+    AppLogger.error(
+      'Flutter framework error',
+      error: details.exception,
+      stackTrace: details.stack ?? StackTrace.current,
+      category: LogCategory.app,
+      context: {'library': details.library ?? 'unknown'},
+    );
+    FlutterError.presentError(details);
+  };
+
+  ui.PlatformDispatcher.instance.onError = (error, stackTrace) {
+    AppLogger.error(
+      'Unhandled platform error',
+      error: error,
+      stackTrace: stackTrace,
+      category: LogCategory.app,
+    );
+    return false;
+  };
+
+  AppLogger.info('Application bootstrap started', category: LogCategory.app);
+
+{{#if flags.supportsLocalization}}
   await EasyLocalization.ensureInitialized();
-  {{/if}}
-  await dotenv.load(fileName: '.env');
-  {{#if extras.flavors}}
+{{/if}}
+{{#if flags.usesDotenv}}
+  await dotenv.load(fileName: '.env', isOptional: true);
+{{/if}}
+{{#if extras.flavors}}
   FlavorConfig.load(Flavor.dev);
-  {{/if}}
-  
+{{/if}}
+
   await AppConfig.init();
-  {{#if flags.usesHive}}
+  AppLogger.success(
+    'Application configuration initialized',
+    category: LogCategory.backend,
+  );
+{{#if flags.usesHive}}
   await HiveService.instance.init();
-  {{/if}}
+{{/if}}
 
   runApp(
-    {{#if flags.supportsLocalization}}
+{{#if flags.supportsLocalization}}
     const LocalizationWrapper(
       child: {{#if (eq stateManagement "none")}}App(){{else}}StateWrapper(
         child: App(),
-      ){{/if}},
+    ){{/if}},
     ),
-    {{else}}
+{{else}}
     {{#if (eq stateManagement "none")}}const App(){{else}}const StateWrapper(
       child: App(),
     ){{/if}},
-    {{/if}}
+{{/if}}
   );
+
+  AppLogger.success('Application started', category: LogCategory.app);
 }

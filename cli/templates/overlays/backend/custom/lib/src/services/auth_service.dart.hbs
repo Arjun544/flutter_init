@@ -23,7 +23,12 @@ class AuthService {
       StreamController<Map<String, dynamic>?>.broadcast();
 
   /// Stream of auth state changes. Emits the current user map or null.
-  Stream<Map<String, dynamic>?> get authStateChanges => _authStateController.stream;
+  Stream<Map<String, dynamic>?> get authStateChanges {
+    return logAuthStateChanges(
+      _authStateController.stream,
+      userIdOf: (user) => user['id'] as String? ?? '',
+    );
+  }
 
   FutureEither<Map<String, dynamic>?> login({
     required String email,
@@ -62,7 +67,12 @@ class AuthService {
       }
       throw Exception('Invalid credentials');
       {{/if}}
-    }, requiresNetwork: true);
+    },
+      operation: 'auth.login',
+      category: LogCategory.auth,
+      context: {'method': 'email'},
+      requiresNetwork: true,
+    );
   }
 
   FutureEither<Map<String, dynamic>?> signUp({
@@ -105,7 +115,12 @@ class AuthService {
       _authStateController.add(data);
       return data;
       {{/if}}
-    }, requiresNetwork: true);
+    },
+      operation: 'auth.signUp',
+      category: LogCategory.auth,
+      context: {'method': 'email'},
+      requiresNetwork: true,
+    );
   }
 
   FutureEither<void> forgotPassword({required String email}) async {
@@ -121,7 +136,11 @@ class AuthService {
       {{else}}
       await Future.delayed(const Duration(seconds: 1));
       {{/if}}
-    }, requiresNetwork: true);
+    },
+      operation: 'auth.forgotPassword',
+      category: LogCategory.auth,
+      requiresNetwork: true,
+    );
   }
 
   FutureEither<void> logout() async {
@@ -134,7 +153,11 @@ class AuthService {
       await Future.delayed(const Duration(seconds: 1));
       {{/if}}
       _authStateController.add(null);
-    }, requiresNetwork: true);
+    },
+      operation: 'auth.logout',
+      category: LogCategory.auth,
+      requiresNetwork: true,
+    );
   }
 
   FutureEither<Map<String, dynamic>?> getCurrentUser() async {
@@ -149,7 +172,10 @@ class AuthService {
       {{else}}
       return null;
       {{/if}}
-    });
+    },
+      operation: 'auth.getCurrentUser',
+      category: LogCategory.auth,
+    );
   }
 
   void dispose() {

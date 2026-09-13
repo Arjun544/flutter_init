@@ -15,10 +15,17 @@ const GenerateStep = dynamic(() => import("./steps/GenerateStep").then(m => m.Ge
 
 function StepSkeleton() {
     return (
-        <div className="space-y-4 w-full">
-            <Skeleton className="h-48 w-full rounded-2xl" />
-            <Skeleton className="h-12 w-3/4" />
-            <Skeleton className="h-32 w-full rounded-2xl" />
+        <div className="flex w-full flex-col items-start gap-8">
+            <div className="flex w-full flex-col gap-2">
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-4 w-full max-w-md" />
+            </div>
+            <div className="grid w-full gap-3 sm:grid-cols-2">
+                <Skeleton className="h-20 w-full rounded-lg" />
+                <Skeleton className="h-20 w-full rounded-lg" />
+                <Skeleton className="h-20 w-full rounded-lg" />
+                <Skeleton className="h-20 w-full rounded-lg" />
+            </div>
         </div>
     )
 }

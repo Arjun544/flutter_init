@@ -1,78 +1,55 @@
 "use client"
 
 import { StateManagement, stateManagementOptions } from "@/app/lib/config/schema"
+import { OptionTile } from "@/app/components/wizard/OptionTile"
+import { StepGrid, StepPanel } from "@/app/components/wizard/StepPanel"
 import { useWizard } from "@/app/lib/state/useWizardStore"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { InformationCircleIcon } from "@hugeicons/core-free-icons"
-import { HugeiconsIcon } from "@hugeicons/react"
+import { RadioGroup } from "@/components/ui/radio-group"
 
 export function StateStep() {
-    const { config, updateConfig, next, prev, setSelectedItem } = useWizard()
+    const { config, updateConfig, setSelectedItem } = useWizard()
 
     return (
-        <Card className="border-border/40 bg-background/60 shadow-xl backdrop-blur-xl transition-all duration-500 animate-in fade-in slide-in-from-bottom-4">
-            <CardHeader>
-                <CardTitle className="bg-linear-to-br from-foreground to-muted-foreground bg-clip-text text-transparent text-xl font-bold">State Management</CardTitle>
-                <CardDescription>Select your preferred approach for managing application state.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <RadioGroup
-                    value={config.stateManagement}
-                    onValueChange={(value) => {
-                        const stateManagement = value as StateManagement
-                        const updates: any = { stateManagement }
+        <StepPanel
+            title="State management"
+            description="Choose one strategy for app state. This also influences which navigation packages stay compatible."
+        >
+            <RadioGroup
+                value={config.stateManagement}
+                onValueChange={(value) => {
+                    const stateManagement = value as StateManagement
+                    const updates: Record<string, unknown> = { stateManagement }
 
-                        if (stateManagement === "riverpod") {
-                            updates.misc = {
-                                ...config.misc,
-                                usesFlutterHooks: true,
-                            }
+                    if (stateManagement === "riverpod") {
+                        updates.misc = {
+                            ...config.misc,
+                            usesFlutterHooks: true,
                         }
+                    }
 
-                        if (stateManagement === "getx") {
-                            updates.navigation = "getx"
-                        } else if (config.navigation === "getx") {
-                            updates.navigation = "go_router"
-                        }
+                    if (stateManagement === "getx") {
+                        updates.navigation = "getx"
+                    } else if (config.navigation === "getx") {
+                        updates.navigation = "go_router"
+                    }
 
-                        updateConfig(updates)
-                    }}
-                    className="grid gap-3"
-                >
+                    updateConfig(updates)
+                }}
+                className="w-full"
+            >
+                <StepGrid cols={2}>
                     {stateManagementOptions.map((option) => (
-                        <label
+                        <OptionTile
                             key={option.value}
-                            className={`flex items-center justify-between rounded-xl border p-4 cursor-pointer transition-all duration-200
-                                ${config.stateManagement === option.value
-                                    ? 'border-primary/50 bg-primary/5 shadow-md shadow-primary/5 ring-1 ring-primary/20'
-                                    : 'border-border/40 bg-card/30 hover:bg-card/50 hover:border-primary/20'
-                                }
-                            `}
-                        >
-                            <div className="flex items-center gap-4">
-                                <RadioGroupItem value={option.value} className="text-primary border-primary" />
-                                <div className="space-y-1">
-                                    <span className="font-semibold text-foreground/90">{option.label}</span>
-                                    <p className="text-xs text-muted-foreground">{option.description}</p>
-                                </div>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    e.stopPropagation()
-                                    setSelectedItem(option.value)
-                                }}
-                                className="p-1.5 rounded-full hover:bg-primary/20 text-muted-foreground hover:text-primary transition-colors focus:outline-hidden cursor-pointer"
-                                title="View details"
-                            >
-                                <HugeiconsIcon icon={InformationCircleIcon} size={20} />
-                            </button>
-                        </label>
+                            value={option.value}
+                            label={option.label}
+                            description={option.description}
+                            selected={config.stateManagement === option.value}
+                            onInfo={() => setSelectedItem(option.value)}
+                        />
                     ))}
-                </RadioGroup>
-            </CardContent>
-        </Card>
+                </StepGrid>
+            </RadioGroup>
+        </StepPanel>
     )
 }

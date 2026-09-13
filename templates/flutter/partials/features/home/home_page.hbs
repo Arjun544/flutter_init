@@ -54,7 +54,7 @@ class HomePage extends StatelessWidget {
     final session = context.watch<SessionStore>();
     {{/if}}
     {{#unless (or flags.isGetX flags.isMobX)}}
-    {{#if (or flags.isRiverpod flags.isBloc flags.isProvider)}}final{{else}}const{{/if}} user = {{#if flags.isRiverpod}}session.user{{else if flags.isBloc}}session.user{{else if flags.isProvider}}session.user{{else}}null{{/if}};
+    {{#if (or flags.isRiverpod flags.isBloc flags.isProvider)}}final{{else}}const{{/if}} user = {{#if flags.isRiverpod}}session.userOrNull{{else if flags.isBloc}}session.userOrNull{{else if flags.isProvider}}session.user{{else}}null{{/if}};
     {{/unless}}
 
     return Scaffold(
@@ -73,11 +73,11 @@ class HomePage extends StatelessWidget {
                 icon: {{#if flags.usesIconsaxPlus}}IconsaxPlusLinear.home{{else if flags.usesFlutterRemix}}FlutterRemix.home_line{{else if flags.usesHugeicons}}HugeIcons.strokeRoundedHome01{{else}}Icons.home_rounded{{/if}},
                 size: {{res 60 'sp' flags.usesScreenutil}},
                 color: colorScheme.primary,
-              ),
+                ),
               SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
               {{#if flags.isGetX}}
               Obx(() {
-                final user = session.user.value;
+                final user = session.user;
                 return Text(
                   user?.name ?? user?.email ?? ({{#if flags.supportsLocalization}}'home.welcome_home'.tr(){{else}}'Welcome Home!'{{/if}}),
                   textAlign: TextAlign.center,
@@ -110,12 +110,12 @@ class HomePage extends StatelessWidget {
                   color: colorScheme.onSurface,
                   fontSize: {{res 28 'sp' flags.usesScreenutil}},
                 ),
-              ),
+                ),
               {{/if}}
               SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
               {{#if flags.isGetX}}
               Obx(() {
-                final user = session.user.value;
+                final user = session.user;
                 return Text(
                   user != null && user.name != null ? user.email : ({{#if flags.supportsLocalization}}'home.home_subtitle'.tr(){{else}}'You have successfully completed the onboarding process.'{{/if}}),
                   textAlign: TextAlign.center,
@@ -145,12 +145,12 @@ class HomePage extends StatelessWidget {
                   color: colorScheme.onSurfaceVariant,
                   fontSize: {{res 14 'sp' flags.usesScreenutil}},
                 ),
-              ),
+                ),
               {{/if}}
             ],
           ),
-        ),
+          ),
       ),
     );
   }
-}
+  }

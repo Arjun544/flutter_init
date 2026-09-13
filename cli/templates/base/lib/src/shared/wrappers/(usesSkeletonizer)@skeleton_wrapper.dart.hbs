@@ -1,7 +1,7 @@
 import '../../imports/imports.dart';
 
 /// A wrapper widget that provides skeleton loading effects.
-/// 
+///
 /// Uses [Skeletonizer] if enabled.
 class SkeletonWrapper extends StatelessWidget {
   final Widget child;

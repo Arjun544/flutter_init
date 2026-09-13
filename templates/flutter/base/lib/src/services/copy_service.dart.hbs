@@ -8,9 +8,12 @@ class CopyService {
 
   /// Copy text to the system clipboard.
   FutureEither<void> copy(String text) async {
-    return runTask(() async {
-      await Clipboard.setData(ClipboardData(text: text));
-      AppLogger.info('Text copied to clipboard');
-    });
+    return runTask(
+      () async {
+        await Clipboard.setData(ClipboardData(text: text));
+      },
+      operation: 'copy.copy',
+      category: LogCategory.app,
+    );
   }
 }

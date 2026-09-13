@@ -2,7 +2,7 @@ import '../../imports/imports.dart';
 
 
 /// A multi-purpose image widget that handles network images, SVGs, and local assets.
-/// 
+///
 /// Automatically uses [CachedNetworkImage] if enabled for web images.
 /// Automatically uses [SvgPicture] if enabled for SVG files.
 class CommonImage extends StatelessWidget {
@@ -53,7 +53,8 @@ class CommonImage extends StatelessWidget {
         height: adjustedHeight,
         fit: fit,
         color: color,
-        errorBuilder: (context, error, stackTrace) => errorWidget ?? _buildDefaultErrorWidget(),
+        errorBuilder: (context, error, stackTrace) =>
+            errorWidget ?? _buildDefaultErrorWidget(),
       );
       {{/if}}
     } else if (imageUrl.endsWith('.svg')) {
@@ -63,7 +64,8 @@ class CommonImage extends StatelessWidget {
         width: adjustedWidth,
         height: adjustedHeight,
         fit: fit,
-        colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+        colorFilter:
+            color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
       );
       {{else}}
       image = const Icon(Icons.broken_image, color: Colors.grey);
@@ -75,7 +77,8 @@ class CommonImage extends StatelessWidget {
         height: adjustedHeight,
         fit: fit,
         color: color,
-        errorBuilder: (context, error, stackTrace) => errorWidget ?? _buildDefaultErrorWidget(),
+        errorBuilder: (context, error, stackTrace) =>
+            errorWidget ?? _buildDefaultErrorWidget(),
       );
     }
 
@@ -102,17 +105,17 @@ class CommonImage extends StatelessWidget {
         {{else if flags.usesIconsaxPlus}}
           const Icon(
             IconsaxPlusBold.image,
-            color: Colors.grey,
+        color: Colors.grey,
           )
         {{else if flags.usesFlutterRemix}}
           const Icon(
             FlutterRemix.image_line,
-            color: Colors.grey,
+        color: Colors.grey,
           )
         {{else}}
           const Icon(
-            Icons.error_outline,
-            color: Colors.grey,
+        Icons.error_outline,
+        color: Colors.grey,
           )
         {{/if}},
     );

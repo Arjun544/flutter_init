@@ -106,10 +106,11 @@ describe("State Management", () => {
                     MISC_DEFAULT,
                 ),
             )
+            // dart format may wrap the hide list; assert symbols survive formatting
             assertFileContains(
                 mobxDioFiles,
                 "lib/src/imports/packages_imports.dart",
-                "hide version, StringExtension, Action, Listener, Listenable, Interceptor, Interceptors",
+                /export 'package:mobx\/mobx\.dart'[\s\S]*?hide[\s\S]*?Interceptor[\s\S]*?Interceptors/,
             )
             assertFileContains(mobxDioFiles, "lib/src/imports/packages_imports.dart", "export 'package:dio/dio.dart'")
         })

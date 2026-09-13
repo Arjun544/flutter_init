@@ -4,7 +4,7 @@ env:
 
 
 # Pre-release gate.
-# Runs ALL valid combinations through both Layer 1 and Layer 2.
+# Runs ALL valid combinations through Layer 1 and Layer 2.
 # Automatic on push to main + manual workflow_dispatch.
 
 on:

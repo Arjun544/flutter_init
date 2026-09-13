@@ -277,22 +277,7 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
             removeFontFile,
             clearFontFiles,
         }),
-        [
-            config,
-            isHydrated,
-            next,
-            prev,
-            setStep,
-            step,
-            stepIndex,
-            updateConfig,
-            selectedItem,
-            setSelectedItem,
-            fontFiles,
-            addFontFile,
-            removeFontFile,
-            clearFontFiles,
-        ]
+        [config, step, stepIndex, isHydrated, selectedItem, updateConfig, setStep, next, prev, reset, fontFiles, addFontFile, removeFontFile, clearFontFiles]
     )
 
     return (

@@ -21,6 +21,7 @@ import path from "node:path"
 
 import { buildConfig } from "../utils/config-builder"
 import { PRIMARY_COMBINATIONS as ALL_COMBINATIONS, COMBO_LABEL as combinationLabel, type PrimaryCombo as Combination } from "../utils/matrix.config"
+import { deriveGeneratorCapabilities } from "../../shared/generator-contract"
 
 // ── Parse CLI args ──────────────────────────────────────────────
 
@@ -73,6 +74,8 @@ async function main() {
     const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "flutter-test-"))
     const projectDir = path.join(tmpDir, "test_app")
     await fs.mkdir(projectDir, { recursive: true })
+    const keepOutput = process.argv.includes("--keep-output")
+    let passed = false
 
     try {
         // Import and run generation
@@ -84,21 +87,29 @@ async function main() {
         console.log("\nRunning dart pub get...")
         const pubGetResult = runCommand("dart pub get", projectDir)
         if (!pubGetResult.success) {
-            console.error("✗ dart pub get FAILED")
-            console.error(pubGetResult.output)
-            process.exit(1)
+            throw new Error(`dart pub get FAILED\n${pubGetResult.output}`)
         }
         console.log("✓ dart pub get passed")
 
         // 2.5 dart run build_runner build (if needed)
-        const needsBuild = config.navigation === "auto_route" || config.stateManagement === "mobx"
+        const needsBuild = deriveGeneratorCapabilities({
+            stateManagement: config.stateManagement,
+            navigation: config.navigation,
+            backend: {
+                provider: config.backend.provider,
+                options: config.backend.provider === "none"
+                    ? undefined
+                    : config.backend.options,
+            },
+            localizationEnabled: config.localization.enabled,
+            usesDotenv: config.misc.usesDotenv,
+            usesHive: config.misc.usesHive,
+        }).requiresCodeGeneration
         if (needsBuild) {
             console.log("\nRunning build_runner...")
             const buildResult = runCommand("dart run build_runner build --delete-conflicting-outputs", projectDir)
             if (!buildResult.success) {
-                console.error("✗ build_runner FAILED")
-                console.error(buildResult.output)
-                process.exit(1)
+                throw new Error(`build_runner FAILED\n${buildResult.output}`)
             }
             console.log("✓ build_runner passed")
         }
@@ -107,20 +118,33 @@ async function main() {
         console.log("\nRunning dart analyze --fatal-infos...")
         const analyzeResult = runCommand("dart analyze --fatal-infos", projectDir)
         if (!analyzeResult.success) {
-            console.error("✗ dart analyze FAILED")
-            console.error(analyzeResult.output)
-            process.exit(1)
+            throw new Error(`dart analyze FAILED\n${analyzeResult.output}`)
         }
         console.log("✓ dart analyze passed")
 
+        console.log("\nRunning flutter test...")
+        const testResult = runCommand("flutter test", projectDir)
+        if (!testResult.success) {
+            if (testResult.output.includes("Building with plugins requires symlink support")) {
+                console.warn("⚠ flutter test skipped: Windows symlink support is disabled")
+            } else {
+                throw new Error(`flutter test FAILED\n${testResult.output}`)
+            }
+        } else {
+            console.log("✓ flutter test passed")
+        }
+        passed = true
         console.log(`\n✅ PASS: ${label}\n`)
     } catch (error) {
         console.error(`\n❌ Generation failed for ${label}:`)
         console.error(error)
-        process.exit(2)
+        process.exitCode = 2
     } finally {
-        // Cleanup
-        await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => { })
+        if (keepOutput || !passed) {
+            console.log(`\nKept generated project at: ${projectDir}`)
+        } else {
+            await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => { })
+        }
     }
 }
 

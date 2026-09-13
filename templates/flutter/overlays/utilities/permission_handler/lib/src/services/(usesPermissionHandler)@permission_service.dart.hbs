@@ -8,21 +8,42 @@ class PermissionService {
 
   /// Check the status of a specific permission.
   FutureEither<PermissionStatus> checkStatus(Permission permission) async {
-    return runTask(() => permission.status);
+    return runTask(
+      () => permission.status,
+      operation: 'permission.checkStatus',
+      category: LogCategory.app,
+      context: {'permission': permission.toString()},
+    );
   }
 
   /// Request a specific permission.
   FutureEither<PermissionStatus> request(Permission permission) async {
-    return runTask(() => permission.request());
+    return runTask(
+      () => permission.request(),
+      operation: 'permission.request',
+      category: LogCategory.app,
+      context: {'permission': permission.toString()},
+    );
   }
 
   /// Request multiple permissions at once.
-  FutureEither<Map<Permission, PermissionStatus>> requestMultiple(List<Permission> permissions) async {
-    return runTask(() => permissions.request());
+  FutureEither<Map<Permission, PermissionStatus>> requestMultiple(
+    List<Permission> permissions,
+  ) async {
+    return runTask(
+      () => permissions.request(),
+      operation: 'permission.requestMultiple',
+      category: LogCategory.app,
+      context: {'count': permissions.length},
+    );
   }
 
   /// Open the app settings.
   FutureEither<bool> openSettings() async {
-    return runTask(() => openAppSettings());
+    return runTask(
+      () => openAppSettings(),
+      operation: 'permission.openSettings',
+      category: LogCategory.app,
+    );
   }
 }

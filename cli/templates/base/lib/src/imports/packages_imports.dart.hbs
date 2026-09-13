@@ -38,7 +38,11 @@ export 'package:flutter_mobx/flutter_mobx.dart' hide version;
 {{#if (eq flags.routerPackage "go_router")}}
 export 'package:{{flags.routerPackage}}/{{flags.routerPackage}}.dart';
 {{else if (eq flags.routerPackage "auto_route")}}
-export 'package:auto_route/auto_route.dart' hide kCupertinoModalBarrierColor, CupertinoPageTransition, CupertinoFullscreenDialogTransition;
+export 'package:auto_route/auto_route.dart'
+    hide
+        kCupertinoModalBarrierColor,
+        CupertinoPageTransition,
+        CupertinoFullscreenDialogTransition;
 {{/if}}
 {{#if flags.usesDio}}
 export 'package:dio/dio.dart';
@@ -65,8 +69,11 @@ export 'package:hugeicons/hugeicons.dart';
 export 'package:skeletonizer/skeletonizer.dart';
 {{/if}}
 export 'package:flutter_animate/flutter_animate.dart' hide ShimmerEffect;
-export 'package:smooth_page_indicator/smooth_page_indicator.dart' hide ScaleEffect, SlideEffect, SwapEffect;
+export 'package:smooth_page_indicator/smooth_page_indicator.dart'
+    hide ScaleEffect, SlideEffect, SwapEffect;
+{{#if flags.usesDotenv}}
 export 'package:flutter_dotenv/flutter_dotenv.dart';
+{{/if}}
 {{#if flags.usesHive}}
 export 'package:hive_ce_flutter/hive_ce_flutter.dart';
 {{/if}}

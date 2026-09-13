@@ -18,11 +18,12 @@ import { generateFlutterScaffold } from "@/app/lib/generator"
 /**
  * Generate a Flutter scaffold and return all files as a Map.
  * Used by Layer 1 tests for in-memory assertions.
+ * Skips `dart format` — Layer 1 checks tokens/structure, not formatting.
  */
 export async function generateToMap(
     config: ScaffoldConfig
 ): Promise<Map<string, string>> {
-    const buffer = await generateFlutterScaffold(config)
+    const buffer = await generateFlutterScaffold(config, [], { skipFormat: true })
     const zip = await JSZip.loadAsync(buffer)
 
     const files = new Map<string, string>()

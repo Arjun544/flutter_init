@@ -10,6 +10,7 @@ import { COMBO_LABEL, type PrimaryCombo } from "../tests/utils/matrix.config"
 
 import { generatePrimaryCombinations } from "../tests/utils/combinations"
 import { MISC_DEFAULT } from "../tests/utils/misc-profiles"
+import { deriveGeneratorCapabilities } from "../shared/generator-contract"
 
 const MODE = process.argv.includes("--mode") ? process.argv[process.argv.indexOf("--mode") + 1] : "critical"
 const KEEP_OUTPUT = process.argv.includes("--keep-output")
@@ -36,8 +37,10 @@ if (COMBO) {
         combosToRun = [found]
     }
     console.log(`🎯 Targeting Combo: ${COMBO}`)
+} else if (MODE === "full") {
+    combosToRun = generatePrimaryCombinations()
 } else if (MODE !== "critical") {
-    console.error("Only critical mode is implemented.")
+    console.error("Supported modes are critical and full.")
     process.exit(1)
 }
 
@@ -71,18 +74,29 @@ for (const combo of combosToRun) {
             continue
         }
 
-        // Run build_runner if needed (MobX or AutoRoute)
-        const needsBuild = buildConfig(combo).navigation === "auto_route" || buildConfig(combo).stateManagement === "mobx";
-        if (needsBuild) {
-            console.log("  Running build_runner...");
-            const buildRunner = await $`cd ${targetDir} && dart run build_runner build --delete-conflicting-outputs`.nothrow().quiet();
+        const capabilities = deriveGeneratorCapabilities({
+            stateManagement: config.stateManagement,
+            navigation: config.navigation,
+            backend: {
+                provider: config.backend.provider,
+                options: config.backend.provider === "none"
+                    ? undefined
+                    : config.backend.options,
+            },
+            localizationEnabled: config.localization.enabled,
+            usesDotenv: config.misc.usesDotenv,
+            usesHive: config.misc.usesHive,
+        })
+        if (capabilities.requiresCodeGeneration) {
+            console.log("  Running build_runner...")
+            const buildRunner = await $`cd ${targetDir} && dart run build_runner build --delete-conflicting-outputs`.nothrow().quiet()
             if (buildRunner.exitCode !== 0) {
-                console.error("  ❌ FAILED: build_runner");
-                console.error(buildRunner.stdout.toString());
-                console.error(buildRunner.stderr.toString());
-                failedLogs.push(`FAIL: ${label} (build_runner)\n${buildRunner.stdout.toString()}\n${buildRunner.stderr.toString()}`);
-                failCount++;
-                continue;
+                console.error("  ❌ FAILED: build_runner")
+                console.error(buildRunner.stdout.toString())
+                console.error(buildRunner.stderr.toString())
+                failedLogs.push(`FAIL: ${label} (build_runner)\n${buildRunner.stdout.toString()}\n${buildRunner.stderr.toString()}`)
+                failCount++
+                continue
             }
         }
 
@@ -96,6 +110,22 @@ for (const combo of combosToRun) {
             failedLogs.push(`FAIL: ${label} (dart analyze)\n${analyze.stdout.toString()}\n${analyze.stderr.toString()}`)
             failCount++
         } else {
+            const flutterTest = await $`cd ${targetDir} && flutter test`.nothrow().quiet()
+            const flutterTestOut = `${flutterTest.stdout.toString()}\n${flutterTest.stderr.toString()}`
+            const skipFlutterTest =
+                flutterTestOut.includes("Building with plugins requires symlink support") ||
+                flutterTestOut.includes("PROGRAMFILES(X86)")
+            if (flutterTest.exitCode !== 0 && !skipFlutterTest) {
+                console.error("  ❌ FAILED: flutter test")
+                console.error(flutterTest.stdout.toString())
+                console.error(flutterTest.stderr.toString())
+                failedLogs.push(`FAIL: ${label} (flutter test)\n${flutterTestOut}`)
+                failCount++
+                continue
+            }
+            if (flutterTest.exitCode !== 0 && skipFlutterTest) {
+                console.log("  ⚠️  flutter test skipped (Windows environment limitation)")
+            }
             console.log("  ✅ PASSED")
             passCount++
             if (!KEEP_OUTPUT) {

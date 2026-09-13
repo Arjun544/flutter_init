@@ -21,18 +21,34 @@ describe("Misc Flags", () => {
     let defaultPubspec: string
     let noDotenvFiles: Map<string, string>
     let noDotenvPubspec: string
+    let noSharedPrefsPubspec: string
 
     beforeAll(async () => {
-        [fullFiles, minimalFiles, defaultFiles, noDotenvFiles] = await Promise.all([
+        const noSharedPrefsConfig = buildConfig(base, MISC_BARE_MINIMUM)
+        noSharedPrefsConfig.localization = { enabled: false, supportedLocales: ["en"] }
+
+        const [
+            full,
+            minimal,
+            defaults,
+            noDotenv,
+            noSharedPrefs,
+        ] = await Promise.all([
             generateToMap(buildConfig(base, MISC_ALL_ON)),
             generateToMap(buildConfig(base, MISC_BARE_MINIMUM)),
             generateToMap(buildConfig(base, MISC_DEFAULT)),
             generateToMap(buildConfig(base, { ...MISC_DEFAULT, usesDotenv: false })),
+            generateToMap(noSharedPrefsConfig),
         ])
+        fullFiles = full
+        minimalFiles = minimal
+        defaultFiles = defaults
+        noDotenvFiles = noDotenv
         fullPubspec = getPubspecContent(fullFiles)
         minimalPubspec = getPubspecContent(minimalFiles)
         defaultPubspec = getPubspecContent(defaultFiles)
         noDotenvPubspec = getPubspecContent(noDotenvFiles)
+        noSharedPrefsPubspec = getPubspecContent(noSharedPrefs)
     })
 
     // ── ScreenUtil ──────────────────────────────────────────────
@@ -131,8 +147,13 @@ describe("Misc Flags", () => {
             assertDependencyPresent(defaultPubspec, "shared_preferences")
         })
 
-        it("when disabled: no shared_preferences", () => {
-            assertDependencyAbsent(minimalPubspec, "shared_preferences")
+        // Localization alone also pulls in shared_preferences (easy_localization).
+        it("when disabled but localization on: shared_preferences still present", () => {
+            assertDependencyPresent(minimalPubspec, "shared_preferences")
+        })
+
+        it("when disabled and localization off: no shared_preferences", () => {
+            assertDependencyAbsent(noSharedPrefsPubspec, "shared_preferences")
         })
     })
 

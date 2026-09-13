@@ -21,12 +21,14 @@ import {
   NAVIGATION_LABELS,
   STATE_LABELS,
   THEME_LABELS,
+  THEME_PRESET_LABELS,
   type Architecture,
   type Backend,
   type FlutterInitConfig,
   type Navigation,
   type StateManager,
   type ThemeMode,
+  type ThemePreset,
 } from './config'
 import { printStep } from './utils/logger'
 
@@ -154,6 +156,11 @@ export async function runPrompts(): Promise<FlutterInitConfig> {
         label: 'GetX',
         hint: 'All-in-one: state, routing, DI. Opinionated but fast.',
       },
+      {
+        value: 'none',
+        label: 'None (setState)',
+        hint: 'Vanilla Flutter state with local setState.',
+      },
     ],
   })
   checkCancel(stateManager)
@@ -195,6 +202,51 @@ export async function runPrompts(): Promise<FlutterInitConfig> {
     ],
   })
   checkCancel(backend)
+  const backendOptionKeys = backend === 'firebase'
+    ? await groupMultiselect<string>({
+        message: 'Select Firebase capabilities',
+        options: {
+          Authentication: [
+            { value: 'authEmail', label: 'Email/password auth' },
+            { value: 'authGoogle', label: 'Google auth' },
+            { value: 'authPhone', label: 'Phone auth' },
+          ],
+          Data: [
+            { value: 'firestore', label: 'Cloud Firestore' },
+            { value: 'realtimeDb', label: 'Realtime Database' },
+            { value: 'storage', label: 'Cloud Storage' },
+            { value: 'analytics', label: 'Analytics' },
+            { value: 'crashlytics', label: 'Crashlytics' },
+          ],
+        },
+      })
+    : backend === 'supabase'
+      ? await groupMultiselect<string>({
+          message: 'Select Supabase capabilities',
+          options: {
+            Services: [
+              { value: 'auth', label: 'Auth' },
+              { value: 'database', label: 'Database' },
+              { value: 'edgeFunctions', label: 'Edge Functions' },
+            ],
+          },
+        })
+      : backend === 'appwrite'
+        ? await groupMultiselect<string>({
+            message: 'Select Appwrite capabilities',
+            options: {
+              Services: [
+                { value: 'auth', label: 'Auth' },
+                { value: 'database', label: 'Database' },
+                { value: 'storage', label: 'Storage' },
+              ],
+            },
+          })
+        : []
+  checkCancel(backendOptionKeys)
+  const selectedBackendOptions = Object.fromEntries(
+    (backendOptionKeys as string[]).map((key) => [key, true]),
+  )
 
   // ── Section: Navigation ────────────────────────────────────────────────────
   printStep(
@@ -216,6 +268,11 @@ export async function runPrompts(): Promise<FlutterInitConfig> {
         hint: 'Code-generated typed routes. Zero string-based navigation.',
       },
       {
+        value: 'getx',
+        label: 'GetX Routing',
+        hint: 'Context-free routing through GetX.',
+      },
+      {
         value: 'none',
         label: 'Navigator 2.0',
         hint: 'Vanilla Flutter navigation. No extra dependency.',
@@ -227,8 +284,18 @@ export async function runPrompts(): Promise<FlutterInitConfig> {
   // ── Section: Theme ────────────────────────────────────────────────────────
   printStep(
     'Theme & Appearance',
-    'Material 3 color scheme and theme mode for your app.',
+    'Choose the widget design system and theme mode for your app.',
   )
+
+  const themePreset = await select<ThemePreset>({
+    message: 'Theme preset',
+    options: [
+      { value: 'material3', label: 'Material 3', hint: 'Modern Material design components.' },
+      { value: 'cupertino', label: 'Cupertino', hint: 'iOS-style application shell.' },
+      { value: 'custom', label: 'Custom Material', hint: 'Material shell without Material 3 defaults.' },
+    ],
+  })
+  checkCancel(themePreset)
 
   const themeMode = await select<ThemeMode>({
     message: 'Theme mode',
@@ -454,6 +521,15 @@ export async function runPrompts(): Promise<FlutterInitConfig> {
   checkCancel(selectedMiscResult)
   const selectedMisc = selectedMiscResult as string[]
 
+  if (
+    backend === 'custom'
+    && !selectedMisc.includes('usesDio')
+    && !selectedMisc.includes('usesHttp')
+  ) {
+    cancel('Custom backend requires either Dio or the HTTP client. Select one and try again.')
+    process.exit(1)
+  }
+
   // ── Derive native feature flags ────────────────────────────────────────────
   const usesCamera = selectedMisc.includes('usesCamera')
   const usesImagePicker = selectedMisc.includes('usesImagePicker')
@@ -463,7 +539,7 @@ export async function runPrompts(): Promise<FlutterInitConfig> {
 
   // Auto-enable permission_handler if any native feature requiring runtime permissions is selected
   const needsPermissionHandler =
-    usesCamera || usesImagePicker || usesFilePicker || usesGeolocator || usesNotifications
+    usesCamera || usesImagePicker || usesGeolocator
   const usesPermissionHandler =
     selectedMisc.includes('usesPermissionHandler') || needsPermissionHandler
 
@@ -522,7 +598,7 @@ export async function runPrompts(): Promise<FlutterInitConfig> {
       `${pc.bold('Backend')}       ${BACKEND_LABELS[backend as Backend]}`,
       `${pc.bold('Navigation')}    ${NAVIGATION_LABELS[navigation as Navigation]}`,
       ``,
-      `${pc.bold('Theme')}         ${THEME_LABELS[themeMode as ThemeMode]}`,
+      `${pc.bold('Theme')}         ${THEME_PRESET_LABELS[themePreset as ThemePreset]} (${THEME_LABELS[themeMode as ThemeMode]})`,
       `${pc.bold('Color')}         ${primaryColor as string || '#027DFD'}`,
       `${pc.bold('Utilities')}     ${allSelected.length > 0 ? allSelected.join(', ') : 'none'}`,
       `${pc.bold('Native')}        ${nativeFeatures || 'None'}`,
@@ -550,8 +626,10 @@ export async function runPrompts(): Promise<FlutterInitConfig> {
     architecture: architecture as Architecture,
     stateManager: stateManager as StateManager,
     backend: backend as Backend,
+    backendOptions: selectedBackendOptions,
     navigation: navigation as Navigation,
     themeMode: themeMode as ThemeMode,
+    themePreset: themePreset as ThemePreset,
     primaryColor: (primaryColor as string) || '#027DFD',
     outputDir,
 

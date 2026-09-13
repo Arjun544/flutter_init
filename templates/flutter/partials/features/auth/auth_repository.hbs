@@ -25,7 +25,7 @@ abstract class AuthRepository {
 
   /// Sign out the current user
   FutureEither<void> logout();
-  
+
   /// Check if the user is currently authenticated natively
   FutureEither<AppUser?> checkAuthState();
 }

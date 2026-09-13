@@ -342,11 +342,11 @@ export function PackageInfoPanel() {
         <Dialog open={open} onOpenChange={(isOpen) => {
             if (!isOpen) setSelectedItem(null)
         }}>
-            <DialogContent className="max-w-md p-0 border-border/40 bg-background shadow-2xl sm:rounded-[32px] overflow-hidden">
+            <DialogContent className="max-w-md p-0 bg-background smooth-shadow-ring-2xl sm:rounded-[32px] overflow-hidden">
                 <div className="relative p-6 md:p-8 flex flex-col gap-6">
                     <DialogHeader className="pb-0">
                         <div className="flex items-start gap-5">
-                            <div className="relative flex shrink-0 items-center justify-center w-16 h-16 rounded-2xl bg-linear-to-tr from-primary/20 to-primary/5 border border-primary/20 shadow-inner group">
+                            <div className="relative flex shrink-0 items-center justify-center w-16 h-16 rounded-2xl bg-linear-to-tr from-primary/20 to-primary/5 smooth-shadow-ring-sm smooth-ring-primary/20 group">
                                 <div className="absolute inset-0 rounded-2xl bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-[20px] pointer-events-none" />
                                 {info.packageName ? (
                                     <HugeiconsIcon icon={PackageIcon} size={30} className="text-primary z-10 drop-shadow-md" />
@@ -360,7 +360,7 @@ export function PackageInfoPanel() {
                                 </DialogTitle>
                                 {info.packageName && (
                                     <div className="flex items-center">
-                                        <span className="px-2.5 py-0.5 rounded-md bg-muted/60 border border-border/40 text-xs font-mono font-semibold text-muted-foreground shadow-xs">
+                                        <span className="px-2.5 py-0.5 rounded-md bg-muted/60 text-xs font-mono font-semibold text-muted-foreground smooth-shadow-ring-xs">
                                             {info.packageName}
                                         </span>
                                     </div>
@@ -388,40 +388,41 @@ export function PackageInfoPanel() {
                             <div className="grid grid-cols-2 gap-3">
                                 {isLoading ? (
                                     <>
-                                        <Skeleton className="h-[68px] w-full rounded-2xl" />
-                                        <Skeleton className="h-[68px] w-full rounded-2xl" />
-                                        <Skeleton className="h-[68px] w-full rounded-2xl" />
-                                        <Skeleton className="h-[68px] w-full rounded-2xl" />
-                                        <Skeleton className="h-[68px] w-full rounded-2xl col-span-2" />
+                                        <Skeleton className="h-17 w-full rounded-2xl" />
+                                        <Skeleton className="h-17 w-full rounded-2xl" />
+                                        <Skeleton className="h-17 w-full rounded-2xl" />
+                                        <Skeleton className="h-17 w-full rounded-2xl" />
+                                        <Skeleton className="h-17 w-full rounded-2xl" />
+                                        <Skeleton className="h-17 w-full rounded-2xl col-span-2" />
                                     </>
                                 ) : (
                                     <>
                                         {info.version && (
-                                            <div className="flex flex-col gap-1.5 p-3.5 rounded-2xl bg-card border border-border/50 shadow-sm transition-colors group">
+                                            <div className="flex flex-col gap-1.5 p-3.5 rounded-2xl bg-card smooth-shadow-ring-sm transition-colors group">
                                                 <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase group-hover:text-primary transition-colors">Version</span>
                                                 <span className="font-mono text-sm font-semibold text-foreground/90">{info.version}</span>
                                             </div>
                                         )}
                                         {info.points && (
-                                            <div className="flex flex-col gap-1.5 p-3.5 rounded-2xl bg-card border border-border/50 shadow-sm transition-colors group">
+                                            <div className="flex flex-col gap-1.5 p-3.5 rounded-2xl bg-card smooth-shadow-ring-sm transition-colors group">
                                                 <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase transition-colors">Pub points</span>
                                                 <span className="font-mono text-sm font-semibold text-foreground/90">{info.points}/160</span>
                                             </div>
                                         )}
                                         {info.likes && (
-                                            <div className="flex flex-col gap-1.5 p-3.5 rounded-2xl bg-card border border-border/50 shadow-sm transition-colors group">
+                                            <div className="flex flex-col gap-1.5 p-3.5 rounded-2xl bg-card smooth-shadow-ring-sm transition-colors group">
                                                 <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase transition-colors">Likes</span>
                                                 <span className="text-sm font-bold text-foreground/90">{info.likes.toLocaleString()}</span>
                                             </div>
                                         )}
                                         {info.downloads && (
-                                            <div className="flex flex-col gap-1.5 p-3.5 rounded-2xl bg-card border border-border/50 shadow-sm transition-colors group">
+                                            <div className="flex flex-col gap-1.5 p-3.5 rounded-2xl bg-card smooth-shadow-ring-sm transition-colors group">
                                                 <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase transition-colors">Downloads</span>
                                                 <span className="text-sm font-bold text-foreground/90">{info.downloads.toLocaleString()}</span>
                                             </div>
                                         )}
                                         {info.publisher && (
-                                            <div className="flex flex-col gap-1.5 p-3.5 rounded-2xl bg-card border border-border/50 shadow-sm transition-colors col-span-2 group">
+                                            <div className="flex flex-col gap-1.5 p-3.5 rounded-2xl bg-card smooth-shadow-ring-sm transition-colors col-span-2 group">
                                                 <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase transition-colors">Publisher</span>
                                                 <span className="text-sm font-semibold text-primary/90">
                                                     {info.publisher}
@@ -439,7 +440,7 @@ export function PackageInfoPanel() {
                                     href={info.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="group relative flex items-center justify-center gap-2.5 w-full py-3.5 px-6 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold tracking-wide transition-all hover:shadow-[0_0_30px_-5px] hover:shadow-primary/40 active:scale-[0.98] overflow-hidden"
+                                    className="group relative flex items-center justify-center gap-2.5 w-full py-3.5 px-6 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold tracking-wide transition-all hover:smooth-shadow-lg hover:shadow-primary/40 active:scale-[0.98] overflow-hidden"
                                 >
                                     <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full duration-1000 transition-transform ease-in-out" />
                                     <span className="relative z-10">View on pub.dev</span>
