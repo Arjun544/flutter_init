@@ -25,6 +25,9 @@ const FIXTURE_CONFIG: FlutterInitConfig = {
   themeMode: 'both',
   primaryColor: '#027DFD',
   outputDir: path.join(os.tmpdir(), 'flutterinit_test_output'),
+  platformStyle: 'adaptive',
+  usesShadcn: false,
+  defaultKit: 'app',
 
   // Icons
   usesIconsaxPlus: true,

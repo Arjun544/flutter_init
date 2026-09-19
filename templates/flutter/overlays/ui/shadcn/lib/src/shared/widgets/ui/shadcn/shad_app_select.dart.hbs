@@ -1,0 +1,81 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// A selectable option for [ShadAppSelect], mirroring [AppDropdownItem].
+class ShadAppSelectItem<T> {
+  const ShadAppSelectItem({
+    required this.value,
+    required this.label,
+  });
+
+  final T value;
+  final String label;
+}
+
+/// Thin [ShadSelect] adapter mirroring [AppDropdown].
+///
+/// Usage:
+/// ```dart
+/// ShadAppSelect<String>(
+///   label: 'Country',
+///   value: country,
+///   items: const [
+///     ShadAppSelectItem(value: 'us', label: 'United States'),
+///     ShadAppSelectItem(value: 'uk', label: 'United Kingdom'),
+///   ],
+///   onChanged: (v) => setState(() => country = v),
+/// )
+/// ```
+class ShadAppSelect<T> extends StatelessWidget {
+  const ShadAppSelect({
+    super.key,
+    required this.items,
+    this.value,
+    this.onChanged,
+    this.label,
+    this.hint,
+    this.enabled = true,
+  });
+
+  final List<ShadAppSelectItem<T>> items;
+  final T? value;
+  final ValueChanged<T?>? onChanged;
+  final String? label;
+  final String? hint;
+  final bool enabled;
+
+  String _labelFor(T v) {
+    return items
+        .firstWhere(
+          (i) => i.value == v,
+          orElse: () => ShadAppSelectItem(value: v, label: v.toString()),
+        )
+        .label;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final select = ShadSelect<T>(
+      initialValue: value,
+      enabled: enabled,
+      onChanged: onChanged,
+      placeholder: Text(hint ?? 'Select'),
+      options: items
+          .map((i) => ShadOption(value: i.value, child: Text(i.label)))
+          .toList(),
+      selectedOptionBuilder: (context, selected) => Text(_labelFor(selected)),
+    );
+
+    if (label == null) return select;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(label!, style: ShadTheme.of(context).textTheme.small),
+        const SizedBox(height: 6),
+        select,
+      ],
+    );
+  }
+}

@@ -1,0 +1,36 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadBadge] adapter mirroring [AppBadge].
+///
+/// Usage:
+/// ```dart
+/// ShadAppBadge(label: 'New', variant: AppVariant.primary)
+/// ```
+class ShadAppBadge extends StatelessWidget {
+  const ShadAppBadge({
+    super.key,
+    required this.label,
+    this.variant = AppVariant.primary,
+  });
+
+  final String label;
+  final AppVariant variant;
+
+  @override
+  Widget build(BuildContext context) {
+    final child = Text(label);
+
+    return switch (variant) {
+      AppVariant.secondary ||
+      AppVariant.info =>
+        ShadBadge.secondary(child: child),
+      AppVariant.outline || AppVariant.ghost => ShadBadge.outline(child: child),
+      AppVariant.danger => ShadBadge.destructive(child: child),
+      AppVariant.primary ||
+      AppVariant.success ||
+      AppVariant.warning =>
+        ShadBadge(child: child),
+    };
+  }
+}

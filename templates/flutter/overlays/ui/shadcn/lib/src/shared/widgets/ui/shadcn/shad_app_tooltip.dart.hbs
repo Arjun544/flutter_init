@@ -1,0 +1,30 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadTooltip] adapter mirroring [AppTooltip].
+///
+/// Usage:
+/// ```dart
+/// ShadAppTooltip(
+///   message: 'Add to library',
+///   child: ShadIconButton(icon: Icon(Icons.add), onPressed: () {}),
+/// )
+/// ```
+class ShadAppTooltip extends StatelessWidget {
+  const ShadAppTooltip({
+    super.key,
+    required this.message,
+    required this.child,
+  });
+
+  final String message;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadTooltip(
+      builder: (context) => Text(message),
+      child: child,
+    );
+  }
+}

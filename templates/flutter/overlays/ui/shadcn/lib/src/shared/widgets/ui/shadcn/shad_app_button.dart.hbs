@@ -1,0 +1,136 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadButton] adapter mirroring [AppButton] params.
+///
+/// Usage:
+/// ```dart
+/// ShadAppButton(
+///   label: 'Save',
+///   onPressed: _save,
+///   variant: ButtonVariant.primary,
+///   width: ButtonSize.large,
+///   isLoading: state.isLoading,
+/// )
+/// ```
+class ShadAppButton extends StatelessWidget {
+  const ShadAppButton({
+    super.key,
+    required this.label,
+    this.onPressed,
+    this.variant = ButtonVariant.primary,
+    this.color,
+    this.textColor,
+    this.height = ButtonSize.medium,
+    this.width,
+    this.size,
+    this.isLoading = false,
+    this.isFullWidth = false,
+    this.prefixIcon,
+    this.suffixIcon,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+  final ButtonVariant variant;
+  final Color? color;
+  final Color? textColor;
+  final ButtonSize height;
+  final ButtonSize? width;
+  /// Alias for [height] — kept for callers that use `size:`.
+  final ButtonSize? size;
+  final bool isLoading;
+  final bool isFullWidth;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
+
+  ButtonSize get _resolvedSize => size ?? height;
+
+  ShadButtonSize get _shadSize => switch (_resolvedSize) {
+        ButtonSize.small => ShadButtonSize.sm,
+        ButtonSize.medium => ShadButtonSize.regular,
+        ButtonSize.large => ShadButtonSize.lg,
+      };
+
+  double? get _fixedWidth {
+    if (isFullWidth) return double.infinity;
+    return switch (width) {
+      ButtonSize.small => 100,
+      ButtonSize.medium => 150,
+      ButtonSize.large => 200,
+      null => null,
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onPressed != null && !isLoading;
+    final leading = isLoading
+        ? SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: textColor ??
+                  ShadTheme.of(context).colorScheme.primaryForeground,
+            ),
+          )
+        : prefixIcon;
+
+    final child = Text(
+      label,
+      style: textColor != null ? TextStyle(color: textColor) : null,
+    );
+
+    final button = switch (variant) {
+      ButtonVariant.secondary => ShadButton.secondary(
+          onPressed: enabled ? onPressed : null,
+          enabled: enabled,
+          size: _shadSize,
+          width: _fixedWidth,
+          leading: leading,
+          trailing: isLoading ? null : suffixIcon,
+          child: child,
+        ),
+      ButtonVariant.outline => ShadButton.outline(
+          onPressed: enabled ? onPressed : null,
+          enabled: enabled,
+          size: _shadSize,
+          width: _fixedWidth,
+          leading: leading,
+          trailing: isLoading ? null : suffixIcon,
+          child: child,
+        ),
+      ButtonVariant.ghost => ShadButton.ghost(
+          onPressed: enabled ? onPressed : null,
+          enabled: enabled,
+          size: _shadSize,
+          width: _fixedWidth,
+          leading: leading,
+          trailing: isLoading ? null : suffixIcon,
+          child: child,
+        ),
+      ButtonVariant.danger => ShadButton.destructive(
+          onPressed: enabled ? onPressed : null,
+          enabled: enabled,
+          size: _shadSize,
+          width: _fixedWidth,
+          leading: leading,
+          trailing: isLoading ? null : suffixIcon,
+          child: child,
+        ),
+      ButtonVariant.primary || ButtonVariant.success => ShadButton(
+          onPressed: enabled ? onPressed : null,
+          enabled: enabled,
+          size: _shadSize,
+          width: _fixedWidth,
+          backgroundColor: color,
+          leading: leading,
+          trailing: isLoading ? null : suffixIcon,
+          child: child,
+        ),
+    };
+
+    return button;
+  }
+}

@@ -1,0 +1,63 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadTextarea] adapter mirroring [AppTextArea].
+///
+/// Usage:
+/// ```dart
+/// ShadAppTextArea(
+///   label: 'Bio',
+///   hint: 'Tell us about yourself',
+///   controller: _bioController,
+/// )
+/// ```
+class ShadAppTextArea extends StatelessWidget {
+  const ShadAppTextArea({
+    super.key,
+    this.label,
+    this.hint,
+    this.controller,
+    this.onChanged,
+    this.focusNode,
+    this.enabled = true,
+    this.minLines = 3,
+    this.maxLines = 6,
+    this.initialValue,
+  });
+
+  final String? label;
+  final String? hint;
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+  final FocusNode? focusNode;
+  final bool enabled;
+  final int minLines;
+  final int maxLines;
+  final String? initialValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final area = ShadTextarea(
+      controller: controller,
+      initialValue: controller == null ? initialValue : null,
+      focusNode: focusNode,
+      enabled: enabled,
+      minHeight: (minLines * 24).toDouble(),
+      maxHeight: (maxLines * 24).toDouble(),
+      onChanged: onChanged,
+      placeholder: hint != null ? Text(hint!) : null,
+    );
+
+    if (label == null) return area;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(label!, style: ShadTheme.of(context).textTheme.small),
+        const SizedBox(height: 6),
+        area,
+      ],
+    );
+  }
+}

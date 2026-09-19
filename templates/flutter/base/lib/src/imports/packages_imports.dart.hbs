@@ -21,15 +21,10 @@ export 'package:provider/provider.dart' hide Dispose;
 {{#if flags.isBloc}}
 export 'package:flutter_bloc/flutter_bloc.dart';
 {{/if}}
-{{#if (or flags.isGetX (eq flags.routerPackage "getx"))}}
-// For Navigation
-export 'package:get/get_navigation/get_navigation.dart' hide GetContextExtensions;
-// For State Management (.obs, GetxController, Obx)
 {{#if flags.isGetX}}
-export 'package:get/get_state_manager/get_state_manager.dart';
-// For Dependency Management (Get.put, Get.find)
-export 'package:get/get_instance/get_instance.dart';
-{{/if}}
+export 'package:get/get.dart' hide StringExtension, ListExtension, BoolExtension, IntExtension, DoubleExtension, DurationExtension, NumExtension, ContextExtensionss;
+{{else if (eq flags.routerPackage "getx")}}
+export 'package:get/get_navigation/get_navigation.dart' hide GetContextExtensions;
 {{/if}}
 {{#if flags.isMobX}}
 export 'package:mobx/mobx.dart' hide version, StringExtension, Action, Listener, Listenable, Interceptor, Interceptors;
@@ -112,6 +107,10 @@ export 'package:device_info_plus/device_info_plus.dart';
 {{/if}}
 {{#if flags.usesAppVersionUpdate}}
 export 'package:app_version_update/app_version_update.dart';
+{{/if}}
+{{#if flags.usesShadcn}}
+export 'package:flutter_localizations/flutter_localizations.dart';
+export 'package:shadcn_ui/shadcn_ui.dart';
 {{/if}}
 
 

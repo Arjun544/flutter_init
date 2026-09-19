@@ -28,6 +28,11 @@ export interface FlutterInitConfig {
   primaryColor: string      // hex string e.g. #6750A4
   outputDir: string         // resolved absolute path (cwd/projectName)
 
+  // UI component library
+  platformStyle: 'adaptive' | 'material' | 'cupertino'
+  usesShadcn: boolean
+  defaultKit: 'app' | 'shadcn'
+
   // Icons selection
   usesIconsaxPlus: boolean
   usesFlutterRemix: boolean

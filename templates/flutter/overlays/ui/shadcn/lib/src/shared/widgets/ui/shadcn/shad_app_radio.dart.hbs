@@ -1,0 +1,50 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadRadio] adapter for a single radio option.
+///
+/// Prefer wrapping a group of radios in a [ShadRadioGroup] when selecting
+/// among many values. This adapter mirrors [AppRadio] for one option.
+///
+/// Usage:
+/// ```dart
+/// ShadAppRadio<String>(
+///   value: 'a',
+///   groupValue: selected,
+///   label: 'Option A',
+///   onChanged: (v) => setState(() => selected = v),
+/// )
+/// ```
+class ShadAppRadio<T> extends StatelessWidget {
+  const ShadAppRadio({
+    super.key,
+    required this.value,
+    required this.groupValue,
+    this.onChanged,
+    this.label,
+    this.enabled = true,
+  });
+
+  final T value;
+  final T? groupValue;
+  final ValueChanged<T?>? onChanged;
+  final String? label;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    // ShadRadio is typically used inside ShadRadioGroup; this thin wrapper
+    // uses a one-option group for AppRadio-style call sites.
+    return ShadRadioGroup<T>(
+      initialValue: groupValue,
+      enabled: enabled,
+      onChanged: onChanged,
+      items: [
+        ShadRadio<T>(
+          value: value,
+          label: label != null ? Text(label!) : null,
+        ),
+      ],
+    );
+  }
+}

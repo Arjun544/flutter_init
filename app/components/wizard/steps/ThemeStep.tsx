@@ -3,38 +3,149 @@
 import {
     CustomFontEntry,
     FONT_MAX_SIZE_BYTES,
+    PlatformStyle,
     SUPPORTED_FONT_EXTENSIONS,
     ThemePreset,
+    UiKit,
     deriveFontFamily,
-    themePresetOptions,
 } from "@/app/lib/config/schema"
+import {
+    AppearancePreview,
+    DefaultAppPreview,
+    PreviewChoiceCard,
+    PreviewChoiceGroup,
+    ThemePresetPreview,
+    UiKitPreview,
+} from "@/app/components/wizard/PreviewChoiceCard"
 import { StepGrid, StepPanel, StepSection } from "@/app/components/wizard/StepPanel"
 import { useWizard } from "@/app/lib/state/useWizardStore"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import { RadioGroup } from "@/components/ui/radio-group"
 import { Separator } from "@/components/ui/separator"
-import { Switch } from "@/components/ui/switch"
 import {
     AlertCircleIcon,
     Cancel01Icon,
     CloudUploadIcon,
     File01Icon,
-    InformationCircleIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
 const ACCEPTED_EXTS = SUPPORTED_FONT_EXTENSIONS.join(",")
+
+type AppearanceMode = "light" | "dark" | "auto"
+type ThemeChoice = "material" | "cupertino" | "shadcn"
+type DefaultApp = "material" | "cupertino" | "shad"
+
+const appearanceOptions: Array<{
+    value: AppearanceMode
+    label: string
+    description: string
+}> = [
+    {
+        value: "light",
+        label: "Light mode",
+        description: "Always use the light color scheme.",
+    },
+    {
+        value: "dark",
+        label: "Dark mode",
+        description: "Generate dark schemes and prefer dark.",
+    },
+    {
+        value: "auto",
+        label: "Auto",
+        description: "Follow the device light/dark preference.",
+    },
+]
+
+const themeChoiceOptions: Array<{
+    value: ThemeChoice
+    label: string
+    description: string
+}> = [
+    {
+        value: "material",
+        label: "Material",
+        description: "Material Design with MaterialApp.",
+    },
+    {
+        value: "cupertino",
+        label: "Cupertino",
+        description: "iOS-style widgets with CupertinoApp.",
+    },
+    {
+        value: "shadcn",
+        label: "shadcn_ui",
+        description: "shadcn/ui package plus ShadApp* wrappers.",
+    },
+]
+
+const defaultAppOptions: Array<{
+    value: DefaultApp
+    /** Unique radio id — must not collide with Theme choice values. */
+    radioValue: string
+    label: string
+    description: string
+}> = [
+    {
+        value: "material",
+        radioValue: "default_app_material",
+        label: "MaterialApp",
+        description: "Root app is MaterialApp; screens use App* widgets.",
+    },
+    {
+        value: "cupertino",
+        radioValue: "default_app_cupertino",
+        label: "CupertinoApp",
+        description: "Root app is CupertinoApp; screens use App* widgets.",
+    },
+    {
+        value: "shad",
+        radioValue: "default_app_shad",
+        label: "ShadApp",
+        description: "Root wraps with ShadApp; screens use ShadApp* widgets.",
+    },
+]
+
+function appearanceFromConfig(darkMode: { enabled: boolean; system: boolean }): AppearanceMode {
+    if (!darkMode.enabled) return "light"
+    if (darkMode.system) return "auto"
+    return "dark"
+}
+
+function darkModeFromAppearance(mode: AppearanceMode) {
+    switch (mode) {
+        case "light":
+            return { enabled: false, system: false }
+        case "dark":
+            return { enabled: true, system: false }
+        case "auto":
+            return { enabled: true, system: true }
+    }
+}
+
+function themeChoiceFromConfig(theme: {
+    preset: ThemePreset
+}, ui: { shadcn: boolean }): ThemeChoice {
+    if (ui.shadcn) return "shadcn"
+    if (theme.preset === "cupertino") return "cupertino"
+    return "material"
+}
+
+function defaultAppFromConfig(theme: {
+    preset: ThemePreset
+}, ui: { platformStyle: PlatformStyle; defaultKit: UiKit }): DefaultApp {
+    if (ui.defaultKit === "shadcn") return "shad"
+    if (theme.preset === "cupertino" || ui.platformStyle === "cupertino") {
+        return "cupertino"
+    }
+    return "material"
+}
 
 function getExt(name: string) {
     const i = name.lastIndexOf(".")
@@ -54,12 +165,84 @@ function formatBytes(bytes: number) {
 export function ThemeStep() {
     const { config, updateConfig, setSelectedItem, addFontFile, removeFontFile } =
         useWizard()
-    const { theme } = config
+    const { theme, ui } = config
     const customFonts = theme.customFonts ?? []
+    const accent = theme.primaryColor || "#6750A4"
+    const appearance = appearanceFromConfig(theme.darkMode)
+    const themeChoice = themeChoiceFromConfig(theme, ui)
+    const defaultApp = defaultAppFromConfig(theme, ui)
 
     const [dragOver, setDragOver] = React.useState(false)
     const [errors, setErrors] = React.useState<string[]>([])
     const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+    function applyThemeChoice(choice: ThemeChoice) {
+        if (choice === "material") {
+            updateConfig({
+                theme: { ...theme, preset: "material3" },
+                ui: {
+                    ...ui,
+                    platformStyle: "material",
+                    shadcn: false,
+                    defaultKit: "app",
+                },
+            })
+            return
+        }
+
+        if (choice === "cupertino") {
+            updateConfig({
+                theme: { ...theme, preset: "cupertino" },
+                ui: {
+                    ...ui,
+                    platformStyle: "cupertino",
+                    shadcn: false,
+                    defaultKit: "app",
+                },
+            })
+            return
+        }
+
+        applyDefaultApp(defaultApp === "shad" ? "shad" : defaultApp)
+    }
+
+    function applyDefaultApp(app: DefaultApp) {
+        if (app === "cupertino") {
+            updateConfig({
+                theme: { ...theme, preset: "cupertino" },
+                ui: {
+                    ...ui,
+                    platformStyle: "cupertino",
+                    shadcn: true,
+                    defaultKit: "app",
+                },
+            })
+            return
+        }
+
+        if (app === "shad") {
+            updateConfig({
+                theme: { ...theme, preset: "material3" },
+                ui: {
+                    ...ui,
+                    platformStyle: "material",
+                    shadcn: true,
+                    defaultKit: "shadcn",
+                },
+            })
+            return
+        }
+
+        updateConfig({
+            theme: { ...theme, preset: "material3" },
+            ui: {
+                ...ui,
+                platformStyle: "material",
+                shadcn: true,
+                defaultKit: "app",
+            },
+        })
+    }
 
     function processFiles(files: FileList | File[]) {
         const arr = Array.from(files)
@@ -120,94 +303,54 @@ export function ThemeStep() {
     return (
         <StepPanel
             title="UI & theme"
-            description="Set the design system, primary color, dark mode behavior, and optional custom fonts."
+            description="Customize appearance, primary color, design system, and custom fonts."
         >
-            <StepSection title="Appearance" description="Core look-and-feel for the generated app.">
-                <FieldGroup className="w-full">
-                    <div className="grid w-full gap-6 md:grid-cols-2">
-                        <Field>
-                            <FieldLabel>Theme</FieldLabel>
-                            <Select
-                                value={theme.preset}
-                                onValueChange={(value) =>
-                                    updateConfig({
-                                        theme: { ...theme, preset: value as ThemePreset },
-                                    })
-                                }
+            <StepSection
+                title="Appearance"
+                description="Customize your theme for a tailored experience."
+            >
+                <RadioGroup
+                    value={appearance}
+                    onValueChange={(value) =>
+                        updateConfig({
+                            theme: {
+                                ...theme,
+                                darkMode: darkModeFromAppearance(value as AppearanceMode),
+                            },
+                        })
+                    }
+                    className="w-full"
+                >
+                    <PreviewChoiceGroup value={appearance}>
+                        {appearanceOptions.map((option) => (
+                            <PreviewChoiceCard
+                                key={option.value}
+                                value={option.value}
+                                label={option.label}
+                                selected={appearance === option.value}
+                                onInfo={() => setSelectedItem(`appearance_${option.value}`)}
                             >
-                                <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Select theme" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {themePresetOptions.map((option) => (
-                                        <SelectItem key={option.value} value={option.value}>
-                                            <div className="flex w-full items-center justify-between gap-3 pr-4">
-                                                <div className="flex flex-col py-0.5 text-left">
-                                                    <span className="font-medium">{option.label}</span>
-                                                    {theme.preset !== option.value ? (
-                                                        <span className="line-clamp-1 text-[10px] font-normal text-muted-foreground">
-                                                            {option.description}
-                                                        </span>
-                                                    ) : null}
-                                                </div>
-                                                {theme.preset !== option.value ? (
-                                                    <button
-                                                        type="button"
-                                                        onPointerDown={(e) => {
-                                                            e.preventDefault()
-                                                            e.stopPropagation()
-                                                            setSelectedItem(`theme_${option.value}`)
-                                                        }}
-                                                        onClick={(e) => {
-                                                            e.preventDefault()
-                                                            e.stopPropagation()
-                                                            setSelectedItem(`theme_${option.value}`)
-                                                        }}
-                                                        className="z-10 cursor-pointer rounded-md p-1 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
-                                                        title="View details"
-                                                    >
-                                                        <HugeiconsIcon
-                                                            icon={InformationCircleIcon}
-                                                            size={16}
-                                                        />
-                                                    </button>
-                                                ) : null}
-                                            </div>
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </Field>
+                                <AppearancePreview mode={option.value} />
+                            </PreviewChoiceCard>
+                        ))}
+                    </PreviewChoiceGroup>
+                </RadioGroup>
+            </StepSection>
 
-                        <Field>
-                            <FieldLabel htmlFor="primaryColor">Primary color</FieldLabel>
-                            <div className="flex items-center gap-3">
-                                <div className="relative flex-1">
-                                    <Input
-                                        id="primaryColor"
-                                        value={theme.primaryColor ?? ""}
-                                        onChange={(e) =>
-                                            updateConfig({
-                                                theme: {
-                                                    ...theme,
-                                                    primaryColor: e.target.value,
-                                                },
-                                            })
-                                        }
-                                        placeholder="#6750A4"
-                                        className="pl-10 font-mono"
-                                    />
-                                    <div
-                                        className="absolute top-1/2 left-3 size-4 -translate-y-1/2 rounded-full border border-border"
-                                        style={{
-                                            backgroundColor: theme.primaryColor ?? "#6750A4",
-                                        }}
-                                    />
-                                </div>
+            <Separator />
+
+            <StepSection
+                title="Primary color"
+                description="Seed color for the generated light and dark schemes."
+            >
+                <FieldGroup className="w-full">
+                    <Field className="max-w-sm">
+                        <FieldLabel htmlFor="primaryColor">Primary color</FieldLabel>
+                        <div className="flex items-center gap-3">
+                            <div className="relative flex-1">
                                 <Input
-                                    type="color"
-                                    className="h-10 w-14 cursor-pointer p-1"
-                                    value={theme.primaryColor ?? "#6750A4"}
+                                    id="primaryColor"
+                                    value={theme.primaryColor ?? ""}
                                     onChange={(e) =>
                                         updateConfig({
                                             theme: {
@@ -216,63 +359,110 @@ export function ThemeStep() {
                                             },
                                         })
                                     }
-                                    aria-label="Pick primary color"
+                                    placeholder="#6750A4"
+                                    className="pl-10 font-mono"
+                                />
+                                <div
+                                    className="absolute top-1/2 left-3 size-4 -translate-y-1/2 rounded-full border border-border"
+                                    style={{ backgroundColor: accent }}
                                 />
                             </div>
-                        </Field>
-                    </div>
+                            <Input
+                                type="color"
+                                className="h-10 w-14 cursor-pointer p-1"
+                                value={accent}
+                                onChange={(e) =>
+                                    updateConfig({
+                                        theme: {
+                                            ...theme,
+                                            primaryColor: e.target.value,
+                                        },
+                                    })
+                                }
+                                aria-label="Pick primary color"
+                            />
+                        </div>
+                    </Field>
                 </FieldGroup>
             </StepSection>
 
             <Separator />
 
-            <StepSection title="Dark mode" description="Enable dark theme support and system sync.">
-                <div className="grid w-full gap-3 sm:grid-cols-2">
-                    <label className="flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-lg border border-border/50 px-3.5 py-3 transition-colors hover:bg-muted/40">
-                        <div className="flex flex-col gap-0.5">
-                            <span className="text-sm font-medium text-foreground">Enable dark mode</span>
-                            <span className="text-xs text-muted-foreground">
-                                Generate light and dark color schemes.
-                            </span>
-                        </div>
-                        <Switch
-                            checked={theme.darkMode.enabled}
-                            onCheckedChange={(checked) =>
-                                updateConfig({
-                                    theme: {
-                                        ...theme,
-                                        darkMode: { ...theme.darkMode, enabled: checked },
-                                    },
-                                })
-                            }
-                        />
-                    </label>
-                    <label
-                        className={cn(
-                            "flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-lg border border-border/50 px-3.5 py-3 transition-colors hover:bg-muted/40",
-                            !theme.darkMode.enabled && "pointer-events-none opacity-50"
-                        )}
-                    >
-                        <div className="flex flex-col gap-0.5">
-                            <span className="text-sm font-medium text-foreground">Follow system</span>
-                            <span className="text-xs text-muted-foreground">
-                                Match the device light/dark preference.
-                            </span>
-                        </div>
-                        <Switch
-                            checked={theme.darkMode.system}
-                            onCheckedChange={(checked) =>
-                                updateConfig({
-                                    theme: {
-                                        ...theme,
-                                        darkMode: { ...theme.darkMode, system: checked },
-                                    },
-                                })
-                            }
-                            disabled={!theme.darkMode.enabled}
-                        />
-                    </label>
-                </div>
+            <StepSection
+                title="Theme"
+                description="Pick Material, Cupertino, or shadcn_ui as the design system."
+            >
+                <RadioGroup
+                    value={themeChoice}
+                    onValueChange={(value) => applyThemeChoice(value as ThemeChoice)}
+                    className="w-full"
+                >
+                    <PreviewChoiceGroup value={themeChoice}>
+                        {themeChoiceOptions.map((option) => (
+                            <PreviewChoiceCard
+                                key={option.value}
+                                value={option.value}
+                                label={option.label}
+                                selected={themeChoice === option.value}
+                                onInfo={() => setSelectedItem(`theme_${option.value}`)}
+                            >
+                                {option.value === "shadcn" ? (
+                                    <UiKitPreview kit="shadcn" />
+                                ) : (
+                                    <ThemePresetPreview
+                                        preset={
+                                            option.value === "cupertino"
+                                                ? "cupertino"
+                                                : "material3"
+                                        }
+                                    />
+                                )}
+                            </PreviewChoiceCard>
+                        ))}
+                    </PreviewChoiceGroup>
+                </RadioGroup>
+
+                {themeChoice === "shadcn" ? (
+                    <div className="mt-4 flex w-full flex-col gap-2">
+                        <span className="text-sm font-medium text-foreground">
+                            Default app
+                        </span>
+                        <p className="text-xs text-muted-foreground">
+                            Choose the root app widget used with shadcn_ui.
+                        </p>
+                        <RadioGroup
+                            value={`default_app_${defaultApp}`}
+                            onValueChange={(value) => {
+                                const match = defaultAppOptions.find(
+                                    (option) => option.radioValue === value
+                                )
+                                if (match) applyDefaultApp(match.value)
+                            }}
+                            className="w-full"
+                        >
+                            <PreviewChoiceGroup value={`default_app_${defaultApp}`}>
+                                {defaultAppOptions.map((option) => (
+                                    <PreviewChoiceCard
+                                        key={option.radioValue}
+                                        value={option.radioValue}
+                                        label={option.label}
+                                        selected={defaultApp === option.value}
+                                        className="w-56"
+                                        surfaceClassName="aspect-[5/4]"
+                                        onInfo={() =>
+                                            setSelectedItem(option.radioValue)
+                                        }
+                                    >
+                                        <DefaultAppPreview
+                                            app={option.value}
+                                            animate={defaultApp === option.value}
+                                        />
+                                    </PreviewChoiceCard>
+                                ))}
+                            </PreviewChoiceGroup>
+                        </RadioGroup>
+                    </div>
+                ) : null}
             </StepSection>
 
             <Separator />

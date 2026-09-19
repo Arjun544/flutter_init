@@ -8,7 +8,7 @@ import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}pr
 {{else if flags.isProvider}}
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/{{else if (eq architecture "mvc")}}controllers/auth/{{else if (eq architecture "mvvm")}}ui/auth/providers/{{else}}features/auth/presentation/providers/{{/if}}auth_provider.dart';
 {{else if flags.isGetX}}
-import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/controllers/auth/{{else if (eq architecture "mvc")}}controllers/auth/{{else if (eq architecture "mvvm")}}ui/auth/controllers/{{else}}features/auth/presentation/controllers/{{/if}}auth_controller.dart';
+import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/{{else if (eq architecture "mvc")}}controllers/auth/{{else if (eq architecture "mvvm")}}ui/auth/controllers/{{else}}features/auth/presentation/providers/{{/if}}auth_controller.dart';
 {{else if flags.isMobX}}
 {{#if flags.usesFlutterHooks}}
 import 'package:{{flags.appSnake}}/src/{{#if (eq architecture "layer-first")}}presentation/providers/{{else if (eq architecture "mvc")}}controllers/auth/{{else if (eq architecture "mvvm")}}ui/auth/stores/{{else}}features/auth/presentation/providers/{{/if}}auth_store.dart';
@@ -360,7 +360,7 @@ class _LoginView extends StatelessWidget {
                   key: formKey,
                   child: Column(
                     children: [
-                      AppTextField(
+                      {{> ui/text_field}}(
                         controller: emailController,
                         enabled: !isLoading,
                         label: {{#if flags.supportsLocalization}}'auth.email'.tr(){{else}}'Email'{{/if}},
@@ -376,7 +376,7 @@ class _LoginView extends StatelessWidget {
                         },
                       ),
                       SizedBox(height: {{res 'AppSpacing.md' 'h' flags.usesScreenutil}}),
-                      AppTextField(
+                      {{> ui/text_field}}(
                         controller: passwordController,
                         enabled: !isLoading,
                         label: {{#if flags.supportsLocalization}}'auth.password'.tr(){{else}}'Password'{{/if}},
@@ -445,7 +445,7 @@ class _LoginView extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: {{res 'AppSpacing.lg' 'h' flags.usesScreenutil}}),
-                      AppButton(
+                      {{> ui/button}}(
                         label: 'Sign In',
                         isLoading: isLoading,
                         onPressed: isLoading ? null : onLogin,

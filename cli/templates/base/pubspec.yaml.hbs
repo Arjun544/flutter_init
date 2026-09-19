@@ -4,19 +4,29 @@ publish_to: "none"
 version: 1.0.0+1
 
 environment:
+  {{#if flags.usesShadcn}}
+  sdk: ">=3.11.0 <4.0.0"
+  flutter: ">=3.41.0"
+  {{else}}
   sdk: ">=3.5.0 <4.0.0"
+  {{/if}}
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  {{#if flags.usesShadcn}}
+  flutter_localizations:
+    sdk: flutter
+  shadcn_ui: ^0.56.3
+  {{/if}}
 
   # Navigation
   {{#if (eq flags.routerPackage "go_router")}}
   go_router: ^17.1.0
   {{else if (eq flags.routerPackage "auto_route")}}
   auto_route: ^11.1.0
-  {{else if (eq flags.routerPackage "getx")}}
+  {{else if (and (eq flags.routerPackage "getx") (not flags.isGetX))}}
   get: ^4.7.3
   {{/if}}
 

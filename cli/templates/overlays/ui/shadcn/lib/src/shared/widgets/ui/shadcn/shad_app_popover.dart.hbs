@@ -1,0 +1,36 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadPopover] adapter.
+///
+/// Usage:
+/// ```dart
+/// ShadAppPopover(
+///   popover: (context) => const Padding(
+///     padding: EdgeInsets.all(12),
+///     child: Text('Popover content'),
+///   ),
+///   child: const ShadButton.outline(child: Text('Open')),
+/// )
+/// ```
+class ShadAppPopover extends StatelessWidget {
+  const ShadAppPopover({
+    super.key,
+    required this.child,
+    required this.popover,
+    this.controller,
+  });
+
+  final Widget child;
+  final WidgetBuilder popover;
+  final ShadPopoverController? controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadPopover(
+      controller: controller,
+      popover: popover,
+      child: child,
+    );
+  }
+}

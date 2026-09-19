@@ -1,0 +1,96 @@
+import '../../../imports/imports.dart';
+
+/// Live gallery of App* (and optional ShadApp*) components.
+///
+/// Open via [AppRoutes.uiShowcase] in debug builds.
+class UiShowcaseScreen extends StatelessWidget {
+  const UiShowcaseScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppScaffold(
+      appBar: const AppTopBar(title: 'UI Showcase'),
+      body: ListView(
+        padding: EdgeInsets.all(AppSpacing.md),
+        children: [
+          Text('Actions', style: context.textTheme.titleLarge),
+          SizedBox(height: AppSpacing.sm),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: [
+              AppButton(label: 'Primary', onPressed: () {}),
+              AppButton(
+                label: 'Secondary',
+                variant: ButtonVariant.secondary,
+                onPressed: () {},
+              ),
+              AppButton(
+                label: 'Outline',
+                variant: ButtonVariant.outline,
+                onPressed: () {},
+              ),
+              AppIconButton(
+                icon: Icons.favorite_outline,
+                onPressed: () {},
+              ),
+              AppChip(label: 'Chip', selected: true, onSelected: (_) {}),
+            ],
+          ),
+          SizedBox(height: AppSpacing.lg),
+          Text('Inputs', style: context.textTheme.titleLarge),
+          SizedBox(height: AppSpacing.sm),
+          const AppTextField(label: 'Email', hint: 'you@example.com'),
+          SizedBox(height: AppSpacing.sm),
+          const AppPasswordField(label: 'Password'),
+          SizedBox(height: AppSpacing.sm),
+          AppSwitch(value: true, onChanged: (_) {}),
+          AppCheckbox(value: true, onChanged: (_) {}, label: 'Remember me'),
+          SizedBox(height: AppSpacing.lg),
+          Text('Display', style: context.textTheme.titleLarge),
+          SizedBox(height: AppSpacing.sm),
+          AppCard(
+            title: 'Card title',
+            subtitle: 'Uses design tokens for padding and radius.',
+            child: Text(
+              'Body content',
+              style: context.textTheme.bodyMedium,
+            ),
+          ),
+          SizedBox(height: AppSpacing.sm),
+          Row(
+            children: [
+              const AppAvatar(initials: 'FI'),
+              SizedBox(width: AppSpacing.sm),
+              const AppBadge(label: 'New'),
+            ],
+          ),
+          SizedBox(height: AppSpacing.lg),
+          Text('Feedback', style: context.textTheme.titleLarge),
+          SizedBox(height: AppSpacing.sm),
+          const AppLoading(message: 'Loading…'),
+          SizedBox(height: AppSpacing.sm),
+          AppEmptyState(
+            title: 'Nothing here',
+            subtitle: 'Empty states use App* actions.',
+            actionLabel: 'Retry',
+            onAction: () {},
+          ),
+          {{#if flags.usesShadcn}}
+          SizedBox(height: AppSpacing.xl),
+          Text('shadcn kit', style: context.textTheme.titleLarge),
+          SizedBox(height: AppSpacing.sm),
+          ShadAppButton(label: 'Shad primary', onPressed: () {}),
+          SizedBox(height: AppSpacing.sm),
+          ShadAppTextField(label: 'Shad input', hint: 'Type here'),
+          SizedBox(height: AppSpacing.sm),
+          ShadAppCard(
+            title: 'Shad card',
+            child: Text('Token-bridged ShadThemeData', style: context.textTheme.bodyMedium),
+          ),
+          {{/if}}
+        ],
+      ),
+    );
+  }
+}

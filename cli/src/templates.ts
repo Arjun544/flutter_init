@@ -118,7 +118,9 @@ Handlebars.registerHelper('indent', (text: string, spaces = 2) =>
 )
 Handlebars.registerHelper('res', (value: unknown, unit: string, usesScreenutil: boolean) => {
   if (usesScreenutil) return `${value}.${unit}`
-  return String(value)
+  // Whole numbers as int literals (prefer_int_literals); Dart accepts them as doubles.
+  const n = Number(value)
+  return Number.isFinite(n) ? String(n) : String(value)
 })
 Handlebars.registerHelper('when', function (this: unknown, condition, options) {
   return condition ? options.fn(this) : options.inverse(this)
@@ -263,6 +265,9 @@ export function buildTemplateContext(config: FlutterInitConfig): TemplateContext
     hasCustomFonts: false,
     primaryFontFamily: '',
     fontFamilies: [] as any[],
+    usesShadcn: config.usesShadcn,
+    shadcnDefault: config.usesShadcn && config.defaultKit === 'shadcn',
+    platformStyle: config.platformStyle,
   }
 
   const backend = {
@@ -282,6 +287,11 @@ export function buildTemplateContext(config: FlutterInitConfig): TemplateContext
         system: config.themeMode === 'both',
       },
       customFonts: [],
+    },
+    ui: {
+      platformStyle: config.platformStyle,
+      shadcn: config.usesShadcn,
+      defaultKit: config.defaultKit,
     },
     flags,
     isRiverpod: config.stateManager === 'riverpod',

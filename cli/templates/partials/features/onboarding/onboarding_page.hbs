@@ -247,7 +247,7 @@ class _OnboardingView extends StatelessWidget {
                 children: [
                    {{#if flags.usesScreenutil}}SizedBox(height: AppSpacing.xl){{else}}const SizedBox(height: 32){{/if}},
                   // Get Started Button
-                  AppButton(
+                  {{> ui/button}}(
                     label: {{#if flags.supportsLocalization}}'shared.get_started'.tr(){{else}}'Get Started'{{/if}},
                     onPressed: onGetStarted,
                     variant: ButtonVariant.primary,

@@ -1,0 +1,53 @@
+## UI component library
+
+Product widgets live under `lib/src/shared/widgets/ui/`.
+
+### Platform style
+
+- Config: `{{ui.platformStyle}}` (adaptive | material | cupertino)
+- Runtime: wrap with `AppPlatformScope`; override per widget via `platform:`
+- Helper: `context.isCupertinoUi` / `context.resolveCupertinoUi(platform)`
+- Prefer **App\*** widgets over raw `ElevatedButton` / `TextField` / `CupertinoButton`
+
+### App kit (`ui/app/`) — always generated
+
+| Category | Widgets |
+|---|---|
+| actions | `AppButton`, `AppIconButton`, `AppTextButton`, `AppFab`, `AppSegmentedControl`, `AppToggleGroup`, `AppChip` |
+| inputs | `AppTextField`, `AppSearchField`, `AppPasswordField`, `AppTextArea`, `AppOtpField`, `AppCheckbox`, `AppRadio`, `AppSwitch`, `AppSlider`, `AppNumberStepper`, `AppDropdown`, `AppDatePicker`, `AppTimePicker`, `AppRating`, `AppForm` |
+| display | `AppCard`, `AppAvatar`, `AppBadge`, `AppListTile`, `AppDivider`, `AppIcon`, `CommonImage`, `AppProgressBar`, `AppCircularProgress`, `AppSkeleton`, `AppTooltip`, `AppExpansionPanel`, `AppTimeline`, `AppDataTable` |
+| feedback | `AppLoading`, `AppErrorWidget`, `AppEmptyState`, dialogs/sheets/banner/snack + toast |
+| navigation | `AppScaffold`, `AppTopBar`, `AppBottomNavBar`, `AppTabBar`, `AppNavigationDrawer`, `AppPageIndicator` |
+| layout | `AppGap`, `AppResponsiveBuilder`, `AppSection` |
+
+Debug gallery: `AppRoutes.uiShowcase` (`/debug/ui-showcase`) in debug builds.
+
+### Design tokens (required)
+
+```dart
+AppSpacing.md
+AppBorders.card
+AppShadows.elevated
+AppDurations.normal
+AppCurves.standard
+context.colors.primary
+context.appColors.success
+context.textTheme.titleMedium
+context.designTokens.paddingMedium
+```
+
+**Never** hardcode hex colors or magic spacing numbers in feature UI.
+
+{{#if flags.usesShadcn}}
+### shadcn kit (`ui/shadcn/`) — enabled
+
+- Package: `shadcn_ui`
+- Theme bridge: `buildShadLightTheme` / `buildShadDarkTheme` (same seed as Material)
+- Wrappers: `ShadAppButton`, `ShadAppTextField`, `ShadAppCard`, … (mirror App\* APIs)
+- Full library: `export 'package:shadcn_ui/shadcn_ui.dart'` via `ui/shadcn/shadcn.dart`
+- Default kit for generated screens: **{{ui.defaultKit}}**
+{{else}}
+### shadcn kit
+
+Not enabled for this project. Re-generate with shadcn opted in from the UI & Theme step to add `ShadApp*` wrappers.
+{{/if}}

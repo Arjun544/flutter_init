@@ -1,0 +1,49 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Helpers around [ShadToaster] / [ShadToast].
+///
+/// Ensure a [ShadToaster] ancestor exists (provided by [ShadApp] by default).
+///
+/// Usage:
+/// ```dart
+/// ShadAppToast.show(context, title: 'Saved', description: 'Changes applied.');
+/// ShadAppToast.showDestructive(context, title: 'Error', description: 'Try again.');
+/// ```
+class ShadAppToast {
+  const ShadAppToast._();
+
+  static void show(
+    BuildContext context, {
+    String? title,
+    String? description,
+    Widget? action,
+  }) {
+    ShadToaster.of(context).show(
+      ShadToast(
+        title: title != null ? Text(title) : null,
+        description: description != null ? Text(description) : null,
+        action: action,
+      ),
+    );
+  }
+
+  static void showDestructive(
+    BuildContext context, {
+    String? title,
+    String? description,
+    Widget? action,
+  }) {
+    ShadToaster.of(context).show(
+      ShadToast.destructive(
+        title: title != null ? Text(title) : null,
+        description: description != null ? Text(description) : null,
+        action: action,
+      ),
+    );
+  }
+
+  static void hide(BuildContext context) {
+    ShadToaster.of(context).hide();
+  }
+}

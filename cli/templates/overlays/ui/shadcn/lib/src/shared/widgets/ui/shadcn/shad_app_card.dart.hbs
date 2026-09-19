@@ -1,0 +1,40 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadCard] adapter mirroring [AppCard].
+///
+/// Usage:
+/// ```dart
+/// ShadAppCard(
+///   title: 'Account',
+///   description: 'Manage your profile',
+///   child: ...,
+/// )
+/// ```
+class ShadAppCard extends StatelessWidget {
+  const ShadAppCard({
+    super.key,
+    this.title,
+    this.description,
+    this.footer,
+    this.child,
+    this.padding,
+  });
+
+  final String? title;
+  final String? description;
+  final Widget? footer;
+  final Widget? child;
+  final EdgeInsetsGeometry? padding;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadCard(
+      title: title != null ? Text(title!) : null,
+      description: description != null ? Text(description!) : null,
+      footer: footer,
+      padding: padding,
+      child: child,
+    );
+  }
+}

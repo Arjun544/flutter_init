@@ -1,0 +1,50 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// A breadcrumb crumb for [ShadAppBreadcrumb].
+class ShadAppBreadcrumbItem {
+  const ShadAppBreadcrumbItem({
+    required this.label,
+    this.onPressed,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+}
+
+/// Thin [ShadBreadcrumb] adapter.
+///
+/// Usage:
+/// ```dart
+/// ShadAppBreadcrumb(
+///   items: [
+///     ShadAppBreadcrumbItem(label: 'Home', onPressed: () {}),
+///     ShadAppBreadcrumbItem(label: 'Components', onPressed: () {}),
+///     ShadAppBreadcrumbItem(label: 'Breadcrumb'),
+///   ],
+/// )
+/// ```
+class ShadAppBreadcrumb extends StatelessWidget {
+  const ShadAppBreadcrumb({
+    super.key,
+    required this.items,
+  });
+
+  final List<ShadAppBreadcrumbItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadBreadcrumb(
+      children: [
+        for (var i = 0; i < items.length; i++)
+          if (i == items.length - 1 || items[i].onPressed == null)
+            Text(items[i].label)
+          else
+            ShadBreadcrumbLink(
+              onPressed: items[i].onPressed,
+              child: Text(items[i].label),
+            ),
+      ],
+    );
+  }
+}

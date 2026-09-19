@@ -332,6 +332,47 @@ export async function runPrompts(): Promise<FlutterInitConfig> {
   })
   checkCancel(primaryColor)
 
+  const platformStyle = await select<'adaptive' | 'material' | 'cupertino'>({
+    message: 'Platform style for App* components',
+    options: [
+      {
+        value: 'adaptive',
+        label: 'Adaptive',
+        hint: 'Material on Android, Cupertino on iOS.',
+      },
+      {
+        value: 'material',
+        label: 'Material',
+        hint: 'Always use Material widgets.',
+      },
+      {
+        value: 'cupertino',
+        label: 'Cupertino',
+        hint: 'Always use Cupertino widgets.',
+      },
+    ],
+  })
+  checkCancel(platformStyle)
+
+  const usesShadcn = await confirm({
+    message: 'Include shadcn/ui custom components?',
+    initialValue: false,
+  })
+  checkCancel(usesShadcn)
+
+  let defaultKit: 'app' | 'shadcn' = 'app'
+  if (usesShadcn) {
+    const kit = await select<'app' | 'shadcn'>({
+      message: 'Default kit for generated screens',
+      options: [
+        { value: 'app', label: 'App kit (native)', hint: 'Screens use App* adaptive widgets.' },
+        { value: 'shadcn', label: 'shadcn/ui', hint: 'Screens use ShadApp* wrappers.' },
+      ],
+    })
+    checkCancel(kit)
+    defaultKit = kit as 'app' | 'shadcn'
+  }
+
   // ── Section: Optional Utilities (Consolidated using groupMultiselect) ──────
   printStep(
     'Optional Utilities & Features',
@@ -632,6 +673,10 @@ export async function runPrompts(): Promise<FlutterInitConfig> {
     themePreset: themePreset as ThemePreset,
     primaryColor: (primaryColor as string) || '#027DFD',
     outputDir,
+
+    platformStyle: platformStyle as 'adaptive' | 'material' | 'cupertino',
+    usesShadcn: Boolean(usesShadcn),
+    defaultKit,
 
     // Icons
     usesIconsaxPlus: selectedMisc.includes('usesIconsaxPlus'),

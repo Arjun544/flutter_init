@@ -1,0 +1,62 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// A panel descriptor for [ShadAppResizable].
+class ShadAppResizablePanelData {
+  const ShadAppResizablePanelData({
+    required this.id,
+    required this.child,
+    this.defaultSize = 0.5,
+    this.minSize,
+    this.maxSize,
+  });
+
+  final Object id;
+  final Widget child;
+  final double defaultSize;
+  final double? minSize;
+  final double? maxSize;
+}
+
+/// Thin [ShadResizablePanelGroup] adapter.
+///
+/// Usage:
+/// ```dart
+/// ShadAppResizable(
+///   panels: [
+///     ShadAppResizablePanelData(id: 0, defaultSize: 0.3, child: Text('A')),
+///     ShadAppResizablePanelData(id: 1, defaultSize: 0.7, child: Text('B')),
+///   ],
+/// )
+/// ```
+class ShadAppResizable extends StatelessWidget {
+  const ShadAppResizable({
+    super.key,
+    required this.panels,
+    this.axis = Axis.horizontal,
+    this.showHandle = false,
+  });
+
+  final List<ShadAppResizablePanelData> panels;
+  final Axis axis;
+  final bool showHandle;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadResizablePanelGroup(
+      axis: axis,
+      showHandle: showHandle,
+      children: panels
+          .map(
+            (p) => ShadResizablePanel(
+              id: p.id,
+              defaultSize: p.defaultSize,
+              minSize: p.minSize ?? 0.0,
+              maxSize: p.maxSize ?? 1.0,
+              child: p.child,
+            ),
+          )
+          .toList(),
+    );
+  }
+}

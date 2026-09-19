@@ -1,0 +1,120 @@
+import '../../../../../imports/imports.dart';
+
+/// Standard padded content for modal bottom sheets.
+///
+/// Usage:
+/// ```dart
+/// await showAppBottomSheet(
+///   context,
+///   builder: (_) => AppBottomSheetContent(
+///     title: 'Filters',
+///     child: FilterForm(),
+///   ),
+/// );
+/// ```
+class AppBottomSheetContent extends StatelessWidget {
+  const AppBottomSheetContent({
+    super.key,
+    this.title,
+    required this.child,
+    this.actions,
+    this.showHandle = true,
+  });
+
+  final String? title;
+  final Widget child;
+  final List<Widget>? actions;
+  final bool showHandle;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.sm,
+          AppSpacing.lg,
+          AppSpacing.lg,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (showHandle)
+              Center(
+                child: Container(
+                  width: {{res 40 'w' flags.usesScreenutil}},
+                  height: {{res 4 'h' flags.usesScreenutil}},
+                  margin: EdgeInsets.only(bottom: AppSpacing.md),
+                  decoration: BoxDecoration(
+                    color: colors.outlineVariant,
+                    borderRadius: AppBorders.full,
+                  ),
+                ),
+              ),
+            if (title != null) ...[
+              Text(
+                title!,
+                style: context.textTheme.titleMedium?.copyWith(
+                  color: colors.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: AppSpacing.md),
+            ],
+            Flexible(child: child),
+            if (actions != null && actions!.isNotEmpty) ...[
+              SizedBox(height: AppSpacing.md),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  for (var i = 0; i < actions!.length; i++) ...[
+                    if (i > 0) SizedBox(width: AppSpacing.sm),
+                    actions![i],
+                  ],
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Shows a modal bottom sheet with theme-aware styling.
+Future<T?> showAppBottomSheet<T>(
+  BuildContext context, {
+  required WidgetBuilder builder,
+  bool isScrollControlled = true,
+  bool useSafeArea = true,
+  AppPlatformStyle? platform,
+}) {
+  final useCupertino = platform != null
+      ? platform == AppPlatformStyle.cupertino
+      : context.isCupertinoUi;
+  final colors = context.colors;
+
+  if (useCupertino) {
+    return showCupertinoModalPopup<T>(
+      context: context,
+      builder: (ctx) => Material(
+        color: colors.surfaceContainerHigh,
+        borderRadius: AppBorders.bottomSheet,
+        clipBehavior: Clip.antiAlias,
+        child: builder(ctx),
+      ),
+    );
+  }
+
+  return showModalBottomSheet<T>(
+    context: context,
+    builder: builder,
+    isScrollControlled: isScrollControlled,
+    useSafeArea: useSafeArea,
+    backgroundColor: colors.surfaceContainerHigh,
+    shape: const RoundedRectangleBorder(borderRadius: AppBorders.bottomSheet),
+  );
+}

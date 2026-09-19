@@ -1,0 +1,108 @@
+import '../../../../../imports/imports.dart';
+
+/// Skeleton / shimmer wrapper around placeholder content.
+///
+/// When `flags.usesSkeletonizer` is enabled, wraps [child] in [Skeletonizer].
+/// Otherwise falls back to a simple shimmering container overlay.
+///
+/// Usage:
+/// ```dart
+/// AppSkeleton(
+///   enabled: isLoading,
+///   child: AppListTile(title: 'Loading…'),
+/// )
+/// ```
+class AppSkeleton extends StatelessWidget {
+  const AppSkeleton({
+    super.key,
+    required this.child,
+    this.enabled = true,
+    this.ignorePointers = true,
+  });
+
+  final Widget child;
+  final bool enabled;
+  final bool ignorePointers;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!enabled) return child;
+
+{{#if flags.usesSkeletonizer}}
+    return Skeletonizer(
+      enabled: enabled,
+      ignorePointers: ignorePointers,
+      child: child,
+    );
+{{else}}
+    final colors = context.colors;
+    return AbsorbPointer(
+      absorbing: ignorePointers,
+      child: _ShimmerBox(
+        baseColor: colors.surfaceContainerHighest,
+        highlightColor: colors.surfaceContainerLow,
+        child: child,
+      ),
+    );
+{{/if}}
+  }
+}
+
+{{#unless flags.usesSkeletonizer}}
+class _ShimmerBox extends StatefulWidget {
+  const _ShimmerBox({
+    required this.child,
+    required this.baseColor,
+    required this.highlightColor,
+  });
+
+  final Widget child;
+  final Color baseColor;
+  final Color highlightColor;
+
+  @override
+  State<_ShimmerBox> createState() => _ShimmerBoxState();
+}
+
+class _ShimmerBoxState extends State<_ShimmerBox>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: AppDurations.shimmer,
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final t = CurvedAnimation(
+          parent: _controller,
+          curve: AppCurves.linear,
+        ).value;
+        return ColorFiltered(
+          colorFilter: ColorFilter.mode(
+            Color.lerp(widget.baseColor, widget.highlightColor, t)!
+                .withValues(alpha: 0.55),
+            BlendMode.srcATop,
+          ),
+          child: child,
+        );
+      },
+      child: widget.child,
+    );
+  }
+}
+{{/unless}}

@@ -1,17 +1,49 @@
 import 'package:{{flags.appSnake}}/src/imports/core_imports.dart';
+{{#if (or flags.isGetX flags.usesShadcn)}}
+import 'package:{{flags.appSnake}}/src/imports/packages_imports.dart';
+{{/if}}
 
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final current = {{#if flags.isCupertino}}_buildCupertinoApp(context){{else}}_buildMaterialApp(context){{/if}};
+    Widget current = {{#if flags.isCupertino}}_buildCupertinoApp(context){{else}}_buildMaterialApp(context){{/if}};
+    current = AppPlatformScope(
+      style: AppPlatformStyle.{{ui.platformStyle}},
+      child: current,
+    );
+    {{#if flags.usesShadcn}}
+    current = _wrapWithShadApp(current);
+    {{/if}}
     {{#if flags.usesScreenutil}}
     return ScreenUtilWrapper(child: current);
     {{else}}
     return current;
     {{/if}}
   }
+
+  {{#if flags.usesShadcn}}
+  Widget _wrapWithShadApp(Widget child) {
+    return ShadApp.custom(
+      themeMode: {{#if flags.hasDarkMode}}{{#if theme.darkMode.system}}ThemeMode.system{{else}}ThemeMode.dark{{/if}}{{else}}ThemeMode.light{{/if}},
+      theme: buildShadLightTheme(primaryColorHex: '{{theme.primaryColor}}'),
+      {{#if flags.hasDarkMode}}
+      darkTheme: buildShadDarkTheme(primaryColorHex: '{{theme.primaryColor}}'),
+      {{/if}}
+      appBuilder: (context) => child,
+    );
+  }
+
+  List<LocalizationsDelegate<dynamic>> _withShadDelegates(
+    List<LocalizationsDelegate<dynamic>> delegates,
+  ) {
+    return [
+      GlobalShadLocalizations.delegate,
+      ...delegates,
+    ];
+  }
+  {{/if}}
 
   {{#if flags.isCupertino}}
   Widget _buildCupertinoApp(BuildContext context) {
@@ -35,28 +67,38 @@ class App extends StatelessWidget {
       onGenerateRoute: AppRouter.onGenerateRoute,
       {{/if}}
       {{#if flags.supportsLocalization}}
-      localizationsDelegates: context.localizationDelegates,
+      localizationsDelegates: {{#if flags.usesShadcn}}_withShadDelegates(context.localizationDelegates){{else}}context.localizationDelegates{{/if}},
       supportedLocales: context.supportedLocales,
       locale: context.locale,
+      {{else}}
+      {{#if flags.usesShadcn}}
+      localizationsDelegates: [
+        GlobalShadLocalizations.delegate,
+        DefaultMaterialLocalizations.delegate,
+        DefaultCupertinoLocalizations.delegate,
+        DefaultWidgetsLocalizations.delegate,
+      ],
+      {{/if}}
       {{/if}}
       builder: (context, child) {
         Widget current = child!;
+        {{#if flags.usesShadcn}}
+        current = ShadAppBuilder(child: current);
+        {{/if}}
         {{#if flags.usesSkeletonizer}}
         current = SkeletonWrapper(child: current);
         {{/if}}
         current = SessionListenerWrapper(child: current);
-        
-        // Ensure Material themes (tokens, widget styles like dialogs/buttons/inputs) 
+
+        // Ensure Material themes (tokens, widget styles like dialogs/buttons/inputs)
         // are available even in Cupertino mode, as many apps use a mix of both.
-        {{#if flags.isCupertino}}
         current = Theme(
           data: {{#if flags.hasDarkMode}}{{#if theme.darkMode.system}}(MediaQuery.of(context).platformBrightness == Brightness.dark){{else}}true{{/if}}{{else}}false{{/if}}
               ? buildDarkTheme(primaryColorHex: '{{theme.primaryColor}}')
               : buildLightTheme(primaryColorHex: '{{theme.primaryColor}}'),
           child: current,
         );
-        {{/if}}
-        
+
         return current;
       },
     );
@@ -87,12 +129,24 @@ class App extends StatelessWidget {
       onGenerateRoute: AppRouter.onGenerateRoute,
       {{/if}}
       {{#if flags.supportsLocalization}}
-      localizationsDelegates: context.localizationDelegates,
+      localizationsDelegates: {{#if flags.usesShadcn}}_withShadDelegates(context.localizationDelegates){{else}}context.localizationDelegates{{/if}},
       supportedLocales: context.supportedLocales,
       locale: context.locale,
+      {{else}}
+      {{#if flags.usesShadcn}}
+      localizationsDelegates: [
+        GlobalShadLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      {{/if}}
       {{/if}}
       builder: (context, child) {
         Widget current = child!;
+        {{#if flags.usesShadcn}}
+        current = ShadAppBuilder(child: current);
+        {{/if}}
         {{#if flags.usesSkeletonizer}}
         current = SkeletonWrapper(child: current);
         {{/if}}

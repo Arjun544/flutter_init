@@ -1,0 +1,57 @@
+import '../../../../../imports/imports.dart';
+
+/// Circular progress / activity indicator with adaptive Material / Cupertino UI.
+///
+/// Usage:
+/// ```dart
+/// const AppCircularProgress()
+/// AppCircularProgress(value: 0.4, size: 32)
+/// ```
+class AppCircularProgress extends StatelessWidget {
+  const AppCircularProgress({
+    super.key,
+    this.value,
+    this.size = 28,
+    this.strokeWidth = 3,
+    this.color,
+    this.platform,
+  });
+
+  /// Progress from 0–1, or `null` for indeterminate.
+  final double? value;
+  final double size;
+  final double strokeWidth;
+  final Color? color;
+  final AppPlatformStyle? platform;
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = platform != null
+        ? platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final colors = context.colors;
+    final indicatorColor = color ?? colors.primary;
+    final resolvedSize = {{#if flags.usesScreenutil}}size.r{{else}}size{{/if}};
+
+    if (useCupertino) {
+      return SizedBox(
+        width: resolvedSize,
+        height: resolvedSize,
+        child: CupertinoActivityIndicator(
+          color: indicatorColor,
+          radius: resolvedSize / 2,
+        ),
+      );
+    }
+
+    return SizedBox(
+      width: resolvedSize,
+      height: resolvedSize,
+      child: CircularProgressIndicator(
+        value: value,
+        strokeWidth: strokeWidth,
+        color: indicatorColor,
+      ),
+    );
+  }
+}

@@ -1,0 +1,88 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadIconButton] adapter mirroring [AppIconButton] params.
+///
+/// Usage:
+/// ```dart
+/// ShadAppIconButton(
+///   icon: Icons.favorite,
+///   onPressed: _toggleFavorite,
+///   variant: ButtonVariant.ghost,
+/// )
+/// ```
+class ShadAppIconButton extends StatelessWidget {
+  const ShadAppIconButton({
+    super.key,
+    required this.icon,
+    this.onPressed,
+    this.variant = ButtonVariant.ghost,
+    this.size = ButtonSize.medium,
+    this.isLoading = false,
+    this.tooltip,
+  });
+
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final ButtonVariant variant;
+  final ButtonSize size;
+  final bool isLoading;
+  final String? tooltip;
+
+  double get _iconSize => switch (size) {
+        ButtonSize.small => 16,
+        ButtonSize.medium => 20,
+        ButtonSize.large => 24,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onPressed != null && !isLoading;
+    final iconWidget = isLoading
+        ? SizedBox(
+            width: _iconSize,
+            height: _iconSize,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          )
+        : Icon(icon, size: _iconSize);
+
+    final button = switch (variant) {
+      ButtonVariant.secondary => ShadIconButton.secondary(
+          icon: iconWidget,
+          onPressed: enabled ? onPressed : null,
+          enabled: enabled,
+          iconSize: _iconSize,
+        ),
+      ButtonVariant.outline => ShadIconButton.outline(
+          icon: iconWidget,
+          onPressed: enabled ? onPressed : null,
+          enabled: enabled,
+          iconSize: _iconSize,
+        ),
+      ButtonVariant.ghost => ShadIconButton.ghost(
+          icon: iconWidget,
+          onPressed: enabled ? onPressed : null,
+          enabled: enabled,
+          iconSize: _iconSize,
+        ),
+      ButtonVariant.danger => ShadIconButton.destructive(
+          icon: iconWidget,
+          onPressed: enabled ? onPressed : null,
+          enabled: enabled,
+          iconSize: _iconSize,
+        ),
+      ButtonVariant.primary || ButtonVariant.success => ShadIconButton(
+          icon: iconWidget,
+          onPressed: enabled ? onPressed : null,
+          enabled: enabled,
+          iconSize: _iconSize,
+        ),
+    };
+
+    if (tooltip == null || tooltip!.isEmpty) return button;
+    return ShadTooltip(
+      builder: (context) => Text(tooltip!),
+      child: button,
+    );
+  }
+}

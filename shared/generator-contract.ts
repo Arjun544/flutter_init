@@ -63,6 +63,8 @@ export interface OverlaySelection {
     device: string[]
     flavors: boolean
     dotenv: boolean
+    /** When true, merge overlays/ui/shadcn */
+    shadcn: boolean
 }
 
 function enabled(options: Record<string, boolean | string | undefined> | undefined, key: string) {
@@ -127,6 +129,7 @@ export function selectOverlayKeys(
         usesFilePicker: boolean
         usesDeviceInfoPlus: boolean
         usesAppVersionUpdate: boolean
+        usesShadcn?: boolean
     },
 ): OverlaySelection {
     const networking = config.usesDio
@@ -166,5 +169,6 @@ export function selectOverlayKeys(
         ],
         flavors: true,
         dotenv: config.usesDotenv,
+        shadcn: config.usesShadcn === true,
     }
 }

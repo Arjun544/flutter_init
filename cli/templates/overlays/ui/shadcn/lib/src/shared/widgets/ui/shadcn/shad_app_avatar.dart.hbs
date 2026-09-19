@@ -1,0 +1,33 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadAvatar] adapter mirroring [AppAvatar].
+///
+/// Usage:
+/// ```dart
+/// ShadAppAvatar(
+///   src: 'https://example.com/avatar.png',
+///   fallback: Text('AB'),
+/// )
+/// ```
+class ShadAppAvatar extends StatelessWidget {
+  const ShadAppAvatar({
+    super.key,
+    this.src,
+    this.fallback,
+    this.size = 40,
+  });
+
+  final String? src;
+  final Widget? fallback;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadAvatar(
+      src ?? '',
+      placeholder: fallback,
+      size: Size(size, size),
+    );
+  }
+}

@@ -1,0 +1,118 @@
+import '../../../../../imports/imports.dart';
+
+/// A themed icon button with Material and Cupertino variants.
+///
+/// Usage:
+/// ```dart
+/// AppIconButton(
+///   icon: Icons.favorite,
+///   onPressed: _toggleFavorite,
+///   variant: ButtonVariant.ghost,
+///   isLoading: state.isSaving,
+/// )
+/// ```
+class AppIconButton extends StatelessWidget {
+  const AppIconButton({
+    super.key,
+    required this.icon,
+    this.onPressed,
+    this.variant = ButtonVariant.ghost,
+    this.size = ButtonSize.medium,
+    this.isLoading = false,
+    this.tooltip,
+    this.color,
+    this.platform,
+  });
+
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final ButtonVariant variant;
+  final ButtonSize size;
+  final bool isLoading;
+  final String? tooltip;
+  final Color? color;
+  final AppPlatformStyle? platform;
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = platform != null
+        ? platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final cs = context.colors;
+    final appColors = context.appColors;
+    final isDisabled = onPressed == null || isLoading;
+
+    final double dimension = switch (size) {
+      ButtonSize.small => {{res 32 'w' flags.usesScreenutil}},
+      ButtonSize.medium => {{res 40 'w' flags.usesScreenutil}},
+      ButtonSize.large => {{res 48 'w' flags.usesScreenutil}},
+    };
+
+    final double iconSize = switch (size) {
+      ButtonSize.small => {{res 18 'sp' flags.usesScreenutil}},
+      ButtonSize.medium => {{res 22 'sp' flags.usesScreenutil}},
+      ButtonSize.large => {{res 26 'sp' flags.usesScreenutil}},
+    };
+
+    final (bg, fg) = switch (variant) {
+      ButtonVariant.primary => (color ?? cs.primary, cs.onPrimary),
+      ButtonVariant.secondary => (cs.secondaryContainer, cs.onSecondaryContainer),
+      ButtonVariant.outline => (Colors.transparent, color ?? cs.primary),
+      ButtonVariant.ghost => (Colors.transparent, color ?? cs.onSurface),
+      ButtonVariant.danger => (cs.error, cs.onError),
+      ButtonVariant.success => (appColors.success, appColors.onSuccess),
+    };
+
+    final child = isLoading
+        ? SizedBox(
+            width: iconSize,
+            height: iconSize,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: fg,
+            ),
+          )
+        : Icon(icon, size: iconSize, color: isDisabled ? fg.withValues(alpha: 0.5) : fg);
+
+    final button = useCupertino
+        ? CupertinoButton(
+            padding: EdgeInsets.zero,
+            onPressed: isDisabled ? null : onPressed,
+            minimumSize: Size.square(dimension),
+            child: AnimatedContainer(
+              duration: AppDurations.fast,
+              width: dimension,
+              height: dimension,
+              decoration: BoxDecoration(
+                color: bg,
+                shape: BoxShape.circle,
+                border: variant == ButtonVariant.outline
+                    ? Border.all(color: cs.outline, width: 1.5)
+                    : null,
+              ),
+              alignment: Alignment.center,
+              child: child,
+            ),
+          )
+        : IconButton(
+            onPressed: isDisabled ? null : onPressed,
+            tooltip: tooltip,
+            style: IconButton.styleFrom(
+              backgroundColor: bg,
+              foregroundColor: fg,
+              disabledForegroundColor: fg.withValues(alpha: 0.5),
+              minimumSize: Size(dimension, dimension),
+              shape: variant == ButtonVariant.outline
+                  ? CircleBorder(side: BorderSide(color: cs.outline, width: 1.5))
+                  : const CircleBorder(),
+            ),
+            icon: child,
+          );
+
+    return AnimatedOpacity(
+      duration: AppDurations.fast,
+      opacity: isDisabled ? 0.6 : 1.0,
+      child: button,
+    );
+  }
+}

@@ -48,6 +48,7 @@ agent-plugins/
 
 # Generator Output
 /dev_out/
+/dev_out_ui_*/
 scripts/dev_config.json
 
 # Test Results

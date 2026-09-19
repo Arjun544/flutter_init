@@ -1,0 +1,55 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadDatePicker] adapter mirroring [AppDatePicker].
+///
+/// Usage:
+/// ```dart
+/// ShadAppDatePicker(
+///   selected: birthday,
+///   onChanged: (d) => setState(() => birthday = d),
+/// )
+/// ```
+class ShadAppDatePicker extends StatelessWidget {
+  const ShadAppDatePicker({
+    super.key,
+    this.selected,
+    this.onChanged,
+    this.label,
+    this.hint,
+    this.enabled = true,
+  });
+
+  final DateTime? selected;
+  final ValueChanged<DateTime?>? onChanged;
+  final String? label;
+  final String? hint;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final picker = IgnorePointer(
+      ignoring: !enabled,
+      child: Opacity(
+        opacity: enabled ? 1 : 0.5,
+        child: ShadDatePicker(
+          selected: selected,
+          onChanged: onChanged,
+          placeholder: Text(hint ?? 'Pick a date'),
+        ),
+      ),
+    );
+
+    if (label == null) return picker;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(label!, style: ShadTheme.of(context).textTheme.small),
+        const SizedBox(height: 6),
+        picker,
+      ],
+    );
+  }
+}

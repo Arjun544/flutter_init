@@ -1,0 +1,129 @@
+import '../../../../../imports/imports.dart';
+
+/// A chip-style toggle group supporting single or multi selection.
+///
+/// Usage:
+/// ```dart
+/// AppToggleGroup(
+///   options: const ['All', 'Active', 'Done'],
+///   selected: selectedIndexes,
+///   multiSelect: false,
+///   onChanged: (indexes) => setState(() => selectedIndexes = indexes),
+/// )
+/// ```
+class AppToggleGroup extends StatelessWidget {
+  const AppToggleGroup({
+    super.key,
+    required this.options,
+    required this.selected,
+    required this.onChanged,
+    this.multiSelect = false,
+    this.platform,
+  });
+
+  final List<String> options;
+  final List<int> selected;
+  final ValueChanged<List<int>> onChanged;
+  final bool multiSelect;
+  final AppPlatformStyle? platform;
+
+  void _toggle(int index) {
+    if (multiSelect) {
+      final next = List<int>.of(selected);
+      if (next.contains(index)) {
+        next.remove(index);
+      } else {
+        next.add(index);
+      }
+      next.sort();
+      onChanged(next);
+    } else {
+      onChanged([index]);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = platform != null
+        ? platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final cs = context.colors;
+
+    return Wrap(
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
+      children: [
+        for (var i = 0; i < options.length; i++)
+          _ToggleChip(
+            label: options[i],
+            selected: selected.contains(i),
+            useCupertino: useCupertino,
+            colorScheme: cs,
+            onTap: () => _toggle(i),
+          ),
+      ],
+    );
+  }
+}
+
+class _ToggleChip extends StatelessWidget {
+  const _ToggleChip({
+    required this.label,
+    required this.selected,
+    required this.useCupertino,
+    required this.colorScheme,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final bool useCupertino;
+  final ColorScheme colorScheme;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = selected ? colorScheme.primary : colorScheme.surfaceContainerHighest;
+    final fg = selected ? colorScheme.onPrimary : colorScheme.onSurface;
+
+    final child = AnimatedContainer(
+      duration: AppDurations.fast,
+      curve: AppCurves.decelerate,
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: AppBorders.full,
+        border: selected
+            ? null
+            : Border.all(color: colorScheme.outlineVariant),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: fg,
+          fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+          fontSize: {{res 13 'sp' flags.usesScreenutil}},
+        ),
+      ),
+    );
+
+    if (useCupertino) {
+      return GestureDetector(
+        onTap: onTap,
+        child: child,
+      );
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: AppBorders.full,
+        child: child,
+      ),
+    );
+  }
+}

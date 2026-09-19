@@ -81,8 +81,10 @@ export function registerHelpers(hbs: Hbs) {
     )
     hbs.registerHelper("res", (value: unknown, unit: string, usesScreenutil: boolean) => {
         if (usesScreenutil) return `${value}.${unit}`;
-        
-        return String(value);
+
+        // Whole numbers as int literals (prefer_int_literals); Dart accepts them as doubles.
+        const n = Number(value)
+        return Number.isFinite(n) ? String(n) : String(value)
     })
     hbs.registerHelper("when", function (this: unknown, condition, options) {
         return condition ? options.fn(this) : options.inverse(this)

@@ -1,0 +1,122 @@
+import '../../../../../imports/imports.dart';
+
+/// Increment / decrement stepper for numeric values.
+///
+/// Usage:
+/// ```dart
+/// AppNumberStepper(
+///   value: quantity,
+///   min: 1,
+///   max: 99,
+///   onChanged: (v) => setState(() => quantity = v),
+/// )
+/// ```
+class AppNumberStepper extends StatelessWidget {
+  const AppNumberStepper({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.min = 0,
+    this.max = 100,
+    this.step = 1,
+    this.enabled = true,
+    this.platform,
+  });
+
+  final num value;
+  final ValueChanged<num> onChanged;
+  final num min;
+  final num max;
+  final num step;
+  final bool enabled;
+  final AppPlatformStyle? platform;
+
+  void _decrement() {
+    final next = value - step;
+    if (next >= min) onChanged(next);
+  }
+
+  void _increment() {
+    final next = value + step;
+    if (next <= max) onChanged(next);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = platform != null
+        ? platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final cs = context.colors;
+    final tt = context.textTheme;
+    final canDec = enabled && value > min;
+    final canInc = enabled && value < max;
+    final display = value is int || value == value.roundToDouble()
+        ? value.toInt().toString()
+        : value.toString();
+
+    Widget buildButton({
+      required IconData materialIcon,
+      required IconData cupertinoIcon,
+      required VoidCallback? onPressed,
+    }) {
+      final icon = useCupertino ? cupertinoIcon : materialIcon;
+      final child = Icon(
+        icon,
+        size: {{res 18 'sp' flags.usesScreenutil}},
+        color: onPressed == null
+            ? cs.onSurface.withValues(alpha: 0.3)
+            : cs.onSurface,
+      );
+
+      if (useCupertino) {
+        return CupertinoButton(
+          padding: EdgeInsets.all(AppSpacing.sm),
+          minimumSize: Size.zero,
+          onPressed: onPressed,
+          child: child,
+        );
+      }
+
+      return IconButton(
+        onPressed: onPressed,
+        visualDensity: VisualDensity.compact,
+        icon: child,
+      );
+    }
+
+    return AnimatedContainer(
+      duration: AppDurations.fast,
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest,
+        borderRadius: AppBorders.input,
+        border: Border.all(color: cs.outlineVariant),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          buildButton(
+            materialIcon: Icons.remove,
+            cupertinoIcon: CupertinoIcons.minus,
+            onPressed: canDec ? _decrement : null,
+          ),
+          ConstrainedBox(
+            constraints: {{#unless flags.usesScreenutil}}const {{/unless}}BoxConstraints(minWidth: {{res 40 'w' flags.usesScreenutil}}),
+            child: Text(
+              display,
+              textAlign: TextAlign.center,
+              style: tt.titleMedium?.copyWith(
+                color: cs.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          buildButton(
+            materialIcon: Icons.add,
+            cupertinoIcon: CupertinoIcons.plus,
+            onPressed: canInc ? _increment : null,
+          ),
+        ],
+      ),
+    );
+  }
+}

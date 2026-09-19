@@ -20,6 +20,9 @@ const baseConfig: FlutterInitConfig = {
   themeMode: 'both',
   primaryColor: '#027DFD',
   outputDir: '/tmp/test_app',
+  platformStyle: 'adaptive',
+  usesShadcn: false,
+  defaultKit: 'app',
 
   // Icons
   usesIconsaxPlus: false,

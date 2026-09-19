@@ -91,6 +91,12 @@ type TemplateContext = ScaffoldConfig & {
             family: string
             fonts: Array<Pick<CustomFontEntry, "fileName" | "style" | "weight">>
         }>
+        /** Opt-in shadcn_ui component layer */
+        usesShadcn: boolean
+        /** Feature screens use ShadApp* when true */
+        shadcnDefault: boolean
+        /** Adaptive / material / cupertino platform style for App* widgets */
+        platformStyle: "adaptive" | "material" | "cupertino"
     }
 }
 
@@ -357,6 +363,9 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             hasCustomFonts: fontFamilies.length > 0,
             primaryFontFamily,
             fontFamilies,
+            usesShadcn: config.ui.shadcn,
+            shadcnDefault: config.ui.shadcn && config.ui.defaultKit === "shadcn",
+            platformStyle: config.ui.platformStyle,
         },
     }
 }
@@ -391,6 +400,7 @@ async function resolveOverlayDirs(
         usesFilePicker: config.misc.usesFilePicker,
         usesDeviceInfoPlus: config.misc.usesDeviceInfoPlus,
         usesAppVersionUpdate: config.misc.usesAppVersionUpdate,
+        usesShadcn: config.ui.shadcn,
     })
     const candidates: Array<[string, boolean]> = [
         [path.join(root, "overlays", "architecture", selection.architecture), true],
@@ -423,6 +433,7 @@ async function resolveOverlayDirs(
         ...selection.device.map((name) => [path.join(root, "overlays", "device", name), true] as [string, boolean]),
         [path.join(root, "overlays", "extras", "flavors"), selection.flavors],
         [path.join(root, "overlays", "extras", "dotenv"), selection.dotenv],
+        [path.join(root, "overlays", "ui", "shadcn"), selection.shadcn],
     ]
 
     for (const [candidate, enabled] of candidates) {

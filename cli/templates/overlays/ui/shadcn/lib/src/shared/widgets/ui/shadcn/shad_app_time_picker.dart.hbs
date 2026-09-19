@@ -1,0 +1,49 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadTimePicker] adapter mirroring [AppTimePicker].
+///
+/// Uses [ShadTimeOfDay] (not Material [TimeOfDay]).
+///
+/// Usage:
+/// ```dart
+/// ShadAppTimePicker(
+///   initialValue: selectedTime,
+///   onChanged: (t) => setState(() => selectedTime = t),
+/// )
+/// ```
+class ShadAppTimePicker extends StatelessWidget {
+  const ShadAppTimePicker({
+    super.key,
+    this.initialValue,
+    this.onChanged,
+    this.label,
+    this.enabled = true,
+  });
+
+  final ShadTimeOfDay? initialValue;
+  final ValueChanged<ShadTimeOfDay>? onChanged;
+  final String? label;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final picker = ShadTimePicker(
+      initialValue: initialValue,
+      onChanged: onChanged,
+      enabled: enabled,
+    );
+
+    if (label == null) return picker;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(label!, style: ShadTheme.of(context).textTheme.small),
+        const SizedBox(height: 6),
+        picker,
+      ],
+    );
+  }
+}
