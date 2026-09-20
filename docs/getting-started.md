@@ -13,11 +13,16 @@ FlutterInit is an open-source scaffolding tool that generates production-ready F
 3. Click **Generate**.
 4. Download the `.zip` archive.
 5. Unzip the archive into your development directory.
-6. Install dependencies:
+6. Create platform folders (the web ZIP does not include `android/`, `ios/`, `web/`, or desktop runners — use the CLI for a full project with platforms already present):
+   ```bash
+   flutter create . --project-name <your_app_name> --org <com.example>
+   ```
+   Use the exact command printed in your generated `SETUP.md` / `README.md`.
+7. Install dependencies:
    ```bash
    flutter pub get
    ```
-7. Run the application:
+8. Run the application:
    ```bash
    flutter run
    ```

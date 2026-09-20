@@ -4,7 +4,22 @@ This project was generated dynamically based on your specific requirements. Befo
 
 ---
 
-## 1. 📦 Initial Dependencies & Generation
+## 1. 📱 Platform folders (web download only)
+
+The web wizard ZIP does **not** include native runners (`android/`, `ios/`, `web/`, `windows/`, `macos/`, `linux/`). Those are created only via the Flutter CLI.
+
+Skip this step if you generated the project with the FlutterInit CLI (`flutter create` already ran).
+
+From the project root:
+```bash
+flutter create . --project-name {{flags.appSnake}} --org {{orgName}}
+```
+
+This adds the platform folders without overwriting your generated Dart sources.
+
+---
+
+## 2. 📦 Initial Dependencies & Generation
 
 First, fetch all pub packages, then format the generated Dart (templates are not pre-formatted):
 ```bash
@@ -34,7 +49,7 @@ flutter pub run easy_localization:generate -S assets/translations -O lib/src/cor
 
 ---
 
-## 2. 🎨 Native Splash Screen Setup
+## 3. 🎨 Native Splash Screen Setup
 
 {{#if flags.usesFlutterNativeSplash}}
 This project uses `flutter_native_splash`.
@@ -62,7 +77,7 @@ dart run flutter_native_splash:create --path=flutter_native_splash.yaml
 
 ---
 
-## 3. 🔐 App Permissions (Android & iOS)
+## 4. 🔐 App Permissions (Android & iOS)
 
 Based on your chosen flags (e.g. {{#if flags.usesImagePicker}}Image Picker{{/if}} {{#if flags.usesGeolocator}}, Geolocator{{/if}} {{#if flags.usesFilePicker}}, File Picker{{/if}}), you must configure Native permissions before testing these features.
 
@@ -171,7 +186,7 @@ end
 
 ---
 
-## 4. 🌍 Environment Variables
+## 5. 🌍 Environment Variables
 
 Your project relies on `flutter_dotenv` to load secrets. 
 
@@ -181,7 +196,7 @@ Your project relies on `flutter_dotenv` to load secrets.
 
 ---
 
-## 5. 💾 Local Storage (Hive)
+## 6. 💾 Local Storage (Hive)
 
 {{#if flags.usesHive}}
 Your project uses **Hive CE** (Community Edition) for high-performance local NoSQL storage.
@@ -198,7 +213,7 @@ Your project uses **Hive CE** (Community Edition) for high-performance local NoS
 
 ---
 
-## 6. ☁️ Backend Connections
+## 7. ☁️ Backend Connections
 
 {{#if (eq backend.provider "firebase")}}
 You chose **Firebase** as your backend architecture.
@@ -235,7 +250,7 @@ Verify that your Base URL pointing to staging/production is correctly initialize
 
 ---
 
-## 7. 🚀 Running the App
+## 8. 🚀 Running the App
 
 Once everything above is verified:
 
