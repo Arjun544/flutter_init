@@ -166,8 +166,8 @@ export const platformStyleOptions = [
 ] as const satisfies Array<{ value: PlatformStyle; label: string; description: string }>
 
 export const uiKitOptions = [
-    { value: "app", label: "App kit (native)", description: "Generated screens use App* adaptive widgets." },
-    { value: "shadcn", label: "shadcn/ui", description: "Generated screens use ShadApp* wrappers." },
+    { value: "app", label: "App kit (native)", description: "Generated screens use App adaptive widgets." },
+    { value: "shadcn", label: "shadcn/ui", description: "Generated screens use ShadApp wrappers." },
 ] as const satisfies Array<{ value: UiKit; label: string; description: string }>
 
 const firebaseSchema = z.object({

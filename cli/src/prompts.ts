@@ -333,7 +333,7 @@ export async function runPrompts(): Promise<FlutterInitConfig> {
   checkCancel(primaryColor)
 
   const platformStyle = await select<'adaptive' | 'material' | 'cupertino'>({
-    message: 'Platform style for App* components',
+    message: 'Platform style for App components',
     options: [
       {
         value: 'adaptive',
@@ -365,8 +365,8 @@ export async function runPrompts(): Promise<FlutterInitConfig> {
     const kit = await select<'app' | 'shadcn'>({
       message: 'Default kit for generated screens',
       options: [
-        { value: 'app', label: 'App kit (native)', hint: 'Screens use App* adaptive widgets.' },
-        { value: 'shadcn', label: 'shadcn/ui', hint: 'Screens use ShadApp* wrappers.' },
+        { value: 'app', label: 'App kit (native)', hint: 'Screens use App adaptive widgets.' },
+        { value: 'shadcn', label: 'shadcn/ui', hint: 'Screens use ShadApp wrappers.' },
       ],
     })
     checkCancel(kit)

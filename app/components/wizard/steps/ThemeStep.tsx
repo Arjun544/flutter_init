@@ -81,7 +81,7 @@ const themeChoiceOptions: Array<{
     {
         value: "shadcn",
         label: "shadcn_ui",
-        description: "shadcn/ui package plus ShadApp* wrappers.",
+        description: "shadcn/ui package plus ShadApp wrappers.",
     },
 ]
 
@@ -96,19 +96,19 @@ const defaultAppOptions: Array<{
         value: "material",
         radioValue: "default_app_material",
         label: "MaterialApp",
-        description: "Root app is MaterialApp; screens use App* widgets.",
+        description: "Root app is MaterialApp; screens use App widgets.",
     },
     {
         value: "cupertino",
         radioValue: "default_app_cupertino",
         label: "CupertinoApp",
-        description: "Root app is CupertinoApp; screens use App* widgets.",
+        description: "Root app is CupertinoApp; screens use App widgets.",
     },
     {
         value: "shad",
         radioValue: "default_app_shad",
         label: "ShadApp",
-        description: "Root wraps with ShadApp; screens use ShadApp* widgets.",
+        description: "Root wraps with ShadApp; screens use ShadApp widgets.",
     },
 ]
 

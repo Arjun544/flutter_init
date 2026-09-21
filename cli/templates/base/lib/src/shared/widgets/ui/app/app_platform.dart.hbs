@@ -52,7 +52,7 @@ class AppPlatformScope extends InheritedWidget {
 }
 
 extension AppPlatformX on BuildContext {
-  /// True when App* widgets should render Cupertino for this context.
+  /// True when App widgets should render Cupertino for this context.
   bool get isCupertinoUi {
     final style = AppPlatformScope.of(this);
     return switch (style) {
