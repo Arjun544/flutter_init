@@ -1,0 +1,60 @@
+name: "Changelog + Version"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+# On every push to main: bump cli/package.json (create-page badge) and
+# prepend an OpenAI-written Keep-a-Changelog section. Commits directly
+# with [changelog][skip ci] so tests and this workflow do not loop.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: changelog-main
+  cancel-in-progress: false
+
+jobs:
+  changelog:
+    name: Update changelog & version
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[changelog]') }}
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # Needed so the bot commit triggers deploy hooks that listen to main.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Generate changelog + bump version
+        id: release
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: gpt-4o-mini
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: node scripts/update-changelog.mjs
+
+      - name: Commit CHANGELOG.md and cli/package.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md cli/package.json
+          if git diff --staged --quiet; then
+            echo "No changelog/version changes to commit."
+            exit 0
+          fi
+          git commit -m "docs: release v${{ steps.release.outputs.version }} [changelog][skip ci]"
+          git push

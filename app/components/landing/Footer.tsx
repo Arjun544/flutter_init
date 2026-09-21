@@ -121,6 +121,12 @@ export function Footer() {
 
           <div className="flex items-center gap-4">
             <Link
+              href="/changelog"
+              className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors font-medium"
+            >
+              Changelog
+            </Link>
+            <Link
               href="/blogs"
               className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors font-medium"
             >
