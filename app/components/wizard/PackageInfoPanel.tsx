@@ -126,7 +126,7 @@ const PACKAGE_INFO: Record<string, {
     },
     theme_shadcn: {
         title: "shadcn_ui",
-        description: "Adds the shadcn_ui package plus ShadApp* wrappers and a ShadThemeData bridge. Pick MaterialApp, CupertinoApp, or ShadApp as the default root.",
+        description: "Adds the shadcn_ui package plus ShadApp wrappers and a ShadThemeData bridge. Pick MaterialApp, CupertinoApp, or ShadApp as the default root.",
         packageName: "shadcn_ui",
         url: "https://mariuti.com/flutter-shadcn-ui/",
     },
@@ -136,15 +136,15 @@ const PACKAGE_INFO: Record<string, {
     },
     default_app_material: {
         title: "MaterialApp",
-        description: "Root widget is MaterialApp. shadcn_ui is included and wrapped around it; generated screens use App* widgets by default.",
+        description: "Root widget is MaterialApp. shadcn_ui is included and wrapped around it; generated screens use App widgets by default.",
     },
     default_app_cupertino: {
         title: "CupertinoApp",
-        description: "Root widget is CupertinoApp. shadcn_ui is included and wrapped around it; generated screens use App* widgets by default.",
+        description: "Root widget is CupertinoApp. shadcn_ui is included and wrapped around it; generated screens use  widgets by default.",
     },
     default_app_shad: {
         title: "ShadApp",
-        description: "Uses ShadApp as the theme host and generates feature screens with ShadApp* wrappers by default.",
+        description: "Uses ShadApp as the theme host and generates feature screens with ShadApp wrappers by default.",
     },
     appearance_light: {
         title: "Light mode",
@@ -160,29 +160,29 @@ const PACKAGE_INFO: Record<string, {
     },
     platform_style_adaptive: {
         title: "Adaptive platform style",
-        description: "App* components render Material on Android and Cupertino on iOS/macOS at runtime. Override per widget with the platform parameter or wrap a subtree in AppPlatformScope.",
+        description: "App components render Material on Android and Cupertino on iOS/macOS at runtime. Override per widget with the platform parameter or wrap a subtree in AppPlatformScope.",
     },
     platform_style_material: {
         title: "Material platform style",
-        description: "Force every App* component to use Material widgets on all platforms.",
+        description: "Force every App component to use Material widgets on all platforms.",
     },
     platform_style_cupertino: {
         title: "Cupertino platform style",
-        description: "Force every App* component to use Cupertino widgets on all platforms. Colors still come from your Material seed ColorScheme so both kits stay in sync.",
+        description: "Force every App component to use Cupertino widgets on all platforms. Colors still come from your Material seed ColorScheme so both kits stay in sync.",
     },
     shadcn_ui: {
         title: "shadcn/ui for Flutter",
         packageName: "shadcn_ui",
-        description: "Adds the shadcn_ui package plus ShadApp* wrappers and a ShadThemeData bridge built from your design tokens. Requires Flutter SDK >= 3.41.",
+        description: "Adds the shadcn_ui package plus ShadApp wrappers and a ShadThemeData bridge built from your design tokens. Requires Flutter SDK >= 3.41.",
         url: "https://mariuti.com/flutter-shadcn-ui/",
     },
     ui_kit_app: {
         title: "App kit (native)",
-        description: "Generated feature screens (login, signup, home, onboarding) use the App* adaptive widget kit.",
+        description: "Generated feature screens (login, signup, home, onboarding) use the App adaptive widget kit.",
     },
     ui_kit_shadcn: {
         title: "shadcn/ui kit",
-        description: "Generated feature screens use ShadApp* wrappers that mirror the App* API so you can swap kits without rewriting screens.",
+        description: "Generated feature screens use ShadApp wrappers that mirror the App API so you can swap kits without rewriting screens.",
     },
     localization_en: {
         title: "English Localization",

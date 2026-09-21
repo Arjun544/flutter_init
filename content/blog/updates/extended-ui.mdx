@@ -1,0 +1,75 @@
+---
+title: "Extended UI: a real widget kit in every FlutterInit scaffold"
+description: "FlutterInit now generates 50+ adaptive App widgets by default, plus optional shadcn_ui ShadApp wrappers you pick on the UI & theme step."
+kind: update
+category: announcements
+tags: [ui, design-system, shadcn, material, cupertino, flutter, scaffolding]
+publishedAt: "2026-09-21"
+author: arjun
+featured: true
+---
+
+Most Flutter generators stop at folders and `pubspec.yaml`. You unzip, open login, and still face raw `ElevatedButton` and a `TextField` with magic padding. That is where the week disappears.
+
+I got tired of that. So FlutterInit now ships **Extended UI**: a product widget kit under `lib/src/shared/widgets/ui/`, generated with the rest of the project.
+
+## What you get by default
+
+Every scaffold includes the App kit. Fifty-plus `App` widgets that pick Material or Cupertino at runtime through `AppPlatformScope`.
+
+| Category | Examples |
+|---|---|
+| Actions | `AppButton`, `AppIconButton`, `AppFab`, `AppChip` |
+| Inputs | `AppTextField`, `AppPasswordField`, `AppOtpField`, `AppDatePicker` |
+| Display | `AppCard`, `AppAvatar`, `AppBadge`, `AppDataTable` |
+| Feedback | Loading, empty states, dialogs, sheets, snackbars |
+| Navigation | `AppScaffold`, `AppTopBar`, `AppBottomNavBar`, `AppTabBar` |
+| Layout | `AppGap`, `AppSection`, `AppResponsiveBuilder` |
+
+Platform style is one of three modes:
+
+- Adaptive: Material on Android, Cupertino on iOS and macOS
+- Material: Material everywhere
+- Cupertino: Cupertino everywhere, still seeded from your `ColorScheme`
+
+Override one widget with `platform:`, or wrap a subtree when a screen needs a different look. Debug builds include `/debug/ui-showcase` so you can poke every control without writing a throwaway page.
+
+## Optional shadcn_ui
+
+On the UI & theme step, pick `shadcn_ui` and generation adds the [shadcn_ui](https://mariuti.com/flutter-shadcn-ui/) package, a `ShadThemeData` bridge from the same seed color, and `ShadApp` wrappers that mirror the `App` API.
+
+When shadcn is on, you also choose the root:
+
+- MaterialApp: Material root, screens still default to `App`
+- CupertinoApp: Cupertino root, screens still default to `App`
+- ShadApp: ShadApp hosts theme, feature screens default to `ShadApp`
+
+Login, signup, home, and onboarding keep the same structure either way. You are not rewriting screens to try a different look.
+
+## Tokens stay required
+
+The kit sits on the same tokens as the rest of the scaffold:
+
+```dart
+AppSpacing.md
+AppBorders.card
+AppShadows.elevated
+context.colors.primary
+context.appColors.success
+context.textTheme.titleMedium
+```
+
+`DESIGN.md` and the agent docs tell humans and coding agents to reach for `AppButton`, not a one-off Material control with hex colors.
+
+## Try it
+
+1. Open [flutterinit.com/create](https://flutterinit.com/create)
+2. Reach UI & theme
+3. Set appearance and primary color
+4. Pick Material, Cupertino, or shadcn_ui
+5. If shadcn, pick MaterialApp, CupertinoApp, or ShadApp
+6. Generate, or open Preview code and inspect `lib/src/shared/widgets/ui/`
+
+Same options in the CLI via `npx create-flutterinit`.
+
+File layout, `AppPlatformScope`, screen patterns, and wizard config live in the [Extended UI guide](/blogs/guides/ui/extended-ui-app-widgets-shadcn).

@@ -1,0 +1,170 @@
+---
+title: "How to use Extended UI: App widgets, platform style, and shadcn_ui"
+description: "A practical guide to FlutterInit Extended UI: App widgets, AppPlatformScope, optional ShadApp via shadcn_ui, and how the wizard maps to config."
+kind: guide
+category: ui
+tags: [ui, app-widgets, shadcn, material, cupertino, design-system, flutterinit]
+publishedAt: "2026-09-21"
+author: arjun
+whenToChoose: "Use the App kit for native Material/Cupertino UI. Turn on shadcn_ui when you want web-style controls with the same screen APIs."
+---
+
+FlutterInit Extended UI is the generated widget kit under `lib/src/shared/widgets/ui/`. Every project gets adaptive `App` widgets. Turn on `shadcn_ui` and you also get `ShadApp` wrappers with matching constructors, so auth and home can change kits without a rewrite.
+
+Short launch note: [Extended UI update](/blogs/updates/extended-ui).
+
+## The problem this solves
+
+Architecture and state get you a clean tree. UI still does not. Teams invent buttons, fields, and empty states per screen, then argue about iOS vs Android chrome later.
+
+Extended UI puts one kit in the repo from generate time: one import path, design tokens, a debug showcase, and notes in `DESIGN.md` so agents stop inventing `EdgeInsets.all(13)`.
+
+## Folder layout
+
+```
+lib/src/shared/widgets/ui/
+  app/                    # always generated
+    app_platform.dart     # AppPlatformScope + helpers
+    actions/              # AppButton, AppFab, AppChip, …
+    inputs/               # AppTextField, AppOtpField, …
+    display/              # AppCard, AppAvatar, …
+    feedback/             # loading, dialogs, sheets, snackbars
+    navigation/           # AppScaffold, AppTopBar, …
+    layout/               # AppGap, AppSection, …
+  shadcn/                 # only when ui.shadcn is true
+    shad_theme.dart
+    shad_app_button.dart
+    …
+  ui_showcase_screen.dart
+  ui.dart                 # barrel export
+```
+
+Import through your shared barrel, usually `imports.dart`. Prefer `AppButton` over raw `ElevatedButton` or `CupertinoButton`.
+
+## Platform style
+
+`AppPlatformScope` sets how `App` widgets render:
+
+```dart
+AppPlatformScope(
+  style: AppPlatformStyle.adaptive, // or .material / .cupertino
+  child: child,
+)
+```
+
+Resolution order, highest wins:
+
+1. Per-widget `platform:`
+2. Nearest `AppPlatformScope`
+3. If adaptive, Material on Android and Cupertino on iOS/macOS from `ThemeData.platform`
+
+```dart
+AppButton(
+  label: 'Continue',
+  onPressed: onContinue,
+  platform: AppPlatformStyle.cupertino,
+)
+
+context.isCupertinoUi;
+context.resolveCupertinoUi(platform);
+```
+
+Colors still come from your seed `ColorScheme`. Forcing Cupertino does not invent a second palette.
+
+I default projects to adaptive unless the product is clearly Material-only, like many web clients, or iOS-first.
+
+## Building a screen
+
+Generated login, signup, home, and onboarding already use the kit. A form looks like this:
+
+```dart
+AppTextField(
+  controller: emailController,
+  label: 'Email',
+  prefixIcon: const Icon(Icons.email_outlined),
+  validator: (v) { /* … */ },
+),
+SizedBox(height: AppSpacing.md),
+AppButton(
+  label: 'Sign in',
+  onPressed: isLoading ? null : onSubmit,
+  isLoading: isLoading,
+  isFullWidth: true,
+  variant: ButtonVariant.primary,
+  height: ButtonSize.large,
+)
+```
+
+Keep spacing and type on tokens: `AppSpacing`, `context.textTheme`, `context.colors`. [DESIGN.md explained](/blogs/guides/ai-context/design-md-explained) covers the full contract.
+
+In debug builds, open `/debug/ui-showcase`, routed as `AppRoutes.uiShowcase`, to browse the kit without a scratch screen.
+
+## Adding shadcn_ui
+
+On UI & theme, select shadcn_ui. Generation adds:
+
+- `shadcn_ui` in `pubspec.yaml`. Needs Flutter SDK 3.41 or newer.
+- `buildShadLightTheme` / `buildShadDarkTheme` from the same seed as Material
+- `ShadApp` wrappers under `ui/shadcn/` with the same params as `App`
+
+```dart
+ShadAppButton(
+  label: 'Save',
+  onPressed: _save,
+  variant: ButtonVariant.primary,
+  height: ButtonSize.large,
+  isLoading: state.isLoading,
+)
+```
+
+Feature templates swap names through Handlebars partials. Same screen tree, different widget:
+
+| Partial | App kit | shadcn as default kit |
+|---|---|---|
+| `ui/button` | `AppButton` | `ShadAppButton` |
+| `ui/text_field` | `AppTextField` | `ShadAppTextField` |
+| `ui/card` | `AppCard` | `ShadAppCard` |
+
+### Default app when shadcn is on
+
+| Choice | Root | Screens default to |
+|---|---|---|
+| MaterialApp | `MaterialApp` with shadcn wrap | `App` |
+| CupertinoApp | `CupertinoApp` with shadcn wrap | `App` |
+| ShadApp | `ShadApp` as theme host | `ShadApp` |
+
+Both kits stay exported when shadcn is enabled. You can call `AppButton` from a ShadApp project if you want a native control in one place.
+
+## Wizard to config
+
+| UI & theme choice | Config |
+|---|---|
+| Material | `theme.preset: material3`, `ui.shadcn: false`, `ui.defaultKit: app` |
+| Cupertino | `theme.preset: cupertino`, often `ui.platformStyle: cupertino` |
+| shadcn_ui | `ui.shadcn: true`; default app sets `defaultKit` and root |
+| Appearance | `theme.darkMode.enabled` / `.system` |
+| Primary color | `theme.primaryColor` (seed for Material and Shad themes) |
+
+`npx create-flutterinit` asks the same UI questions.
+
+## What I pick when
+
+| Goal | Pick |
+|---|---|
+| Native phone/tablet | App kit, platform style adaptive |
+| Material everywhere, including web demos and admin | App kit + material |
+| iOS-first chrome | Cupertino theme or cupertino platform style |
+| Web-style menus, tables, dense controls | shadcn_ui, often with ShadApp as default |
+| Cheap kit swaps later | Stick to `App` / `ShadApp` in features |
+
+Mixing raw Material widgets into feature screens while the rest of the app uses the kit is how you get uneven spacing and two button styles. Don't.
+
+## Checklist after generate
+
+- Open `lib/src/shared/widgets/ui/` and skim `app/`
+- Hit `/debug/ui-showcase` once
+- Read the UI section in `DESIGN.md`
+- Build new screens with `App` (or `ShadApp` if that is the default kit)
+- Skip raw `ElevatedButton` / `TextField` in features unless you have a reason
+
+Generate on [/create](/create), set UI & theme, then open the tree or Preview code before you download.

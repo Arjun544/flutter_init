@@ -81,7 +81,7 @@ describe("UI component library generation", () => {
         expect(app).toContain("GlobalShadLocalizations")
     })
 
-    it("uses ShadApp* names in login when defaultKit is shadcn", async () => {
+    it("uses ShadApp names in login when defaultKit is shadcn", async () => {
         const config = {
             ...buildConfig(base),
             ui: {

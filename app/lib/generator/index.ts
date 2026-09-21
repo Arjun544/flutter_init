@@ -95,9 +95,9 @@ type TemplateContext = ScaffoldConfig & {
         }>
         /** Opt-in shadcn_ui component layer */
         usesShadcn: boolean
-        /** Feature screens use ShadApp* when true */
+        /** Feature screens use ShadApp when true */
         shadcnDefault: boolean
-        /** Adaptive / material / cupertino platform style for App* widgets */
+        /** Adaptive / material / cupertino platform style for App widgets */
         platformStyle: "adaptive" | "material" | "cupertino"
     }
 }
