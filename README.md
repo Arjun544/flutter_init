@@ -165,7 +165,7 @@ FlutterInit ships a built-in blog at [flutterinit.com/blogs](https://flutterinit
 | **Updates** | Release notes, announcements, and major product stories |
 | **Guides** | Deep-dive technical guides for every supported stack combination |
 
-The living product changelog lives at [flutterinit.com/changelog](https://flutterinit.com/changelog) (source: [`CHANGELOG.md`](CHANGELOG.md)). The version badge on [/create](https://flutterinit.com/create) tracks [`cli/package.json`](cli/package.json) and is bumped automatically on every push to `main`.
+The living product changelog lives at [flutterinit.com/changelog](https://flutterinit.com/changelog) (source: [`CHANGELOG.md`](CHANGELOG.md)). The version badge on [/create](https://flutterinit.com/create) tracks [`cli/package.json`](cli/package.json); every push to `main` opens a changelog PR that bumps it.
 
 Every guide shows the exact `stackConfig` it covers (Architecture · State · Backend · Navigation), a "when to choose this stack" recommendation, an interactive file tree of the generated output, and a Table of Contents sidebar.
 
