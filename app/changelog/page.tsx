@@ -43,14 +43,12 @@ function bodyWithoutTitle(markdown: string): string {
   return markdown.replace(/^#\s+Changelog\s*\r?\n+/, "").trimStart()
 }
 
-async function loadChangelog(): Promise<string> {
-  const filePath = path.join(process.cwd(), "CHANGELOG.md")
-  return readFile(filePath, "utf8")
-}
+// Module-scope read keeps this route prerenderable under Cache Components.
+const changelogSource = bodyWithoutTitle(
+  await readFile(path.join(process.cwd(), "CHANGELOG.md"), "utf8"),
+)
 
-export default async function ChangelogPage() {
-  const raw = await loadChangelog()
-  const source = bodyWithoutTitle(raw)
+export default function ChangelogPage() {
   const version = cliPackage.version
 
   return (
@@ -131,7 +129,7 @@ export default async function ChangelogPage() {
 
         <article className="prose-custom">
           <MDXRemote
-            source={source}
+            source={changelogSource}
             components={mdxComponents}
             options={{ mdxOptions }}
           />
