@@ -1,0 +1,30 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadProgress] adapter mirroring [AppProgressBar].
+///
+/// Usage:
+/// ```dart
+/// ShadAppProgress(value: 0.4)
+/// // indeterminate:
+/// ShadAppProgress()
+/// ```
+class ShadAppProgress extends StatelessWidget {
+  const ShadAppProgress({
+    super.key,
+    this.value,
+    this.minHeight,
+  });
+
+  /// Progress from 0.0–1.0. Pass null for indeterminate.
+  final double? value;
+  final double? minHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadProgress(
+      value: value,
+      minHeight: minHeight,
+    );
+  }
+}

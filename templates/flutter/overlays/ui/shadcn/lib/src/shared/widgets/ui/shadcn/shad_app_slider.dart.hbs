@@ -1,0 +1,58 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadSlider] adapter mirroring [AppSlider].
+///
+/// Usage:
+/// ```dart
+/// ShadAppSlider(
+///   value: volume,
+///   min: 0,
+///   max: 100,
+///   onChanged: (v) => setState(() => volume = v),
+/// )
+/// ```
+class ShadAppSlider extends StatelessWidget {
+  const ShadAppSlider({
+    super.key,
+    required this.value,
+    this.onChanged,
+    this.min = 0,
+    this.max = 1,
+    this.divisions,
+    this.label,
+    this.enabled = true,
+  });
+
+  final double value;
+  final ValueChanged<double>? onChanged;
+  final double min;
+  final double max;
+  final int? divisions;
+  final String? label;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final slider = ShadSlider(
+      initialValue: value,
+      min: min,
+      max: max,
+      divisions: divisions,
+      enabled: enabled,
+      onChanged: onChanged,
+    );
+
+    if (label == null) return slider;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(label!, style: ShadTheme.of(context).textTheme.small),
+        const SizedBox(height: 6),
+        slider,
+      ],
+    );
+  }
+}

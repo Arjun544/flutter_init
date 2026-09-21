@@ -1,0 +1,167 @@
+import '../../../../../imports/imports.dart';
+
+/// A fixed-length OTP / pin entry field.
+///
+/// Usage:
+/// ```dart
+/// AppOtpField(
+///   length: 6,
+///   onCompleted: (code) => verifyOtp(code),
+/// )
+/// ```
+class AppOtpField extends StatefulWidget {
+  const AppOtpField({
+    super.key,
+    this.length = 6,
+    this.onCompleted,
+    this.onChanged,
+    this.enabled = true,
+    this.autofocus = true,
+    this.platform,
+  });
+
+  final int length;
+  final ValueChanged<String>? onCompleted;
+  final ValueChanged<String>? onChanged;
+  final bool enabled;
+  final bool autofocus;
+  final AppPlatformStyle? platform;
+
+  @override
+  State<AppOtpField> createState() => _AppOtpFieldState();
+}
+
+class _AppOtpFieldState extends State<AppOtpField> {
+  late final List<TextEditingController> _controllers;
+  late final List<FocusNode> _nodes;
+
+  @override
+  void initState() {
+    super.initState();
+    _controllers = List.generate(widget.length, (_) => TextEditingController());
+    _nodes = List.generate(widget.length, (_) => FocusNode());
+  }
+
+  @override
+  void dispose() {
+    for (final c in _controllers) {
+      c.dispose();
+    }
+    for (final n in _nodes) {
+      n.dispose();
+    }
+    super.dispose();
+  }
+
+  String get _code => _controllers.map((c) => c.text).join();
+
+  void _emit() {
+    final code = _code;
+    widget.onChanged?.call(code);
+    if (code.length == widget.length) {
+      widget.onCompleted?.call(code);
+    }
+  }
+
+  void _onChanged(int index, String value) {
+    if (value.length > 1) {
+      final chars = value.replaceAll(RegExp(r'\D'), '').split('');
+      for (var i = 0; i < chars.length && index + i < widget.length; i++) {
+        _controllers[index + i].text = chars[i];
+      }
+      final next = (index + chars.length).clamp(0, widget.length - 1);
+      _nodes[next].requestFocus();
+    } else if (value.isEmpty && index > 0) {
+      _nodes[index - 1].requestFocus();
+    } else if (value.isNotEmpty && index < widget.length - 1) {
+      _nodes[index + 1].requestFocus();
+    }
+
+    _emit();
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = widget.platform != null
+        ? widget.platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final cs = context.colors;
+    final tt = context.textTheme;
+    {{#if flags.usesScreenutil}}
+    final double boxSize = {{res 48 'w' flags.usesScreenutil}};
+    {{else}}
+    const double boxSize = {{res 48 'w' flags.usesScreenutil}};
+    {{/if}}
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (var i = 0; i < widget.length; i++) ...[
+          if (i > 0) SizedBox(width: AppSpacing.sm),
+          SizedBox(
+            width: boxSize,
+            height: boxSize,
+            child: useCupertino
+                ? CupertinoTextField(
+                    controller: _controllers[i],
+                    focusNode: _nodes[i],
+                    enabled: widget.enabled,
+                    autofocus: widget.autofocus && i == 0,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    maxLength: widget.length,
+                    onChanged: (v) => _onChanged(i, v),
+                    padding: EdgeInsets.zero,
+                    decoration: BoxDecoration(
+                      color: cs.surfaceContainerHighest,
+                      borderRadius: AppBorders.input,
+                      border: Border.all(
+                        color: _nodes[i].hasFocus ? cs.primary : cs.outlineVariant,
+                        width: _nodes[i].hasFocus ? 1.5 : 1,
+                      ),
+                    ),
+                    style: tt.titleLarge?.copyWith(
+                      color: cs.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    cursorColor: cs.primary,
+                  )
+                : TextField(
+                    controller: _controllers[i],
+                    focusNode: _nodes[i],
+                    enabled: widget.enabled,
+                    autofocus: widget.autofocus && i == 0,
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    onChanged: (v) => _onChanged(i, v),
+                    style: tt.titleLarge?.copyWith(
+                      color: cs.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    cursorColor: cs.primary,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(widget.length),
+                    ],
+                    decoration: InputDecoration(
+                      counterText: '',
+                      contentPadding: EdgeInsets.zero,
+                      filled: true,
+                      fillColor: cs.surfaceContainerHighest,
+                      border: OutlineInputBorder(
+                        borderRadius: AppBorders.input,
+                        borderSide: BorderSide(color: cs.outlineVariant),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: AppBorders.input,
+                        borderSide: BorderSide(color: cs.primary, width: 1.5),
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      ],
+    );
+  }
+}

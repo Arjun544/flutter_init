@@ -1,0 +1,74 @@
+import '../../../../../imports/imports.dart';
+
+/// Small status/count badge, optionally wrapping a [child].
+///
+/// Usage:
+/// ```dart
+/// AppBadge(label: '3', child: Icon(Icons.notifications_outlined))
+/// AppBadge(label: 'New', color: context.appColors.success)
+/// ```
+class AppBadge extends StatelessWidget {
+  const AppBadge({
+    super.key,
+    required this.label,
+    this.child,
+    this.color,
+    this.textColor,
+    this.platform,
+  });
+
+  final String label;
+  final Widget? child;
+  final Color? color;
+  final Color? textColor;
+  final AppPlatformStyle? platform;
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = platform != null
+        ? platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final colors = context.colors;
+    final bg = color ?? colors.error;
+    final fg = textColor ?? colors.onError;
+
+    final badge = Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.xs,
+        vertical: AppSpacing.xxs,
+      ),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: useCupertino ? AppBorders.full : AppBorders.xs,
+      ),
+      constraints: {{#unless flags.usesScreenutil}}const {{/unless}}BoxConstraints(
+        minWidth: {{res 16 'r' flags.usesScreenutil}},
+        minHeight: {{res 16 'r' flags.usesScreenutil}},
+      ),
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: context.textTheme.labelSmall?.copyWith(
+          color: fg,
+          fontWeight: FontWeight.w700,
+          fontSize: {{res 10 'sp' flags.usesScreenutil}},
+          height: 1.1,
+        ),
+      ),
+    );
+
+    if (child == null) return badge;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        child!,
+        Positioned(
+          top: -AppSpacing.xs,
+          right: -AppSpacing.xs,
+          child: badge,
+        ),
+      ],
+    );
+  }
+}

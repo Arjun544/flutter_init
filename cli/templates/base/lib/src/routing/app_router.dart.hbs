@@ -40,6 +40,8 @@ import 'package:{{flags.appSnake}}/src/features/home/presentation/screens/home_p
 import 'package:{{flags.appSnake}}/src/features/onboarding/presentation/screens/onboarding_page.dart';
 
 {{/if}}
+import 'package:{{flags.appSnake}}/src/shared/widgets/ui/ui_showcase_screen.dart';
+import 'package:flutter/foundation.dart';
 
 final GoRouter appRouter = GoRouter(
   navigatorKey: rootNavigatorKey,
@@ -71,6 +73,12 @@ final GoRouter appRouter = GoRouter(
       name: 'home',
       builder: (context, state) => const HomePage(),
     ),
+    if (kDebugMode)
+      GoRoute(
+        path: AppRoutes.uiShowcase,
+        name: 'uiShowcase',
+        builder: (context, state) => const UiShowcaseScreen(),
+      ),
   ],
 );
 {{else if (eq flags.routerPackage "auto_route")}}

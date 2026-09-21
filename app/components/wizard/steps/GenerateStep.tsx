@@ -54,7 +54,38 @@ export function GenerateStep({
                                 )
                             }
                         />
-                        <SummaryItem label="Theme" value={config.theme.preset} />
+                        <SummaryItem
+                            label="Theme"
+                            value={
+                                config.ui.shadcn
+                                    ? "shadcn_ui"
+                                    : config.theme.preset === "cupertino"
+                                      ? "Cupertino"
+                                      : "Material"
+                            }
+                        />
+                        <SummaryItem
+                            label="Appearance"
+                            value={
+                                !config.theme.darkMode.enabled
+                                    ? "Light"
+                                    : config.theme.darkMode.system
+                                      ? "Auto"
+                                      : "Dark"
+                            }
+                        />
+                        {config.ui.shadcn ? (
+                            <SummaryItem
+                                label="Default app"
+                                value={
+                                    config.ui.defaultKit === "shadcn"
+                                        ? "ShadApp"
+                                        : config.theme.preset === "cupertino"
+                                          ? "CupertinoApp"
+                                          : "MaterialApp"
+                                }
+                            />
+                        ) : null}
                         <SummaryItem label="Architecture" value={config.architecture} />
                         <SummaryItem label="State" value={config.stateManagement} />
                         <SummaryItem label="Navigation" value={config.navigation} />

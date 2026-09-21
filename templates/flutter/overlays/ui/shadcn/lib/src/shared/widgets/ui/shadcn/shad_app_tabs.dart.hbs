@@ -1,0 +1,57 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// A single tab for [ShadAppTabs].
+class ShadAppTabItem<T> {
+  const ShadAppTabItem({
+    required this.value,
+    required this.label,
+    required this.content,
+  });
+
+  final T value;
+  final String label;
+  final Widget content;
+}
+
+/// Thin [ShadTabs] adapter mirroring [AppTabBar].
+///
+/// Usage:
+/// ```dart
+/// ShadAppTabs<String>(
+///   value: 'account',
+///   tabs: [
+///     ShadAppTabItem(value: 'account', label: 'Account', content: ...),
+///     ShadAppTabItem(value: 'password', label: 'Password', content: ...),
+///   ],
+/// )
+/// ```
+class ShadAppTabs<T> extends StatelessWidget {
+  const ShadAppTabs({
+    super.key,
+    required this.value,
+    required this.tabs,
+    this.onChanged,
+  });
+
+  final T value;
+  final List<ShadAppTabItem<T>> tabs;
+  final ValueChanged<T>? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadTabs<T>(
+      value: value,
+      onChanged: onChanged,
+      tabs: tabs
+          .map(
+            (t) => ShadTab(
+              value: t.value,
+              content: t.content,
+              child: Text(t.label),
+            ),
+          )
+          .toList(),
+    );
+  }
+}

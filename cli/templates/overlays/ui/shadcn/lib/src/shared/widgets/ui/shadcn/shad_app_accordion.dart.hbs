@@ -1,0 +1,56 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// A single accordion section for [ShadAppAccordion].
+class ShadAppAccordionItem {
+  const ShadAppAccordionItem({
+    required this.value,
+    required this.title,
+    required this.content,
+  });
+
+  final String value;
+  final String title;
+  final Widget content;
+}
+
+/// Thin [ShadAccordion] adapter.
+///
+/// Usage:
+/// ```dart
+/// ShadAppAccordion(
+///   items: [
+///     ShadAppAccordionItem(
+///       value: '1',
+///       title: 'Is it accessible?',
+///       content: Text('Yes. It adheres to the WAI-ARIA design pattern.'),
+///     ),
+///   ],
+/// )
+/// ```
+class ShadAppAccordion extends StatelessWidget {
+  const ShadAppAccordion({
+    super.key,
+    required this.items,
+    this.initialValue,
+  });
+
+  final List<ShadAppAccordionItem> items;
+  final String? initialValue;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadAccordion<String>(
+      initialValue: initialValue,
+      children: items
+          .map(
+            (item) => ShadAccordionItem(
+              value: item.value,
+              title: Text(item.title),
+              child: item.content,
+            ),
+          )
+          .toList(),
+    );
+  }
+}

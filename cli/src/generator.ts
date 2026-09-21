@@ -125,6 +125,7 @@ export async function generateProject(config: FlutterInitConfig): Promise<void> 
     usesFilePicker: config.usesFilePicker,
     usesDeviceInfoPlus: config.usesDeviceInfoPlus,
     usesAppVersionUpdate: config.usesAppVersionUpdate,
+    usesShadcn: config.usesShadcn,
   })
 
   // ── Guard: check for existing non-empty directory ──────────────────────────
@@ -214,6 +215,9 @@ export async function generateProject(config: FlutterInitConfig): Promise<void> 
       : []),
     ...(overlays.dotenv
       ? [['dotenv', path.join('overlays', 'extras', 'dotenv')] as [string, string]]
+      : []),
+    ...(overlays.shadcn
+      ? [['shadcn ui', path.join('overlays', 'ui', 'shadcn')] as [string, string]]
       : []),
   ]
 

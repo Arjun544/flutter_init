@@ -1,0 +1,35 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadContextMenuRegion] / [ShadContextMenu] adapter.
+///
+/// Pass raw [ShadContextMenuItem] widgets in [items].
+///
+/// Usage:
+/// ```dart
+/// ShadAppContextMenu(
+///   items: const [
+///     ShadContextMenuItem(child: Text('Back')),
+///     ShadContextMenuItem(child: Text('Reload')),
+///   ],
+///   child: const Text('Right-click me'),
+/// )
+/// ```
+class ShadAppContextMenu extends StatelessWidget {
+  const ShadAppContextMenu({
+    super.key,
+    required this.child,
+    required this.items,
+  });
+
+  final Widget child;
+  final List<Widget> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadContextMenuRegion(
+      items: items,
+      child: child,
+    );
+  }
+}

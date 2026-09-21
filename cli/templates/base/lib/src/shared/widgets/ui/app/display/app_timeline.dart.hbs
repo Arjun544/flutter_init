@@ -1,0 +1,122 @@
+import '../../../../../imports/imports.dart';
+
+/// A single node in an [AppTimeline].
+class AppTimelineItem {
+  const AppTimelineItem({
+    required this.title,
+    this.subtitle,
+    this.isActive = false,
+  });
+
+  final String title;
+  final String? subtitle;
+  final bool isActive;
+}
+
+/// Vertical timeline of titled steps with an active indicator.
+///
+/// Usage:
+/// ```dart
+/// AppTimeline(
+///   items: [
+///     AppTimelineItem(title: 'Ordered', isActive: true),
+///     AppTimelineItem(title: 'Shipped', subtitle: 'In transit'),
+///     AppTimelineItem(title: 'Delivered'),
+///   ],
+/// )
+/// ```
+class AppTimeline extends StatelessWidget {
+  const AppTimeline({
+    super.key,
+    required this.items,
+    this.platform,
+  });
+
+  final List<AppTimelineItem> items;
+  final AppPlatformStyle? platform;
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = platform != null
+        ? platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final colors = context.colors;
+    {{#if flags.usesScreenutil}}
+    final double dotSize = {{res 12 'r' flags.usesScreenutil}};
+    {{else}}
+    const double dotSize = {{res 12 'r' flags.usesScreenutil}};
+    {{/if}}
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < items.length; i++) ...[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                children: [
+                  Container(
+                    width: dotSize,
+                    height: dotSize,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: items[i].isActive
+                          ? colors.primary
+                          : colors.outlineVariant,
+                      border: useCupertino
+                          ? Border.all(
+                              color: items[i].isActive
+                                  ? colors.primary
+                                  : colors.outline,
+                              width: 1.5,
+                            )
+                          : null,
+                    ),
+                  ),
+                  if (i < items.length - 1)
+                    Container(
+                      width: 2,
+                      height: AppSpacing.xl,
+                      color: colors.outlineVariant,
+                    ),
+                ],
+              ),
+              SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: AppSpacing.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        items[i].title,
+                        style: context.textTheme.titleSmall?.copyWith(
+                          color: items[i].isActive
+                              ? colors.onSurface
+                              : colors.onSurfaceVariant,
+                          fontWeight: items[i].isActive
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                        ),
+                      ),
+                      if (items[i].subtitle != null) ...[
+                        SizedBox(height: AppSpacing.xxs),
+                        Text(
+                          items[i].subtitle!,
+                          style: context.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+}

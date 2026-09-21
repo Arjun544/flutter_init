@@ -1,0 +1,182 @@
+import '../../../../../imports/imports.dart';
+
+/// A time field that opens a Material dialog or Cupertino modal picker.
+///
+/// Usage:
+/// ```dart
+/// AppTimePicker(
+///   label: 'Reminder',
+///   value: reminderTime,
+///   onChanged: (t) => setState(() => reminderTime = t),
+/// )
+/// ```
+class AppTimePicker extends StatelessWidget {
+  const AppTimePicker({
+    super.key,
+    this.value,
+    required this.onChanged,
+    this.label,
+    this.hint = 'Select time',
+    this.use24HourFormat,
+    this.enabled = true,
+    this.platform,
+  });
+
+  final TimeOfDay? value;
+  final ValueChanged<TimeOfDay> onChanged;
+  final String? label;
+  final String hint;
+  final bool? use24HourFormat;
+  final bool enabled;
+  final AppPlatformStyle? platform;
+
+  String _format(BuildContext context, TimeOfDay t) {
+    final localizations = MaterialLocalizations.of(context);
+    return localizations.formatTimeOfDay(
+      t,
+      alwaysUse24HourFormat: use24HourFormat ?? MediaQuery.alwaysUse24HourFormatOf(context),
+    );
+  }
+
+  Future<void> _pick(BuildContext context) async {
+    final useCupertino = platform != null
+        ? platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final cs = context.colors;
+    final now = TimeOfDay.now();
+    final initial = value ?? now;
+
+    if (useCupertino) {
+      final initialDateTime = DateTime(2000, 1, 1, initial.hour, initial.minute);
+      var temp = initial;
+      await showCupertinoModalPopup<void>(
+        context: context,
+        builder: (ctx) {
+          return Container(
+            height: {{res 300 'h' flags.usesScreenutil}},
+            color: cs.surface,
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                  color: cs.surfaceContainerHighest,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CupertinoButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: Text('Cancel', style: TextStyle(color: cs.onSurfaceVariant)),
+                      ),
+                      CupertinoButton(
+                        onPressed: () {
+                          onChanged(temp);
+                          Navigator.of(ctx).pop();
+                        },
+                        child: Text(
+                          'Done',
+                          style: TextStyle(
+                            color: cs.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.time,
+                    initialDateTime: initialDateTime,
+                    use24hFormat: use24HourFormat ??
+                        MediaQuery.alwaysUse24HourFormatOf(context),
+                    onDateTimeChanged: (d) {
+                      temp = TimeOfDay(hour: d.hour, minute: d.minute);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+      return;
+    }
+
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: initial,
+    );
+    if (picked != null) onChanged(picked);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = platform != null
+        ? platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final cs = context.colors;
+    final tt = context.textTheme;
+    final display = value != null ? _format(context, value!) : hint;
+
+    final field = GestureDetector(
+      onTap: enabled ? () => _pick(context) : null,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.ms,
+        ),
+        decoration: BoxDecoration(
+          color: useCupertino ? cs.surfaceContainerHighest : null,
+          borderRadius: AppBorders.input,
+          border: Border.all(color: cs.outlineVariant),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (label != null && !useCupertino)
+                    Text(
+                      label!,
+                      style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                    ),
+                  Text(
+                    display,
+                    style: tt.bodyLarge?.copyWith(
+                      color: value == null ? cs.onSurfaceVariant : cs.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              useCupertino ? CupertinoIcons.time : Icons.access_time,
+              size: {{res 20 'sp' flags.usesScreenutil}},
+              color: cs.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (useCupertino && label != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(bottom: AppSpacing.xs),
+            child: Text(
+              label!,
+              style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+            ),
+          ),
+          field,
+        ],
+      );
+    }
+
+    return field;
+  }
+}

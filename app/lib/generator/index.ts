@@ -14,6 +14,8 @@ import {
 import { createHandlebarsEnvironment } from "./handlebars"
 
 type TemplateContext = ScaffoldConfig & {
+    /** Reverse-domain org for `flutter create --org` (derived from packageId). */
+    orgName: string
     flags: {
         appSlug: string
         appSnake: string
@@ -91,6 +93,12 @@ type TemplateContext = ScaffoldConfig & {
             family: string
             fonts: Array<Pick<CustomFontEntry, "fileName" | "style" | "weight">>
         }>
+        /** Opt-in shadcn_ui component layer */
+        usesShadcn: boolean
+        /** Feature screens use ShadApp* when true */
+        shadcnDefault: boolean
+        /** Adaptive / material / cupertino platform style for App* widgets */
+        platformStyle: "adaptive" | "material" | "cupertino"
     }
 }
 
@@ -118,11 +126,9 @@ export async function generateFlutterScaffold(
     )
 
     try {
-        await copyPlatformScaffold(
-            path.join(templatesRoot, "platforms"),
-            workingDir,
-            config,
-        )
+        // Native platform trees (android/ios/web/desktop) are intentionally
+        // omitted from the web ZIP — create them with `flutter create` (CLI
+        // does this automatically). See SETUP.md in the generated project.
         await composeLayers([baseDir, ...overlayDirs], workingDir, hbs, context)
 
         if (context.flags.supportsLocalization) {
@@ -186,74 +192,14 @@ export async function generateFlutterScaffold(
     }
 }
 
-type PlatformScaffoldEntry = { relativePath: string; data: Buffer; isText: boolean }
-let platformScaffoldCache: Promise<PlatformScaffoldEntry[]> | undefined
-
-async function loadPlatformScaffold(sourceDir: string): Promise<PlatformScaffoldEntry[]> {
-    const textExtensions = new Set([
-        ".cc", ".cpp", ".h", ".hpp", ".java", ".json", ".kt", ".plist",
-        ".properties", ".rb", ".rc", ".storyboard", ".swift", ".txt",
-        ".xcscheme", ".xcconfig", ".xml", ".yaml", ".yml", ".gradle",
-        ".kts", ".cmake", ".html", ".md", ".manifest", ".pbxproj",
-    ])
-    const result: PlatformScaffoldEntry[] = []
-
-    async function walk(currentSource: string) {
-        const entries = await fs.readdir(currentSource, { withFileTypes: true })
-        for (const entry of entries) {
-            const sourcePath = path.join(currentSource, entry.name)
-            const relativePath = path.relative(sourceDir, sourcePath)
-            if (entry.isDirectory()) {
-                await walk(sourcePath)
-                continue
-            }
-            result.push({
-                relativePath,
-                data: await fs.readFile(sourcePath),
-                isText: textExtensions.has(path.extname(entry.name).toLowerCase()),
-            })
-        }
-    }
-
-    await fs.access(sourceDir)
-    await walk(sourceDir)
-    return result
-}
-
-async function copyPlatformScaffold(
-    sourceDir: string,
-    targetDir: string,
-    config: ScaffoldConfig,
-) {
-    const projectName = config.appName.trim().replace(/\s+/g, "_").toLowerCase()
-    platformScaffoldCache ??= loadPlatformScaffold(sourceDir)
-    const entries = await platformScaffoldCache
-
-    for (const entry of entries) {
-        const renderedRelativePath = entry.relativePath.replaceAll(
-            "platform_seed",
-            projectName,
-        )
-        const targetPath = path.join(targetDir, renderedRelativePath)
-        await fs.mkdir(path.dirname(targetPath), { recursive: true })
-
-        if (!entry.isText) {
-            await fs.writeFile(targetPath, entry.data)
-            continue
-        }
-
-        const rendered = entry.data
-            .toString("utf8")
-            .replaceAll("com.example.platform_seed", config.packageId)
-            .replaceAll("platform_seed_android", `${projectName}_android`)
-            .replaceAll("platform_seed", projectName)
-        await fs.writeFile(targetPath, rendered, "utf8")
-    }
-}
-
 function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
     const appSlug = config.appName.trim().replace(/\s+/g, "-").toLowerCase()
     const appSnake = config.appName.trim().replace(/\s+/g, "_").toLowerCase()
+    const packageParts = config.packageId.split(".").filter(Boolean)
+    const orgName =
+        packageParts.length > 1
+            ? packageParts.slice(0, -1).join(".")
+            : "com.example"
     let routerPackage: "go_router" | "auto_route" | "getx" | undefined
     if (config.stateManagement === "getx") {
         routerPackage = "getx"
@@ -293,6 +239,7 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
 
     return {
         ...config,
+        orgName,
         flags: {
             appSlug,
             appSnake,
@@ -357,6 +304,9 @@ function buildTemplateContext(config: ScaffoldConfig): TemplateContext {
             hasCustomFonts: fontFamilies.length > 0,
             primaryFontFamily,
             fontFamilies,
+            usesShadcn: config.ui.shadcn,
+            shadcnDefault: config.ui.shadcn && config.ui.defaultKit === "shadcn",
+            platformStyle: config.ui.platformStyle,
         },
     }
 }
@@ -391,6 +341,7 @@ async function resolveOverlayDirs(
         usesFilePicker: config.misc.usesFilePicker,
         usesDeviceInfoPlus: config.misc.usesDeviceInfoPlus,
         usesAppVersionUpdate: config.misc.usesAppVersionUpdate,
+        usesShadcn: config.ui.shadcn,
     })
     const candidates: Array<[string, boolean]> = [
         [path.join(root, "overlays", "architecture", selection.architecture), true],
@@ -423,6 +374,7 @@ async function resolveOverlayDirs(
         ...selection.device.map((name) => [path.join(root, "overlays", "device", name), true] as [string, boolean]),
         [path.join(root, "overlays", "extras", "flavors"), selection.flavors],
         [path.join(root, "overlays", "extras", "dotenv"), selection.dotenv],
+        [path.join(root, "overlays", "ui", "shadcn"), selection.shadcn],
     ]
 
     for (const [candidate, enabled] of candidates) {

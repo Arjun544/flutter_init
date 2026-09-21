@@ -1,0 +1,119 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadInput] / [ShadInputFormField] adapter mirroring [AppTextField].
+///
+/// Usage:
+/// ```dart
+/// ShadAppTextField(
+///   label: 'Email',
+///   hint: 'you@example.com',
+///   controller: _emailController,
+///   validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+/// )
+/// ```
+class ShadAppTextField extends StatelessWidget {
+  const ShadAppTextField({
+    super.key,
+    this.label,
+    this.hint,
+    this.controller,
+    this.validator,
+    this.onChanged,
+    this.onFieldSubmitted,
+    this.onSubmitted,
+    this.focusNode,
+    this.keyboardType,
+    this.textInputAction,
+    this.obscureText = false,
+    this.readOnly = false,
+    this.enabled = true,
+    this.maxLines = 1,
+    this.minLines,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.initialValue,
+    this.autofocus = false,
+  });
+
+  final String? label;
+  final String? hint;
+  final TextEditingController? controller;
+  final FormFieldValidator<String>? validator;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onFieldSubmitted;
+  final ValueChanged<String>? onSubmitted;
+  final FocusNode? focusNode;
+  final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
+  final bool obscureText;
+  final bool readOnly;
+  final bool enabled;
+  final int? maxLines;
+  final int? minLines;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
+  final String? initialValue;
+  final bool autofocus;
+
+  ValueChanged<String>? get _submit => onFieldSubmitted ?? onSubmitted;
+
+  @override
+  Widget build(BuildContext context) {
+    final placeholder = hint != null ? Text(hint!) : null;
+
+    if (validator != null) {
+      return ShadInputFormField(
+        controller: controller,
+        initialValue: controller == null ? initialValue : null,
+        label: label != null ? Text(label!) : null,
+        placeholder: placeholder,
+        focusNode: focusNode,
+        keyboardType: keyboardType,
+        textInputAction: textInputAction,
+        obscureText: obscureText,
+        readOnly: readOnly,
+        enabled: enabled,
+        maxLines: maxLines,
+        minLines: minLines,
+        autofocus: autofocus,
+        onChanged: onChanged,
+        onSubmitted: _submit,
+        leading: prefixIcon,
+        trailing: suffixIcon,
+        validator: (v) => validator!(v),
+      );
+    }
+
+    final input = ShadInput(
+      controller: controller,
+      initialValue: controller == null ? initialValue : null,
+      focusNode: focusNode,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      obscureText: obscureText,
+      readOnly: readOnly,
+      enabled: enabled,
+      maxLines: maxLines,
+      minLines: minLines,
+      autofocus: autofocus,
+      onChanged: onChanged,
+      onSubmitted: _submit,
+      leading: prefixIcon,
+      trailing: suffixIcon,
+      placeholder: placeholder,
+    );
+
+    if (label == null) return input;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(label!, style: ShadTheme.of(context).textTheme.small),
+        const SizedBox(height: 6),
+        input,
+      ],
+    );
+  }
+}

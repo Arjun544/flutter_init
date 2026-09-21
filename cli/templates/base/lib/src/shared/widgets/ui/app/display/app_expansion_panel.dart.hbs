@@ -1,0 +1,150 @@
+import '../../../../../imports/imports.dart';
+
+/// Expandable section with a title header and collapsible [children].
+///
+/// Usage:
+/// ```dart
+/// AppExpansionPanel(
+///   title: 'Advanced',
+///   initiallyExpanded: false,
+///   children: [Text('Hidden details')],
+/// )
+/// ```
+class AppExpansionPanel extends StatefulWidget {
+  const AppExpansionPanel({
+    super.key,
+    required this.title,
+    required this.children,
+    this.initiallyExpanded = false,
+    this.trailing,
+    this.platform,
+  });
+
+  final String title;
+  final List<Widget> children;
+  final bool initiallyExpanded;
+  final Widget? trailing;
+  final AppPlatformStyle? platform;
+
+  @override
+  State<AppExpansionPanel> createState() => _AppExpansionPanelState();
+}
+
+class _AppExpansionPanelState extends State<AppExpansionPanel>
+    with SingleTickerProviderStateMixin {
+  late bool _expanded;
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _expanded = widget.initiallyExpanded;
+    _controller = AnimationController(
+      vsync: this,
+      duration: AppDurations.normal,
+      value: _expanded ? 1 : 0,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    setState(() {
+      _expanded = !_expanded;
+      if (_expanded) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = widget.platform != null
+        ? widget.platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final colors = context.colors;
+
+    final header = InkWell(
+      onTap: _toggle,
+      borderRadius: AppBorders.md,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                widget.title,
+                style: context.textTheme.titleSmall?.copyWith(
+                  color: colors.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            if (widget.trailing != null) ...[
+              widget.trailing!,
+              SizedBox(width: AppSpacing.sm),
+            ],
+            RotationTransition(
+              turns: Tween<double>(begin: 0, end: 0.5).animate(
+                CurvedAnimation(
+                  parent: _controller,
+                  curve: AppCurves.standard,
+                ),
+              ),
+              child: Icon(
+                useCupertino
+                    ? CupertinoIcons.chevron_down
+                    : Icons.expand_more,
+                color: colors.onSurfaceVariant,
+                size: {{res 22 'sp' flags.usesScreenutil}},
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerLow,
+        borderRadius: AppBorders.md,
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          header,
+          SizeTransition(
+            sizeFactor: CurvedAnimation(
+              parent: _controller,
+              curve: AppCurves.decelerate,
+            ),
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                0,
+                AppSpacing.md,
+                AppSpacing.md,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: widget.children,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

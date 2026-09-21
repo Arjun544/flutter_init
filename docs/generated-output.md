@@ -8,12 +8,12 @@ FlutterInit follows a "src-first" encapsulation model. All internal logic, imple
 
 ```text
 my_app/
-├── android/            # Native Android project and configurations
-├── ios/                # Native iOS project, Podfile, and Runner icons
-├── web/                # Web-build entry point
-├── windows/            # Windows runner and build configuration
-├── macos/              # macOS runner and build configuration
-├── linux/              # Linux runner and build configuration
+├── android/            # CLI only — from `flutter create` (not in web ZIP)
+├── ios/                # CLI only — from `flutter create` (not in web ZIP)
+├── web/                # CLI only — from `flutter create` (not in web ZIP)
+├── windows/            # CLI only — from `flutter create` (not in web ZIP)
+├── macos/              # CLI only — from `flutter create` (not in web ZIP)
+├── linux/              # CLI only — from `flutter create` (not in web ZIP)
 ├── assets/             # Images, JSON translations, and fonts
 ├── lib/
 │   ├── main.dart       # App initialization entry point
@@ -34,6 +34,12 @@ my_app/
 ├── .cursor/rules/      # Cursor IDE rules (flutter-project.mdc)
 └── SETUP.md            # Post-generation setup instructions
 ```
+
+### Web ZIP vs CLI
+
+- **Web wizard**: Downloads a Dart/source overlay (`lib/`, `assets/`, `pubspec.yaml`, docs). It does **not** ship `android/`, `ios/`, `web/`, or desktop runners. After unzipping, run `flutter create . --project-name <name> --org <org>` (documented in `SETUP.md`).
+- **CLI**: Runs `flutter create` first, then overlays the same templates, so platform folders are present immediately.
+
 
 ## Key File Breakdown
 

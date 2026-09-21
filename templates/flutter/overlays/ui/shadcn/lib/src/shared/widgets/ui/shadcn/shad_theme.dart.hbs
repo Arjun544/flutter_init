@@ -1,0 +1,70 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+Color _parseHex(String hex) {
+  final normalized = hex.replaceFirst('#', '0xff');
+  return Color(int.parse(normalized));
+}
+
+ShadColorScheme _mapColorScheme(ColorScheme scheme) {
+  return ShadColorScheme(
+    background: scheme.surface,
+    foreground: scheme.onSurface,
+    card: scheme.surfaceContainerLow,
+    cardForeground: scheme.onSurface,
+    popover: scheme.surfaceContainer,
+    popoverForeground: scheme.onSurface,
+    primary: scheme.primary,
+    primaryForeground: scheme.onPrimary,
+    secondary: scheme.secondary,
+    secondaryForeground: scheme.onSecondary,
+    muted: scheme.surfaceContainerHighest,
+    mutedForeground: scheme.onSurfaceVariant,
+    accent: scheme.tertiary,
+    accentForeground: scheme.onTertiary,
+    destructive: scheme.error,
+    destructiveForeground: scheme.onError,
+    border: scheme.outlineVariant,
+    input: scheme.outlineVariant,
+    ring: scheme.primary,
+    selection: scheme.primary.withValues(alpha: 0.2),
+  );
+}
+
+/// Builds a light [ShadThemeData] from the project primary color hex.
+ShadThemeData buildShadLightTheme({required String primaryColorHex}) {
+  final seed = _parseHex(primaryColorHex);
+  final scheme = ColorScheme.fromSeed(
+    seedColor: seed,
+    brightness: Brightness.light,
+  );
+
+  return ShadThemeData(
+    brightness: Brightness.light,
+    colorScheme: _mapColorScheme(scheme),
+    // AppBorders.md is BorderRadius.circular(12)
+    radius: BorderRadius.circular(12),
+    {{#if flags.hasCustomFonts}}
+    textTheme: ShadTextTheme(family: '{{flags.primaryFontFamily}}'),
+    {{/if}}
+  );
+}
+
+/// Builds a dark [ShadThemeData] from the project primary color hex.
+ShadThemeData buildShadDarkTheme({required String primaryColorHex}) {
+  final seed = _parseHex(primaryColorHex);
+  final scheme = ColorScheme.fromSeed(
+    seedColor: seed,
+    brightness: Brightness.dark,
+  );
+
+  return ShadThemeData(
+    brightness: Brightness.dark,
+    colorScheme: _mapColorScheme(scheme),
+    // AppBorders.md is BorderRadius.circular(12)
+    radius: BorderRadius.circular(12),
+    {{#if flags.hasCustomFonts}}
+    textTheme: ShadTextTheme(family: '{{flags.primaryFontFamily}}'),
+    {{/if}}
+  );
+}

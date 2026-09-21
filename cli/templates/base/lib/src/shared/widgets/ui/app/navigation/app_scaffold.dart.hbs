@@ -1,0 +1,99 @@
+import '../../../../../imports/imports.dart';
+
+/// Adaptive page scaffold — Material [Scaffold] or [CupertinoPageScaffold].
+///
+/// Usage:
+/// ```dart
+/// AppScaffold(
+///   appBar: AppTopBar(title: 'Home'),
+///   body: HomeBody(),
+///   floatingActionButton: AppFab(onPressed: _add, icon: Icons.add),
+/// )
+/// ```
+class AppScaffold extends StatelessWidget {
+  const AppScaffold({
+    super.key,
+    this.appBar,
+    required this.body,
+    this.bottomNavigationBar,
+    this.floatingActionButton,
+    this.drawer,
+    this.endDrawer,
+    this.backgroundColor,
+    this.resizeToAvoidBottomInset = true,
+    this.platform,
+  });
+
+  final PreferredSizeWidget? appBar;
+  final Widget body;
+  final Widget? bottomNavigationBar;
+  final Widget? floatingActionButton;
+  final Widget? drawer;
+  final Widget? endDrawer;
+  final Color? backgroundColor;
+  final bool resizeToAvoidBottomInset;
+  final AppPlatformStyle? platform;
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = platform != null
+        ? platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final colors = context.colors;
+    final bg = backgroundColor ?? colors.surface;
+
+    if (useCupertino) {
+      final navigationBar = appBar == null
+          ? null
+          : CupertinoNavigationBar(
+              backgroundColor: bg,
+              middle: appBar is AppTopBar
+                  ? Text((appBar as AppTopBar).title)
+                  : appBar,
+            );
+
+      Widget page = CupertinoPageScaffold(
+        navigationBar: navigationBar,
+        backgroundColor: bg,
+        child: SafeArea(child: body),
+      );
+
+      if (bottomNavigationBar != null || floatingActionButton != null) {
+        page = Stack(
+          children: [
+            Positioned.fill(child: page),
+            if (floatingActionButton != null)
+              Positioned(
+                right: AppSpacing.lg,
+                bottom: AppSpacing.lg +
+                    (bottomNavigationBar != null
+                        ? {{res 56 'h' flags.usesScreenutil}}
+                        : 0),
+                child: floatingActionButton!,
+              ),
+            if (bottomNavigationBar != null)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: bottomNavigationBar!,
+              ),
+          ],
+        );
+      }
+
+      return page;
+    }
+
+    return Scaffold(
+      appBar: appBar,
+      body: body,
+      bottomNavigationBar: bottomNavigationBar,
+      floatingActionButton: floatingActionButton,
+      drawer: drawer,
+      endDrawer: endDrawer,
+      backgroundColor: bg,
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+    );
+  }
+}

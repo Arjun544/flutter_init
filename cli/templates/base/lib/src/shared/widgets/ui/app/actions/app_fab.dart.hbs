@@ -1,0 +1,102 @@
+import '../../../../../imports/imports.dart';
+
+/// A floating action button with optional extended label.
+///
+/// Usage:
+/// ```dart
+/// AppFab(
+///   icon: Icons.add,
+///   label: 'New task',
+///   extended: true,
+///   onPressed: _createTask,
+/// )
+/// ```
+class AppFab extends StatelessWidget {
+  const AppFab({
+    super.key,
+    required this.onPressed,
+    required this.icon,
+    this.label,
+    this.extended = false,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.heroTag,
+    this.platform,
+  });
+
+  final VoidCallback? onPressed;
+  final IconData icon;
+  final String? label;
+  final bool extended;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final Object? heroTag;
+  final AppPlatformStyle? platform;
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = platform != null
+        ? platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final cs = context.colors;
+    final bg = backgroundColor ?? cs.primaryContainer;
+    final fg = foregroundColor ?? cs.onPrimaryContainer;
+    final showLabel = extended && label != null && label!.isNotEmpty;
+
+    if (useCupertino) {
+      return CupertinoButton(
+        padding: EdgeInsets.zero,
+        onPressed: onPressed,
+        child: AnimatedContainer(
+          duration: AppDurations.fast,
+          curve: AppCurves.decelerate,
+          padding: EdgeInsets.symmetric(
+            horizontal: showLabel ? AppSpacing.md : AppSpacing.ms,
+            vertical: AppSpacing.ms,
+          ),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: AppBorders.full,
+            boxShadow: AppShadows.elevated,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: fg, size: {{res 22 'sp' flags.usesScreenutil}}),
+              if (showLabel) ...[
+                SizedBox(width: AppSpacing.sm),
+                Text(
+                  label!,
+                  style: TextStyle(
+                    color: fg,
+                    fontWeight: FontWeight.w600,
+                    fontSize: {{res 14 'sp' flags.usesScreenutil}},
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (showLabel) {
+      return FloatingActionButton.extended(
+        onPressed: onPressed,
+        heroTag: heroTag,
+        backgroundColor: bg,
+        foregroundColor: fg,
+        icon: Icon(icon),
+        label: Text(label!),
+      );
+    }
+
+    return FloatingActionButton(
+      onPressed: onPressed,
+      heroTag: heroTag,
+      backgroundColor: bg,
+      foregroundColor: fg,
+      child: Icon(icon),
+    );
+  }
+}

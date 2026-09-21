@@ -11,4 +11,5 @@ Full reference: **[DESIGN.md](DESIGN.md)**
 - **Tokens:** `AppSpacing`, `AppBorders`, `AppShadows`, `AppDurations`, `AppCurves` from `lib/src/theme/theme_constants.dart`
 - **Extensions:** `context_extension.dart` — `width`, `height`, `isDarkMode`, `showAppDialog`, `showTypedSnackBar`
 {{#if flags.usesScreenutil}}- **ScreenUtil:** baseline 390×844; `.w` `.h` `.r` `.sp`; wrapper already in app — no second `ScreenUtilInit`{{else}}- **Layout:** `MediaQuery` / `LayoutBuilder` / `Flexible` — no ScreenUtil{{/if}}
-- **Widgets:** reusable UI in `lib/src/shared/widgets/`; use tokens not magic numbers
+- **Widgets:** reusable UI in `lib/src/shared/widgets/ui/app/` (App* adaptive kit){{#if flags.usesShadcn}}; shadcn wrappers in `ui/shadcn/`{{/if}} — use tokens not magic numbers
+- **Platform style:** `{{ui.platformStyle}}` via `AppPlatformScope` / `context.isCupertinoUi`

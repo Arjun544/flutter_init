@@ -1,0 +1,43 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadAlert] adapter.
+///
+/// Usage:
+/// ```dart
+/// ShadAppAlert(
+///   title: 'Heads up',
+///   description: 'You can add components to your app.',
+/// )
+/// ```
+class ShadAppAlert extends StatelessWidget {
+  const ShadAppAlert({
+    super.key,
+    this.title,
+    this.description,
+    this.icon,
+    this.destructive = false,
+  });
+
+  final String? title;
+  final String? description;
+  final Widget? icon;
+  final bool destructive;
+
+  @override
+  Widget build(BuildContext context) {
+    if (destructive) {
+      return ShadAlert.destructive(
+        icon: icon,
+        title: title != null ? Text(title!) : null,
+        description: description != null ? Text(description!) : null,
+      );
+    }
+
+    return ShadAlert(
+      icon: icon,
+      title: title != null ? Text(title!) : null,
+      description: description != null ? Text(description!) : null,
+    );
+  }
+}

@@ -26,6 +26,11 @@ export function buildConfig(
             darkMode: { enabled: true, system: true },
             customFonts: [],
         },
+        ui: {
+            platformStyle: "adaptive",
+            shadcn: false,
+            defaultKit: "app",
+        },
         icons: {
             default: true,
             iconsax_plus: false,

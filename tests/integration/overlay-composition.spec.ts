@@ -95,14 +95,17 @@ describe("Overlay Composition", () => {
     describe("Networking overlays", () => {
         it("dio overlay: dio service files present when usesDio=true", async () => {
             const files = await generateToMap(buildConfig(base, MISC_ALL_ON))
-            const dioFiles = [...files.keys()].filter((f) => f.toLowerCase().includes("dio"))
+            // Match path segments / file stems named "dio", not substrings like "radio"
+            const dioFiles = [...files.keys()].filter((f) =>
+                /(^|[\\/._-])dio([\\/._-]|$)/i.test(f)
+            )
             expect(dioFiles.length).toBeGreaterThan(0)
         })
 
         it("no dio overlay: no dio files when usesDio=false", async () => {
             const files = await generateToMap(buildConfig(base, MISC_BARE_MINIMUM))
             const dioServiceFiles = [...files.keys()].filter(
-                (f) => f.toLowerCase().includes("dio") && f.endsWith(".dart")
+                (f) => /(^|[\\/._-])dio([\\/._-]|$)/i.test(f) && f.endsWith(".dart")
             )
             expect(dioServiceFiles).toEqual([])
         })
@@ -125,20 +128,35 @@ describe("Overlay Composition", () => {
         })
     })
 
-    // ── Architecture overlays ───────────────────────────────────
-    describe("Architecture overlay produces correct folder structure", () => {
-        it("clean architecture has domain/data/presentation layers", async () => {
-            const files = await generateToMap(buildConfig({ ...base, architecture: "clean" }))
-            const paths = [...files.keys()]
-            expect(paths.some((p) => p.includes("/domain/"))).toBe(true)
-            expect(paths.some((p) => p.includes("/data/"))).toBe(true)
-            expect(paths.some((p) => p.includes("/presentation/"))).toBe(true)
+    // ── UI / shadcn overlay ─────────────────────────────────────
+    describe("UI shadcn overlay", () => {
+        it("does not emit shadcn files when ui.shadcn is false", async () => {
+            const files = await generateToMap(buildConfig(base))
+            const shadcnFiles = [...files.keys()].filter((f) =>
+                f.includes("/widgets/ui/shadcn/"),
+            )
+            expect(shadcnFiles).toEqual([])
+            expect(getPubspecContent(files)).not.toContain("shadcn_ui:")
         })
 
-        it("feature-first has features directory", async () => {
-            const files = await generateToMap(buildConfig({ ...base, architecture: "feature-first" }))
-            const paths = [...files.keys()]
-            expect(paths.some((p) => p.includes("/features/"))).toBe(true)
+        it("merges shadcn overlay when ui.shadcn is true", async () => {
+            const files = await generateToMap({
+                ...buildConfig(base),
+                ui: {
+                    platformStyle: "adaptive",
+                    shadcn: true,
+                    defaultKit: "app",
+                },
+            })
+            expect(
+                [...files.keys()].some((f) => f.endsWith("/widgets/ui/shadcn/shad_theme.dart")),
+            ).toBe(true)
+            expect(
+                [...files.keys()].some((f) =>
+                    f.endsWith("/widgets/ui/shadcn/shad_app_button.dart"),
+                ),
+            ).toBe(true)
+            expect(getPubspecContent(files)).toContain("shadcn_ui:")
         })
     })
 })

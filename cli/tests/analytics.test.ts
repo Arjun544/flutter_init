@@ -13,6 +13,9 @@ const BASE_CONFIG: FlutterInitConfig = {
   themeMode: 'both',
   primaryColor: '#027DFD',
   outputDir: '/mock/output/dir',
+  platformStyle: 'adaptive',
+  usesShadcn: false,
+  defaultKit: 'app',
 
   usesIconsaxPlus: false,
   usesFlutterRemix: false,

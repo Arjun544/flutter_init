@@ -146,6 +146,30 @@ const themeSchema = z.object({
 })
 export type ThemeConfig = z.infer<typeof themeSchema>
 
+export const platformStyleSchema = z.enum(["adaptive", "material", "cupertino"])
+export type PlatformStyle = z.infer<typeof platformStyleSchema>
+
+export const uiKitSchema = z.enum(["app", "shadcn"])
+export type UiKit = z.infer<typeof uiKitSchema>
+
+const uiSchema = z.object({
+    platformStyle: platformStyleSchema.default("adaptive"),
+    shadcn: z.boolean().default(false),
+    defaultKit: uiKitSchema.default("app"),
+})
+export type UiConfig = z.infer<typeof uiSchema>
+
+export const platformStyleOptions = [
+    { value: "adaptive", label: "Adaptive", description: "Material on Android, Cupertino on iOS — follows the device." },
+    { value: "material", label: "Material", description: "Always use Material widgets on every platform." },
+    { value: "cupertino", label: "Cupertino", description: "Always use Cupertino widgets on every platform." },
+] as const satisfies Array<{ value: PlatformStyle; label: string; description: string }>
+
+export const uiKitOptions = [
+    { value: "app", label: "App kit (native)", description: "Generated screens use App* adaptive widgets." },
+    { value: "shadcn", label: "shadcn/ui", description: "Generated screens use ShadApp* wrappers." },
+] as const satisfies Array<{ value: UiKit; label: string; description: string }>
+
 const firebaseSchema = z.object({
     authEmail: z.boolean(),
     authGoogle: z.boolean(),
@@ -227,6 +251,11 @@ export const scaffoldConfigSchema = z.object({
         .regex(/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/, "Invalid Package ID format (e.g., com.example.app_name)"),
     description: z.string().optional(),
     theme: themeSchema,
+    ui: uiSchema.default({
+        platformStyle: "adaptive",
+        shadcn: false,
+        defaultKit: "app",
+    }),
     stateManagement: stateManagementSchema,
     backend: backendSchema,
     localization: localizationSchema,
@@ -271,6 +300,14 @@ export const scaffoldConfigSchema = z.object({
 }, {
     message: "Either Dio or HTTP client must be enabled when using Custom Backend",
     path: ["misc"],
+}).refine((data) => {
+    if (data.ui.defaultKit === "shadcn") {
+        return data.ui.shadcn === true
+    }
+    return true
+}, {
+    message: "defaultKit cannot be shadcn unless shadcn components are enabled",
+    path: ["ui", "defaultKit"],
 })
 
 export type ScaffoldConfig = z.infer<typeof scaffoldConfigSchema>
@@ -298,6 +335,11 @@ export const defaultConfig: ScaffoldConfig = {
         primaryColor: "#6750A4",
         darkMode: { enabled: true, system: true },
         customFonts: [],
+    },
+    ui: {
+        platformStyle: "adaptive",
+        shadcn: false,
+        defaultKit: "app",
     },
     icons: {
         default: true,

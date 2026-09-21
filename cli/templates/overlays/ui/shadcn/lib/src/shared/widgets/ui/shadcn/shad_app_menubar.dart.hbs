@@ -1,0 +1,54 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// A menubar item for [ShadAppMenubar].
+class ShadAppMenubarItem {
+  const ShadAppMenubarItem({
+    required this.label,
+    required this.items,
+  });
+
+  final String label;
+  final List<Widget> items;
+}
+
+/// Thin [ShadMenubar] adapter.
+///
+/// Pass raw [ShadContextMenuItem] / [ShadSeparator] widgets in [items].
+///
+/// Usage:
+/// ```dart
+/// ShadAppMenubar(
+///   menus: [
+///     ShadAppMenubarItem(
+///       label: 'File',
+///       items: [
+///         const ShadContextMenuItem(child: Text('New')),
+///         const ShadContextMenuItem(child: Text('Open')),
+///       ],
+///     ),
+///   ],
+/// )
+/// ```
+class ShadAppMenubar extends StatelessWidget {
+  const ShadAppMenubar({
+    super.key,
+    required this.menus,
+  });
+
+  final List<ShadAppMenubarItem> menus;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadMenubar(
+      items: menus
+          .map(
+            (menu) => ShadMenubarItem(
+              items: menu.items,
+              child: Text(menu.label),
+            ),
+          )
+          .toList(),
+    );
+  }
+}

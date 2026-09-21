@@ -1,0 +1,162 @@
+import '../../../../../imports/imports.dart';
+
+/// A search field with clear affordance and adaptive chrome.
+///
+/// Usage:
+/// ```dart
+/// AppSearchField(
+///   controller: _searchController,
+///   hint: 'Search projects…',
+///   onChanged: _onQueryChanged,
+/// )
+/// ```
+class AppSearchField extends StatefulWidget {
+  const AppSearchField({
+    super.key,
+    this.controller,
+    this.hint = 'Search',
+    this.onChanged,
+    this.onSubmitted,
+    this.focusNode,
+    this.enabled = true,
+    this.autofocus = false,
+    this.platform,
+  });
+
+  final TextEditingController? controller;
+  final String hint;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final FocusNode? focusNode;
+  final bool enabled;
+  final bool autofocus;
+  final AppPlatformStyle? platform;
+
+  @override
+  State<AppSearchField> createState() => _AppSearchFieldState();
+}
+
+class _AppSearchFieldState extends State<AppSearchField> {
+  TextEditingController? _ownedController;
+  late TextEditingController _controller;
+
+  TextEditingController get _effectiveController =>
+      widget.controller ?? _ownedController!;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.controller == null) {
+      _ownedController = TextEditingController();
+    }
+    _controller = _effectiveController;
+    _controller.addListener(_onTextChanged);
+  }
+
+  @override
+  void didUpdateWidget(AppSearchField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      _controller.removeListener(_onTextChanged);
+      if (oldWidget.controller == null) {
+        _ownedController?.dispose();
+        _ownedController = null;
+      }
+      if (widget.controller == null) {
+        _ownedController = TextEditingController();
+      }
+      _controller = _effectiveController;
+      _controller.addListener(_onTextChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_onTextChanged);
+    _ownedController?.dispose();
+    super.dispose();
+  }
+
+  void _onTextChanged() => setState(() {});
+
+  void _clear() {
+    _controller.clear();
+    widget.onChanged?.call('');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = widget.platform != null
+        ? widget.platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final cs = context.colors;
+    final tt = context.textTheme;
+    final hasText = _controller.text.isNotEmpty;
+
+    if (useCupertino) {
+      return CupertinoTextField(
+        controller: _controller,
+        focusNode: widget.focusNode,
+        enabled: widget.enabled,
+        autofocus: widget.autofocus,
+        onChanged: widget.onChanged,
+        onSubmitted: widget.onSubmitted,
+        placeholder: widget.hint,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.ms,
+        ),
+        prefix: Padding(
+          padding: EdgeInsets.only(left: AppSpacing.sm),
+          child: Icon(
+            CupertinoIcons.search,
+            size: {{res 18 'sp' flags.usesScreenutil}},
+            color: cs.onSurfaceVariant,
+          ),
+        ),
+        suffix: hasText
+            ? CupertinoButton(
+                padding: EdgeInsets.only(right: AppSpacing.xs),
+                minimumSize: Size.zero,
+                onPressed: _clear,
+                child: Icon(
+                  CupertinoIcons.clear_circled_solid,
+                  size: {{res 18 'sp' flags.usesScreenutil}},
+                  color: cs.onSurfaceVariant,
+                ),
+              )
+            : null,
+        decoration: BoxDecoration(
+          color: cs.surfaceContainerHighest,
+          borderRadius: AppBorders.input,
+          border: Border.all(color: cs.outlineVariant),
+        ),
+        style: tt.bodyLarge?.copyWith(color: cs.onSurface),
+        placeholderStyle: tt.bodyLarge?.copyWith(color: cs.onSurfaceVariant),
+        cursorColor: cs.primary,
+      );
+    }
+
+    return TextField(
+      controller: _controller,
+      focusNode: widget.focusNode,
+      enabled: widget.enabled,
+      autofocus: widget.autofocus,
+      onChanged: widget.onChanged,
+      onSubmitted: widget.onSubmitted,
+      style: tt.bodyLarge?.copyWith(color: cs.onSurface),
+      cursorColor: cs.primary,
+      decoration: InputDecoration(
+        hintText: widget.hint,
+        isDense: true,
+        prefixIcon: Icon(Icons.search, color: cs.onSurfaceVariant),
+        suffixIcon: hasText
+            ? IconButton(
+                onPressed: _clear,
+                icon: Icon(Icons.clear, color: cs.onSurfaceVariant),
+              )
+            : null,
+      ),
+    );
+  }
+}

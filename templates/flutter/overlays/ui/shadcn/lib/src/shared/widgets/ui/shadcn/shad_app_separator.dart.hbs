@@ -1,0 +1,27 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadSeparator] adapter mirroring [AppDivider].
+///
+/// Usage:
+/// ```dart
+/// ShadAppSeparator()
+/// ShadAppSeparator.vertical()
+/// ```
+class ShadAppSeparator extends StatelessWidget {
+  const ShadAppSeparator({
+    super.key,
+    this.vertical = false,
+  });
+
+  const ShadAppSeparator.vertical({super.key}) : vertical = true;
+
+  final bool vertical;
+
+  @override
+  Widget build(BuildContext context) {
+    return vertical
+        ? const ShadSeparator.vertical()
+        : const ShadSeparator.horizontal();
+  }
+}

@@ -1,0 +1,79 @@
+import '../../../../../imports/imports.dart';
+
+/// Interactive star rating control.
+///
+/// Usage:
+/// ```dart
+/// AppRating(
+///   value: rating,
+///   onChanged: (v) => setState(() => rating = v),
+/// )
+/// ```
+class AppRating extends StatelessWidget {
+  const AppRating({
+    super.key,
+    required this.value,
+    this.onChanged,
+    this.max = 5,
+    this.size,
+    this.allowHalf = false,
+    this.enabled = true,
+    this.platform,
+  });
+
+  final double value;
+  final ValueChanged<double>? onChanged;
+  final int max;
+  final double? size;
+  final bool allowHalf;
+  final bool enabled;
+  final AppPlatformStyle? platform;
+
+  void _handleTap(int index, TapDownDetails details, double starSize) {
+    if (!enabled || onChanged == null) return;
+    if (allowHalf && details.localPosition.dx < starSize / 2) {
+      onChanged!(index - 0.5);
+    } else {
+      onChanged!(index.toDouble());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = platform != null
+        ? platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final cs = context.colors;
+    final starSize = size ?? {{res 28 'sp' flags.usesScreenutil}};
+    final filledIcon = useCupertino ? CupertinoIcons.star_fill : Icons.star_rounded;
+    final emptyIcon = useCupertino ? CupertinoIcons.star : Icons.star_outline_rounded;
+    final halfIcon =
+        useCupertino ? CupertinoIcons.star_lefthalf_fill : Icons.star_half_rounded;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 1; i <= max; i++)
+          GestureDetector(
+            onTapDown: !enabled || onChanged == null
+                ? null
+                : (details) => _handleTap(i, details, starSize),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.xxs),
+              child: Icon(
+                value >= i
+                    ? filledIcon
+                    : (allowHalf && value >= i - 0.5)
+                        ? halfIcon
+                        : emptyIcon,
+                size: starSize,
+                color: value >= i - (allowHalf ? 0.5 : 0)
+                    ? cs.primary
+                    : cs.outlineVariant,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}

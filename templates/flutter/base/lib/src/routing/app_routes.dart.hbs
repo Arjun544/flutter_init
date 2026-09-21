@@ -12,6 +12,8 @@ abstract final class AppRoutes {
   static const String login = '/login';
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
+  /// Debug-only component gallery.
+  static const String uiShowcase = '/debug/ui-showcase';
 }
 {{else if (eq flags.routerPackage "auto_route")}}
 /// Centralized route name constants for AutoRoute.
@@ -27,6 +29,8 @@ abstract final class AppRoutes {
   static const String login = '/login';
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
+  /// Debug-only component gallery.
+  static const String uiShowcase = '/debug/ui-showcase';
 }
 {{else}}
 /// Centralized route name constants for named Navigator routes.
@@ -42,5 +46,7 @@ abstract final class AppRoutes {
   static const String login = '/login';
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
+  /// Debug-only component gallery.
+  static const String uiShowcase = '/debug/ui-showcase';
 }
 {{/if}}

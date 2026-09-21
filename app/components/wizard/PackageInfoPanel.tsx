@@ -112,17 +112,77 @@ const PACKAGE_INFO: Record<string, {
         title: "None",
         description: "No specific package used. Uses native capabilities or default Flutter libraries."
     },
+    theme_material: {
+        title: "Material",
+        description: "Google's Material Design system with MaterialApp as the root. Updated styling, dynamic colors, and accessible defaults.",
+    },
     theme_material3: {
         title: "Material 3",
         description: "The latest evolution of Google's Material Design system. It offers updated styling, vibrant dynamic colors, and better accessibility by default.",
     },
     theme_cupertino: {
         title: "Cupertino",
-        description: "Replicates the iOS design language. Best suited if you are specifically targeting Apple platforms with native-looking widgets.",
+        description: "Replicates the iOS design language with CupertinoApp. Best suited if you are specifically targeting Apple platforms with native-looking widgets.",
+    },
+    theme_shadcn: {
+        title: "shadcn_ui",
+        description: "Adds the shadcn_ui package plus ShadApp* wrappers and a ShadThemeData bridge. Pick MaterialApp, CupertinoApp, or ShadApp as the default root.",
+        packageName: "shadcn_ui",
+        url: "https://mariuti.com/flutter-shadcn-ui/",
     },
     theme_custom: {
         title: "Custom Theme",
         description: "A blank canvas allowing you to implement your own completely bespoke design system and styling from scratch without relying on pre-built design languages.",
+    },
+    default_app_material: {
+        title: "MaterialApp",
+        description: "Root widget is MaterialApp. shadcn_ui is included and wrapped around it; generated screens use App* widgets by default.",
+    },
+    default_app_cupertino: {
+        title: "CupertinoApp",
+        description: "Root widget is CupertinoApp. shadcn_ui is included and wrapped around it; generated screens use App* widgets by default.",
+    },
+    default_app_shad: {
+        title: "ShadApp",
+        description: "Uses ShadApp as the theme host and generates feature screens with ShadApp* wrappers by default.",
+    },
+    appearance_light: {
+        title: "Light mode",
+        description: "Generates a light color scheme only. Dark mode support is disabled in the scaffold.",
+    },
+    appearance_dark: {
+        title: "Dark mode",
+        description: "Generates light and dark color schemes and defaults the app to dark. Users can still switch themes in code.",
+    },
+    appearance_auto: {
+        title: "Auto appearance",
+        description: "Generates light and dark schemes and follows the device brightness preference (ThemeMode.system).",
+    },
+    platform_style_adaptive: {
+        title: "Adaptive platform style",
+        description: "App* components render Material on Android and Cupertino on iOS/macOS at runtime. Override per widget with the platform parameter or wrap a subtree in AppPlatformScope.",
+    },
+    platform_style_material: {
+        title: "Material platform style",
+        description: "Force every App* component to use Material widgets on all platforms.",
+    },
+    platform_style_cupertino: {
+        title: "Cupertino platform style",
+        description: "Force every App* component to use Cupertino widgets on all platforms. Colors still come from your Material seed ColorScheme so both kits stay in sync.",
+    },
+    shadcn_ui: {
+        title: "shadcn/ui for Flutter",
+        packageName: "shadcn_ui",
+        description: "Adds the shadcn_ui package plus ShadApp* wrappers and a ShadThemeData bridge built from your design tokens. Requires Flutter SDK >= 3.41.",
+        url: "https://mariuti.com/flutter-shadcn-ui/",
+    },
+    ui_kit_app: {
+        title: "App kit (native)",
+        description: "Generated feature screens (login, signup, home, onboarding) use the App* adaptive widget kit.",
+    },
+    ui_kit_shadcn: {
+        title: "shadcn/ui kit",
+        description: "Generated feature screens use ShadApp* wrappers that mirror the App* API so you can swap kits without rewriting screens.",
     },
     localization_en: {
         title: "English Localization",

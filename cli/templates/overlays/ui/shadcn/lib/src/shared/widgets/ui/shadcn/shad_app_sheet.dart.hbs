@@ -1,0 +1,68 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadSheet] helpers mirroring [AppBottomSheet].
+///
+/// Usage:
+/// ```dart
+/// await ShadAppSheet.show(
+///   context,
+///   title: Text('Edit profile'),
+///   child: ...,
+/// );
+/// ```
+class ShadAppSheet {
+  const ShadAppSheet._();
+
+  /// Shows a [ShadSheet] via [showShadSheet].
+  static Future<T?> show<T>(
+    BuildContext context, {
+    Widget? title,
+    Widget? description,
+    Widget? child,
+    List<Widget>? actions,
+    ShadSheetSide side = ShadSheetSide.bottom,
+    BoxConstraints? constraints,
+  }) {
+    return showShadSheet<T>(
+      context: context,
+      side: side,
+      builder: (context) => ShadSheet(
+        title: title,
+        description: description,
+        actions: actions ?? const [],
+        constraints: constraints,
+        child: child,
+      ),
+    );
+  }
+}
+
+/// Widget form of [ShadSheet] for embedding in custom flows.
+class ShadAppSheetView extends StatelessWidget {
+  const ShadAppSheetView({
+    super.key,
+    this.title,
+    this.description,
+    this.child,
+    this.actions = const [],
+    this.constraints,
+  });
+
+  final Widget? title;
+  final Widget? description;
+  final Widget? child;
+  final List<Widget> actions;
+  final BoxConstraints? constraints;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadSheet(
+      title: title,
+      description: description,
+      actions: actions,
+      constraints: constraints,
+      child: child,
+    );
+  }
+}

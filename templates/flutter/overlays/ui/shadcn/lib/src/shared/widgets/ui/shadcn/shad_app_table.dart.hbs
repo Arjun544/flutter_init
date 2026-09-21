@@ -1,0 +1,41 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadTable] adapter for simple header + row data.
+///
+/// Usage:
+/// ```dart
+/// ShadAppTable(
+///   headers: const ['Name', 'Email'],
+///   rows: const [
+///     ['Alice', 'a@example.com'],
+///     ['Bob', 'b@example.com'],
+///   ],
+/// )
+/// ```
+class ShadAppTable extends StatelessWidget {
+  const ShadAppTable({
+    super.key,
+    required this.headers,
+    required this.rows,
+  });
+
+  final List<String> headers;
+  final List<List<String>> rows;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadTable.list(
+      header: headers
+          .map((h) => ShadTableCell.header(child: Text(h)))
+          .toList(),
+      children: rows
+          .map(
+            (row) => row
+                .map((cell) => ShadTableCell(child: Text(cell)))
+                .toList(),
+          )
+          .toList(),
+    );
+  }
+}

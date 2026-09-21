@@ -1,0 +1,53 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadInputOTP] adapter mirroring [AppOtpField].
+///
+/// Usage:
+/// ```dart
+/// ShadAppOtpField(
+///   length: 6,
+///   onCompleted: (code) => verifyOtp(code),
+/// )
+/// ```
+class ShadAppOtpField extends StatelessWidget {
+  const ShadAppOtpField({
+    super.key,
+    this.length = 6,
+    this.onCompleted,
+    this.onChanged,
+    this.enabled = true,
+    this.initialValue,
+  });
+
+  final int length;
+  final ValueChanged<String>? onCompleted;
+  final ValueChanged<String>? onChanged;
+  final bool enabled;
+  final String? initialValue;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadInputOTP(
+      maxLength: length,
+      enabled: enabled,
+      initialValue: initialValue,
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      onChanged: (value) {
+        onChanged?.call(value);
+        if (value.length == length) {
+          onCompleted?.call(value);
+        }
+      },
+      children: [
+        ShadInputOTPGroup(
+          children: List.generate(
+            length,
+            (_) => const ShadInputOTPSlot(),
+          ),
+        ),
+      ],
+    );
+  }
+}

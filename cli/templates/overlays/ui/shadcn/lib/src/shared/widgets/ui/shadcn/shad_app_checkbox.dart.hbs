@@ -1,0 +1,37 @@
+import '../../../../imports/imports.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+/// Thin [ShadCheckbox] adapter mirroring [AppCheckbox].
+///
+/// Usage:
+/// ```dart
+/// ShadAppCheckbox(
+///   value: accepted,
+///   label: 'I agree to the terms',
+///   onChanged: (v) => setState(() => accepted = v),
+/// )
+/// ```
+class ShadAppCheckbox extends StatelessWidget {
+  const ShadAppCheckbox({
+    super.key,
+    required this.value,
+    this.onChanged,
+    this.label,
+    this.enabled = true,
+  });
+
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+  final String? label;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShadCheckbox(
+      value: value,
+      enabled: enabled,
+      onChanged: onChanged,
+      label: label != null ? Text(label!) : null,
+    );
+  }
+}
