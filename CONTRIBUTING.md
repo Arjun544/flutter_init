@@ -44,6 +44,12 @@ Please follow these naming standards for your branches:
 - `docs/doc-updates` (Improvements to markdown)
 - `perf/optimization` (Performance enhancements)
 
+## Changelog & versioning
+
+Product version lives in `cli/package.json` and is shown on `/create`. On every push to `main`, GitHub Actions bumps that version and prepends an entry to `CHANGELOG.md` (OpenAI-written, committed with `[changelog][skip ci]`).
+
+Do **not** hand-edit version bumps for routine merges — the workflow owns them. Large product stories still belong in `content/blog/updates/` as MDX announcements.
+
 ## Development Workflow
 
 We provide a specialized dev loop for template creation that provides "Hot Reload" for your scaffolds.

@@ -22,6 +22,7 @@ jobs:
 
   layer1:
     name: Layer 1 — Template Unit Tests
+    if: ${{ github.event_name == 'workflow_dispatch' || (!contains(github.event.head_commit.message, '[changelog]') && !contains(github.event.head_commit.message, '[skip ci]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -141,6 +142,11 @@ jobs:
     steps:
       - name: Check all jobs passed
         run: |
+          # Bot changelog commits skip the matrix; treat that as a no-op pass.
+          if [ "${{ needs.layer1.result }}" = "skipped" ]; then
+            echo "⏭️ Tier 3 skipped (changelog / skip-ci commit)."
+            exit 0
+          fi
           if [ "${{ needs.layer1.result }}" != "success" ] || [ "${{ needs.layer2.result }}" != "success" ]; then
             echo "❌ Release gate FAILED. Not all jobs passed."
             exit 1
