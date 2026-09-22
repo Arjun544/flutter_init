@@ -37,7 +37,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GH_PAT }} # Uses your custom token to bypass restrictions
 
       - name: Skip if push is changelog-only
         id: guard
@@ -79,7 +78,9 @@ jobs:
       - name: Open changelog PR
         if: steps.guard.outputs.skip != 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITHUB_TOKEN cannot create PRs unless "Allow GitHub Actions to
+          # create and approve pull requests" is enabled. Reuse GH_PAT.
+          GH_TOKEN: ${{ secrets.GH_PAT }}
           VERSION: ${{ steps.release.outputs.version }}
         run: |
           git config user.name "github-actions[bot]"
