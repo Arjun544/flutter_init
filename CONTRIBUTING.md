@@ -46,7 +46,7 @@ Please follow these naming standards for your branches:
 
 ## Changelog & versioning
 
-Product version lives in `cli/package.json` and is shown on `/create`. On every push to `main`, GitHub Actions bumps that version and prepends an entry to `CHANGELOG.md` (OpenAI-written, committed with `[changelog][skip ci]`).
+Product version lives in `cli/package.json` and is shown on `/create`. On every push to `main`, GitHub Actions bumps that version, prepends an entry to `CHANGELOG.md`, and opens a PR (main is protected). Merge that PR to publish the release notes and version badge update.
 
 Do **not** hand-edit version bumps for routine merges — the workflow owns them. Large product stories still belong in `content/blog/updates/` as MDX announcements.
 
